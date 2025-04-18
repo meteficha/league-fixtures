@@ -1,3 +1,4 @@
+from datetime import date
 from enum import Enum
 
 class Weekday(Enum):
@@ -41,8 +42,11 @@ class Division:
 
 class League:
     """A chess league."""
-    def __init__(self, name: str, divisions: list[Division]):
+    def __init__(self, name: str, start: date, end: date, divisions: list[Division]):
+        assert(end > start)
         self.name = name
+        self.start = start
+        self.end = end
         self.divisions = divisions
 
 def season202425() -> League:
@@ -76,4 +80,4 @@ def season202425() -> League:
     div4 = Division("Division 4", [Team(ashfield), Team(ashfield), Team(gambit), Team(grantham), Team(nomads), Team(westBridgford), Team(westNottingham)])
     div5 = Division("Division 5", [Team(radcliffeBingham), Team(radcliffeBingham), Team(newark), Team(grantham), Team(gambit), Team(central, "Central 2"), Team(beeston)])
 
-    return League("Notts League 2024/25", [div1, div2, div3, div4, div5])
+    return League("Notts League 2024/25", date(2024, 9, 1), date(2025, 5, 15), [div1, div2, div3, div4, div5])
