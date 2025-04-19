@@ -46,7 +46,7 @@ class Fixture:
         self.home = home
         self.away = away
         self.date = date
-        self.ref = z3.Int(self.name())
+        self.ref = z3.BitVec(self.name(), 10)
         home.fixtures.append(self)
         away.fixtures.append(self)
         self.venue().fixtures.append(self)
