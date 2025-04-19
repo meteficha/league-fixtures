@@ -1,15 +1,15 @@
 from league import *
 
 def season202425() -> League:
-    bramcote = Venue("Bramcote Memorial Hall")
+    bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=3)
     brownCow = Venue("Brown Cow")
     coronation = Venue("Coronation Social Club")
-    embankment = Venue("The Embankment Pub")
+    embankment = Venue("The Embankment Pub", maxMatchesPerDay=3)
     gonerby = Venue("Great Gonerby Social Club")
     legion = Venue("Royal British Legion Club")
     monica = Venue("Monica Partridge Building")
     poacher = Venue("The Lincolnshire Poacher")
-    railway = Venue("The Railway Club")
+    railway = Venue("The Railway Club", maxMatchesPerDay=3)
     wolds = Venue("The Wolds Pub")
 
     ashfield = Club("Ashfield", coronation, Weekday.WEDNESDAY)
@@ -31,4 +31,4 @@ def season202425() -> League:
     div4 = Division("Division 4", [Team(ashfield), Team(ashfield), Team(gambit), Team(grantham), Team(nomads), Team(westBridgford), Team(westNottingham)])
     div5 = Division("Division 5", [Team(radcliffeBingham), Team(radcliffeBingham), Team(newark), Team(grantham), Team(gambit), Team(central, "Central 2"), Team(beeston)])
 
-    return League("Notts League 2024/25", date(2024, 9, 1), date(2025, 5, 15), [div1, div2, div3, div4, div5])
+    return League("Notts League 2024/25", date(2024, 9, 1), date(2025, 4, 15), [div1, div2, div3, div4, div5])

@@ -22,10 +22,11 @@ Desirable properties:
 from notts import season202425
 from solver import Solver
 
-print(1)
+print("Creating league data...")
 league = season202425()
-print(2)
+print("Creating solver...")
 solver = Solver(league)
-print(3)
+print("Solving...")
 solver.solve()
-print(4)
+print("Done!")
+print(league)

@@ -38,7 +38,7 @@ class Team:
         club.teams.append(self)
 
     def __str__(self) -> str:
-        return "TODO" # TODO
+        return self.name
 
 class Fixture:
     """A match between two teams."""
@@ -63,6 +63,10 @@ class Fixture:
     def sameClub(self) -> bool:
         return self.home.club == self.away.club
 
+    def __str__(self) -> str:
+        dateStr = str(self.date) if self.date else "????-??-??"
+        return f"{dateStr} {self.name()}"
+
 class Division:
     """A division in the chess league."""
     def __init__(self, name: str, teams: list[Team]):
@@ -72,8 +76,13 @@ class Division:
 
     def __str__(self) -> str:
         r = f'= {self.name} =\nTeams:\n'
-        for t in self.teams:
-            r += '    ' + str(t) + '\n'
+        for ts in sorted(map(str, self.teams)):
+            r += '    ' + ts + '\n'
+
+        r += '\nFixtures:\n'
+        for f in sorted(self.fixtures, key=lambda f: (f.date or date(2000, 1, 1), f.name())):
+            r += '    ' + str(f) + '\n'
+
         return r
 
 class League:

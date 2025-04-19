@@ -75,3 +75,12 @@ class Solver:
             raise UnsatisfiableConstraints(self.solver.reason_unknown())
         elif r == z3.unsat:
             raise UnsatisfiableConstraints(str(self.solver.unsat_core()))
+
+        m = self.solver.model()
+        for d in self.league.divisions:
+            for f in d.fixtures:
+                v = m[f.ref]
+                if isinstance(v, z3.BitVecNumRef):
+                    f.date = self.intToDate(v.as_long())
+                else:
+                    raise Exception(f"{f.ref} is not a BitVecNumRef")
