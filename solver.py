@@ -3,6 +3,9 @@ from z3 import z3
 
 from league import *
 
+class UnsatisfiableConstraints(Exception):
+    pass
+
 class Solver:
     """Update every fixture of the given league with dates that
     fit the necessary constraints."""
@@ -46,7 +49,7 @@ class Solver:
         # Constraint: teams can only play one fixture per day.
         for d in self.league.divisions:
             for t in d.teams:
-                self.solver.add(z3.Distinct(*[f.date for f in t.fixtures]))
+                self.solver.add(z3.Distinct(*[f.ref for f in t.fixtures]))
 
         # Constraint: venues have a maximum number of matches per day.
         for (v, wd) in self.league.venues():
@@ -65,3 +68,10 @@ class Solver:
                         chosen = best[0] if len(best) > 0 else candidates[0]
                         self.solver.add([chosen.ref < f.ref for f in t.fixtures if chosen != f])
                         hasFirstMatchConstraint.add(chosen.away)
+
+    def solve(self) -> None:
+        r = self.solver.check()
+        if r == z3.unknown:
+            raise UnsatisfiableConstraints(self.solver.reason_unknown())
+        elif r == z3.unsat:
+            raise UnsatisfiableConstraints(str(self.solver.unsat_core()))

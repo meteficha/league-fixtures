@@ -37,6 +37,9 @@ class Team:
         self.fixtures: list[Fixture] = []
         club.teams.append(self)
 
+    def __str__(self) -> str:
+        return "TODO" # TODO
+
 class Fixture:
     """A match between two teams."""
     def __init__(self, home: Team, away: Team, date: date | None = None):
@@ -67,6 +70,12 @@ class Division:
         self.teams = teams
         self.fixtures = [Fixture(home, away) for home in teams for away in teams if home != away]
 
+    def __str__(self) -> str:
+        r = f'= {self.name} =\nTeams:\n'
+        for t in self.teams:
+            r += '    ' + str(t) + '\n'
+        return r
+
 class League:
     """A chess league."""
     def __init__(self, name: str, start: date, end: date, divisions: list[Division]):
@@ -75,6 +84,12 @@ class League:
         self.start = start
         self.end = end
         self.divisions = divisions
+
+    def __str__(self) -> str:
+        r = f'=== {self.name} (from {self.start} until {self.end}) ===\n'
+        for d in self.divisions:
+            r += '\n' + str(d)
+        return r
 
     def venues(self) -> set[tuple[Venue, Weekday]]:
         return set((t.club.venue, t.club.weekday) for d in self.divisions for t in d.teams)

@@ -14,16 +14,18 @@ Constraints:
 
 Desirable properties:
 
+    - Last fixture should be scheduled at least 5 weeks away from league end.
+
     - Teams alternate between playing at home and away.
 """
 
-from z3 import z3
+from notts import season202425
+from solver import Solver
 
-
-
-s = z3.Solver()
-x = z3.Real('x')
-s.add(0 == x**2 + 2*x - 1, x != - (1 + z3.Sqrt(2)))
-print(s)
-print(s.check())
-print(s.model())
+print(1)
+league = season202425()
+print(2)
+solver = Solver(league)
+print(3)
+solver.solve()
+print(4)
