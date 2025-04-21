@@ -21,8 +21,8 @@ class Solver:
         return date.fromordinal(x + self.league.start.toordinal())
 
     def weekdayToInt(self, x: Weekday) -> int:
-        """dateToInt(x) % 7 == weekdayToInt(Weekday(x.isoweekday()))"""
-        offset = self.league.start.isoweekday()
+        """dateToInt(x) % 7 == weekdayToInt(Weekday.fromDate(x))"""
+        offset = Weekday.fromDate(self.league.start).value
         return (x.value - offset) % 7
 
     def possibleDays(self, x: Weekday) -> range:
@@ -41,6 +41,9 @@ class Solver:
 
                 # Constraint: played on venue's weekday.
                 self.solver.add(f.ref % 7 == self.weekdayToInt(f.weekday()))
+
+                # Constraint: not played on a holiday.
+                self.solver.add([f.ref != self.dateToInt(holiday) for holiday in self.league.holidays.get(f.weekday(), set())])
 
                 # Constraint: matches between teams of the same club must be played by 31 Jan.
                 if f.sameClub():

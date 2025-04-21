@@ -1,5 +1,7 @@
 from datetime import date
 from enum import Enum
+from functools import cached_property
+from typing import Self
 from z3 import z3
 
 class Weekday(Enum):
@@ -10,6 +12,10 @@ class Weekday(Enum):
     FRIDAY = 5
     SATURDAY = 6
     SUNDAY = 7
+
+    @classmethod
+    def fromDate(cls: type[Self], d: date) -> Self:
+        return cls(d.isoweekday())
 
 class Venue:
     """A venue is a place that clubs use to schedule their matches.
@@ -85,14 +91,24 @@ class Division:
 
         return r
 
+class Calendar:
+    """A set of holidays."""
+    def __init__(self, holidays: set[date]):
+        self.holidays = holidays
+
+    @classmethod
+    def empty(cls: type[Self]) -> Self:
+        return cls(set())
+
 class League:
     """A chess league."""
-    def __init__(self, name: str, start: date, end: date, divisions: list[Division]):
+    def __init__(self, name: str, start: date, end: date, divisions: list[Division], calendar: Calendar = Calendar.empty()):
         assert(end > start)
         self.name = name
         self.start = start
         self.end = end
         self.divisions = divisions
+        self.calendar = calendar
 
     def __str__(self) -> str:
         r = f'=== {self.name} (from {self.start} until {self.end}) ===\n'
@@ -102,3 +118,11 @@ class League:
 
     def venues(self) -> set[tuple[Venue, Weekday]]:
         return set((t.club.venue, t.club.weekday) for d in self.divisions for t in d.teams)
+
+    @cached_property
+    def holidays(self) -> dict[Weekday, set[date]]:
+        r: dict[Weekday, set[date]] = dict()
+        for d in self.calendar.holidays:
+            if self.start <= d <= self.end:
+                r.setdefault(Weekday.fromDate(d), set()).add(d)
+        return r
