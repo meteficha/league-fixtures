@@ -40,10 +40,10 @@ class Solver:
                 self.solver.add(f.ref >= self.dateToInt(self.league.start), f.ref <= self.dateToInt(self.league.end))
 
                 # Constraint: played on venue's weekday.
-                self.solver.add(f.ref % 7 == self.weekdayToInt(f.weekday()))
+                self.solver.add(f.ref % 7 == self.weekdayToInt(f.weekday))
 
                 # Constraint: not played on a holiday.
-                self.solver.add([f.ref != self.dateToInt(holiday) for holiday in self.league.holidays.get(f.weekday(), set())])
+                self.solver.add([f.ref != self.dateToInt(holiday) for holiday in self.league.holidays.get(f.weekday, set())])
 
                 # Constraint: matches between teams of the same club must be played by 31 Jan.
                 if f.sameClub():
@@ -55,7 +55,7 @@ class Solver:
                 self.solver.add(z3.Distinct(*[f.ref for f in t.fixtures]))
 
         # Constraint: venues have a maximum number of matches per day.
-        for (v, wd) in self.league.venues():
+        for (v, wd) in self.league.venues:
             for d in self.possibleDays(wd):
                 self.solver.add(z3.PbLe([(f.ref == d, 1) for f in v.fixtures], v.maxMatchesPerDay))
 

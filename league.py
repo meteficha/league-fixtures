@@ -52,17 +52,20 @@ class Fixture:
         self.home = home
         self.away = away
         self.date = date
-        self.ref = z3.BitVec(self.name(), 10)
+        self.ref = z3.BitVec(self.name, 10)
         home.fixtures.append(self)
         away.fixtures.append(self)
-        self.venue().fixtures.append(self)
+        self.venue.fixtures.append(self)
 
+    @property
     def venue(self) -> Venue:
         return self.home.club.venue
 
+    @property
     def weekday(self) -> Weekday:
         return self.home.club.weekday
 
+    @cached_property
     def name(self) -> str:
         return self.home.name + " x " + self.away.name
 
@@ -71,7 +74,7 @@ class Fixture:
 
     def __str__(self) -> str:
         dateStr = str(self.date) if self.date else "????-??-??"
-        return f"{dateStr} {self.name()}"
+        return f"{dateStr} {self.name}"
 
 class Division:
     """A division in the chess league."""
@@ -86,7 +89,7 @@ class Division:
             r += '    ' + ts + '\n'
 
         r += '\nFixtures:\n'
-        for f in sorted(self.fixtures, key=lambda f: (f.date or date(2000, 1, 1), f.name())):
+        for f in sorted(self.fixtures, key=lambda f: (f.date or date(2000, 1, 1), f.name)):
             r += '    ' + str(f) + '\n'
 
         return r
@@ -116,6 +119,7 @@ class League:
             r += '\n' + str(d)
         return r
 
+    @cached_property
     def venues(self) -> set[tuple[Venue, Weekday]]:
         return set((t.club.venue, t.club.weekday) for d in self.divisions for t in d.teams)
 
