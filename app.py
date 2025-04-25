@@ -20,12 +20,14 @@ Desirable properties:
 """
 
 from notts import season202425
-from solver import Solver
+import solver_pycsp3 as solver
+# import solver_z3 as solver
+
 
 print("Creating league data...")
 league = season202425()
 print("Creating solver...")
-solver = Solver(league)
+solver = solver.Solver(league)
 print("Solving...")
 solver.solve()
 print("Done!")

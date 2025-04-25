@@ -1,6 +1,7 @@
 from datetime import date
 from enum import Enum
 from functools import cached_property
+from pycsp3.classes.main.variables import Variable
 from typing import Self
 from z3 import z3
 
@@ -52,7 +53,8 @@ class Fixture:
         self.home = home
         self.away = away
         self.date = date
-        self.ref = z3.BitVec(self.name, 10)
+        self.pycsp3: Variable | None = None
+        self.z3 = z3.BitVec(self.name, 10)
         home.fixtures.append(self)
         away.fixtures.append(self)
         self.venue.fixtures.append(self)
@@ -68,6 +70,10 @@ class Fixture:
     @cached_property
     def name(self) -> str:
         return self.home.name + " x " + self.away.name
+
+    @cached_property
+    def sanitized_name(self) -> str:
+        return self.name.replace(" ", "_").replace("&", "_")
 
     def sameClub(self) -> bool:
         return self.home.club == self.away.club
