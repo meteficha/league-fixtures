@@ -31,12 +31,12 @@ def season202425() -> League:
     div4 = Division("Division 4", [Team(ashfield), Team(ashfield), Team(gambit), Team(grantham), Team(nomads), Team(westBridgford), Team(westNottingham)])
     div5 = Division("Division 5", [Team(radcliffeBingham), Team(radcliffeBingham), Team(newark), Team(grantham), Team(gambit), Team(central, "Central 2"), Team(beeston)])
 
-    calendar = Calendar(set(
+    calendar = Calendar(
         [ date(2024, 12, 23)
         , date(2024, 12, 24)
         , date(2024, 12, 25)
         , date(2024, 12, 31)
         , date(2025, 1, 1)
-        ]))
+        ])
 
     return League("Notts League 2024/25", date(2024, 9, 1), date(2025, 4, 15), [div1, div2, div3, div4, div5], calendar)

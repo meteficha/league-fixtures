@@ -2,7 +2,7 @@ from datetime import date
 from enum import Enum
 from functools import cached_property
 from pycsp3.classes.main.variables import Variable
-from typing import Self
+from typing import Iterable, Self
 from z3 import z3
 
 class Weekday(Enum):
@@ -76,8 +76,8 @@ class Fixture:
         return self.name.replace(" ", "_").replace("&", "_")
 
     @cached_property
-    def teams(self) -> set[Team]:
-        return set([self.home, self.away])
+    def teams(self) -> frozenset[Team]:
+        return frozenset([self.home, self.away])
 
     def sameClub(self) -> bool:
         return self.home.club == self.away.club
@@ -104,14 +104,27 @@ class Division:
 
         return r
 
+    @cached_property
+    def fixturePairs(self) -> frozenset[frozenset[Fixture]]:
+        """All fixtures in the division, paired so that T1 v T2 and T2 v T1 are together.
+        All inner sets have two Fixtures in them."""
+        toAdd = self.fixtures.copy()
+        ret = set()
+        while toAdd:
+            f1 = toAdd.pop()
+            f2 = next(f for f in toAdd if f.teams == f1.teams)
+            toAdd.remove(f2)
+            ret.add(frozenset({f1, f2}))
+        return frozenset(ret)
+
 class Calendar:
     """A set of holidays."""
-    def __init__(self, holidays: set[date]):
-        self.holidays = holidays
+    def __init__(self, holidays: Iterable[date]):
+        self.holidays = frozenset(holidays)
 
     @classmethod
     def empty(cls: type[Self]) -> Self:
-        return cls(set())
+        return cls([])
 
 class League:
     """A chess league."""
@@ -130,17 +143,17 @@ class League:
         return r
 
     @cached_property
-    def venues(self) -> set[tuple[Venue, Weekday]]:
-        return set((t.club.venue, t.club.weekday) for d in self.divisions for t in d.teams)
+    def venues(self) -> frozenset[tuple[Venue, Weekday]]:
+        return frozenset((t.club.venue, t.club.weekday) for d in self.divisions for t in d.teams)
 
     @cached_property
-    def holidays(self) -> dict[Weekday, set[date]]:
+    def holidays(self) -> dict[Weekday, frozenset[date]]:
         r: dict[Weekday, set[date]] = dict()
         for d in self.calendar.holidays:
             if self.start <= d <= self.end:
                 r.setdefault(Weekday.fromDate(d), set()).add(d)
-        return r
+        return {k: frozenset(v) for (k, v) in r.items()}
 
     @cached_property
-    def clubs(self) -> set[Club]:
-        return set(t.club for d in self.divisions for t in d.teams)
+    def clubs(self) -> frozenset[Club]:
+        return frozenset(t.club for d in self.divisions for t in d.teams)

@@ -1,4 +1,5 @@
 from datetime import date
+from itertools import pairwise
 from typing import Iterator
 import pycsp3
 
@@ -9,10 +10,6 @@ def pairs[T](xs: list[T]) -> Iterator[tuple[T, T]]:
     for i in range(len(xs)):
         for j in range(i+1, len(xs)):
             yield (xs[i], xs[j])
-
-def adjacent[T](xs: list[T]) -> Iterator[tuple[T, T]]:
-    for i in range(len(xs)-1):
-        yield (xs[i], xs[i+1])
 
 class Solver(SolverBase):
     """Update every fixture of the given league with dates that
@@ -30,14 +27,14 @@ class Solver(SolverBase):
     def dom(self, f: Fixture) -> set[int]:
         # Constraint: played within start/end dates.
         # Constraint: played on venue's weekday.
-        ret = set(d for d in self.possibleDays(f.weekday))
+        ret = {d for d in self.possibleDays(f.weekday)}
 
         # Constraint: not played on a holiday.
         ret.difference_update(self.dateToInt(d) for d in self.league.holidays.get(f.weekday, set()))
 
         # Constraint: matches between teams of the same club must be played by 31 Jan.
         if f.sameClub():
-            ret = set(d for d in ret if d <= self.dateToInt(date(self.league.end.year, 1, 31)))
+            ret = {d for d in ret if d <= self.dateToInt(date(self.league.end.year, 1, 31))}
 
         return ret
 
@@ -85,11 +82,11 @@ class Solver(SolverBase):
         adjacentTeams = [
             f1.pycsp3 == f2.pycsp3
             for c in self.league.clubs
-            for (t1, t2) in adjacent(c.teams)
+            for (t1, t2) in pairwise(c.teams)
             for f1 in t1.fixtures
-            if f1.teams != set([t1, t2])
+            if f1.teams != {t1, t2}
             for f2 in t2.fixtures
-            if f2.teams != set([t1, t2])
+            if f2.teams != {t1, t2}
         ]
         optAdjacentTeams = 0
         if self.adjacentTeamsAsConstraint:
@@ -98,6 +95,18 @@ class Solver(SolverBase):
         else:
             # As an optimization
             optAdjacentTeams = -50 * pycsp3.Sum(adjacentTeams) # type: ignore
+
+        # Constraint and optimization: fixture pairs played with time between them.
+        pycsp3.satisfy(
+            pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*5   # type: ignore
+            for d in self.league.divisions
+            for (f1, f2) in d.fixturePairs
+        )
+        optFixturePairs = pycsp3.Sum(
+            pycsp3.abs(f1.pycsp3 - f2.pycsp3)    # type: ignore
+            for d in self.league.divisions
+            for (f1, f2) in d.fixturePairs
+        )
 
         # Optimization: teams alternate between playing away and at home.
         def homeAwaySequence(t: Team) -> list[Fixture]:
@@ -139,7 +148,7 @@ class Solver(SolverBase):
             for t in d.teams
         )
 
-        pycsp3.maximize(30*optDivision + optVenues + optHomeAway + optAdjacentTeams) # type: ignore
+        pycsp3.maximize(30*optDivision + optVenues + optHomeAway + optAdjacentTeams + optFixturePairs) # type: ignore
 
     def solve(self) -> None:
         self.__createConstraints()
