@@ -75,6 +75,10 @@ class Fixture:
     def sanitized_name(self) -> str:
         return self.name.replace(" ", "_").replace("&", "_")
 
+    @cached_property
+    def teams(self) -> set[Team]:
+        return set([self.home, self.away])
+
     def sameClub(self) -> bool:
         return self.home.club == self.away.club
 
@@ -136,3 +140,7 @@ class League:
             if self.start <= d <= self.end:
                 r.setdefault(Weekday.fromDate(d), set()).add(d)
         return r
+
+    @cached_property
+    def clubs(self) -> set[Club]:
+        return set(t.club for d in self.divisions for t in d.teams)
