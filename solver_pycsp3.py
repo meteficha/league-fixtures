@@ -1,7 +1,8 @@
+# pyright: strict, reportUnknownMemberType=false
 from datetime import date
 from itertools import pairwise
-from typing import Iterator
-import pycsp3
+from typing import Any, Iterator
+import pycsp3 # pyright: ignore [reportMissingTypeStubs]
 
 from league import *
 from solver_base import SolverBase, UnsatisfiableConstraints
@@ -30,7 +31,7 @@ class Solver(SolverBase):
         ret = {d for d in self.possibleDays(f.weekday)}
 
         # Constraint: not played on a holiday.
-        ret.difference_update(self.dateToInt(d) for d in self.league.holidays.get(f.weekday, set()))
+        ret.difference_update(self.dateToInt(d) for d in self.league.holidays.get(f.weekday, frozenset()))
 
         # Constraint: matches between teams of the same club must be played by 31 Jan.
         if f.sameClub():
@@ -64,8 +65,8 @@ class Solver(SolverBase):
             pycsp3.satisfy(pycsp3.Cardinality([f.pycsp3 for f in v.fixtures], occurrences={d:range(0, v.maxMatchesPerDay+1) for d in self.possibleDays(wd)}))
 
         # Constraint: first matches of a club's teams in a division are between themselves.
-        hasFirstMatchConstraint = set()
-        firstMatches = set()
+        hasFirstMatchConstraint: set[Team] = set()
+        firstMatches: set[Fixture] = set()
         for d in self.league.divisions:
             for t in d.teams:
                 if t not in hasFirstMatchConstraint:
@@ -79,14 +80,14 @@ class Solver(SolverBase):
                         hasFirstMatchConstraint.add(chosen.away)
 
         # Constraint or optimization: adjacent teams of a club shouldn't play on the same day.
-        adjacentTeams = [
+        adjacentTeams = [ # pyright: ignore[reportUnknownVariableType]
             f1.pycsp3 == f2.pycsp3
             for c in self.league.clubs
             for (t1, t2) in pairwise(c.teams)
             for f1 in t1.fixtures
-            if f1.teams != {t1, t2}
+            if f1.teams != frozenset({t1, t2})
             for f2 in t2.fixtures
-            if f2.teams != {t1, t2}
+            if f2.teams != frozenset({t1, t2})
         ]
         optAdjacentTeams = 0
         if self.adjacentTeamsAsConstraint:
@@ -94,29 +95,30 @@ class Solver(SolverBase):
             pycsp3.satisfy(pycsp3.NoneHold(adjacentTeams))
         else:
             # As an optimization
-            optAdjacentTeams = -50 * pycsp3.Sum(adjacentTeams) # pyright: ignore [reportOperatorIssue]
+            optAdjacentTeams = -50 * pycsp3.Sum(adjacentTeams) # pyright: ignore [reportOperatorIssue, reportUnknownVariableType]
 
         # Constraint and optimization: fixture pairs played with time between them.
         pycsp3.satisfy(
-            pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*7 # pyright: ignore [reportOperatorIssue]
+            pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*7 # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
             for d in self.league.divisions
             for (f1, f2) in d.fixturePairs
         )
-        optFixturePairs = pycsp3.Sum(
-            pycsp3.abs(f1.pycsp3 - f2.pycsp3) # pyright: ignore [reportOperatorIssue]
+        optFixturePairs = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
+            pycsp3.abs(f1.pycsp3 - f2.pycsp3) # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
             for d in self.league.divisions
             for (f1, f2) in d.fixturePairs
         )
 
         # Optimization: teams alternate between playing away and at home.
         def homeAwaySequence(t: Team) -> list[Fixture]:
-            home, away = [], []
+            home: list[Fixture] = []
+            away: list[Fixture] = []
             for f in t.fixtures:
                 if f.home == t:
                     home.append(f)
                 else:
                     away.append(f)
-            ret = []
+            ret: list[Fixture] = []
             while home:
                 ret.append(home.pop(0))
                 try:
@@ -125,10 +127,12 @@ class Solver(SolverBase):
                     pass
             ret.extend(away)
             return ret
-        def ltConstraints(fs: list[Fixture]):
+
+        def ltConstraints(fs: list[Fixture]) -> Iterator[Any]:
             for i in range(len(fs)-1):
                 yield fs[i].pycsp3 < fs[i+1].pycsp3 # pyright: ignore [reportOperatorIssue]
-        optHomeAway = pycsp3.Sum(
+
+        optHomeAway = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
                 c
                 for d in self.league.divisions
                 for t in d.teams
@@ -136,22 +140,22 @@ class Solver(SolverBase):
             )
 
         # Optimization: venues have matches assigned to most of their days.
-        optVenues = pycsp3.Sum(
+        optVenues = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
             pycsp3.NValues(f.pycsp3 for f in v.fixtures if f.weekday == wd)
             for (v, wd) in self.league.venues
             if not v.minimizeEmptyDays
         )
 
         # Optimization: venues can choose to minimize empty days.
-        optVenuesEmptyDays = -1 * pycsp3.Sum(
+        optVenuesEmptyDays = -1 * pycsp3.Sum( # pyright: ignore [reportOperatorIssue, reportUnknownVariableType]
             pycsp3.NValues(f.pycsp3 for f in v.fixtures if f.weekday == wd)
             for (v, wd) in self.league.venues
             if v.minimizeEmptyDays
-        ) # pyright: ignore [reportOperatorIssue]
+        )
 
         # Optimization: space out the matches of a team (and thus of the division).
-        optDivision = pycsp3.Sum(
-            pycsp3.Minimum(pycsp3.abs(f1.pycsp3 - f2.pycsp3) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue]
+        optDivision = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
+            pycsp3.Minimum(pycsp3.abs(f1.pycsp3 - f2.pycsp3) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
             for d in self.league.divisions
             for t in d.teams
         )
@@ -168,5 +172,8 @@ class Solver(SolverBase):
 
         for d in self.league.divisions:
             for f in d.fixtures:
-                v = pycsp3.value(f.pycsp3)
-                f.date = self.intToDate(v)
+                v = pycsp3.value(f.pycsp3) # pyright: ignore[reportUnknownVariableType]
+                if isinstance(v, int):
+                    f.date = self.intToDate(v)
+                else:
+                    raise Exception(f"pycsp3.value({f.pycsp3}) is {v}, not an int")

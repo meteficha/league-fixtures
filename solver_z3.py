@@ -1,5 +1,6 @@
+# pyright: strict, reportUnknownMemberType=false
 from datetime import date
-from z3 import z3
+from z3 import z3 # pyright: ignore [reportMissingTypeStubs]
 
 from league import *
 from solver_base import SolverBase, UnsatisfiableConstraints
@@ -31,7 +32,7 @@ class Solver(SolverBase):
                 self.solver.add(f.z3 % 7 == self.weekdayToInt(f.weekday))
 
                 # Constraint: not played on a holiday.
-                self.solver.add([f.z3 != self.dateToInt(holiday) for holiday in self.league.holidays.get(f.weekday, set())])
+                self.solver.add([f.z3 != self.dateToInt(holiday) for holiday in self.league.holidays.get(f.weekday, frozenset())])
 
                 # Constraint: matches between teams of the same club must be played by 31 Jan.
                 if f.sameClub():
@@ -48,7 +49,7 @@ class Solver(SolverBase):
                 self.solver.add(z3.PbLe([(f.z3 == d, 1) for f in v.fixtures], v.maxMatchesPerDay))
 
         # Constraint: first matches of a club's teams in a division are between themselves.
-        hasFirstMatchConstraint = set()
+        hasFirstMatchConstraint: set[Team] = set()
         for d in self.league.divisions:
             for t in d.teams:
                 if t not in hasFirstMatchConstraint:
@@ -71,7 +72,7 @@ class Solver(SolverBase):
         m = self.solver.model()
         for d in self.league.divisions:
             for f in d.fixtures:
-                v = m[f.z3]
+                v = m[f.z3] # pyright: ignore[reportUnknownVariableType]
                 if isinstance(v, z3.BitVecNumRef):
                     f.date = self.intToDate(v.as_long())
                 else:

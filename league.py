@@ -1,9 +1,9 @@
 from datetime import date
 from enum import Enum
 from functools import cached_property
-from pycsp3.classes.main.variables import Variable
+from pycsp3.classes.main.variables import Variable # pyright: ignore [reportMissingTypeStubs]
 from typing import Iterable, Self
-from z3 import z3
+from z3 import z3 # pyright: ignore [reportMissingTypeStubs]
 
 class Weekday(Enum):
     MONDAY = 1
@@ -55,7 +55,7 @@ class Fixture:
         self.away = away
         self.date = date
         self.pycsp3: Variable | None = None
-        self.z3 = z3.BitVec(self.name, 10)
+        self.z3 = z3.BitVec(self.name, 10) # pyright: ignore [reportUnknownMemberType]
         home.fixtures.append(self)
         away.fixtures.append(self)
         self.venue.fixtures.append(self)
@@ -110,7 +110,7 @@ class Division:
         """All fixtures in the division, paired so that T1 v T2 and T2 v T1 are together.
         All inner sets have two Fixtures in them."""
         toAdd = self.fixtures.copy()
-        ret = set()
+        ret: set[frozenset[Fixture]] = set()
         while toAdd:
             f1 = toAdd.pop()
             f2 = next(f for f in toAdd if f.teams == f1.teams)
