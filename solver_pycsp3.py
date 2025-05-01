@@ -75,7 +75,7 @@ class Solver(SolverBase):
                         best = [f for f in candidates if f.away not in hasFirstMatchConstraint]
                         chosen = best[0] if len(best) > 0 else candidates[0]
                         firstMatches.add(chosen)
-                        pycsp3.satisfy(chosen.pycsp3 < pycsp3.Minimum(f.pycsp3 for u in chosen.teams for f in u.fixtures if f not in firstMatches)) # type: ignore
+                        pycsp3.satisfy(chosen.pycsp3 < pycsp3.Minimum(f.pycsp3 for u in chosen.teams for f in u.fixtures if f not in firstMatches)) # pyright: ignore [reportOperatorIssue]
                         hasFirstMatchConstraint.add(chosen.away)
 
         # Constraint or optimization: adjacent teams of a club shouldn't play on the same day.
@@ -94,16 +94,16 @@ class Solver(SolverBase):
             pycsp3.satisfy(pycsp3.NoneHold(adjacentTeams))
         else:
             # As an optimization
-            optAdjacentTeams = -50 * pycsp3.Sum(adjacentTeams) # type: ignore
+            optAdjacentTeams = -50 * pycsp3.Sum(adjacentTeams) # pyright: ignore [reportOperatorIssue]
 
         # Constraint and optimization: fixture pairs played with time between them.
         pycsp3.satisfy(
-            pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*7   # type: ignore
+            pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*7 # pyright: ignore [reportOperatorIssue]
             for d in self.league.divisions
             for (f1, f2) in d.fixturePairs
         )
         optFixturePairs = pycsp3.Sum(
-            pycsp3.abs(f1.pycsp3 - f2.pycsp3)    # type: ignore
+            pycsp3.abs(f1.pycsp3 - f2.pycsp3) # pyright: ignore [reportOperatorIssue]
             for d in self.league.divisions
             for (f1, f2) in d.fixturePairs
         )
@@ -127,7 +127,7 @@ class Solver(SolverBase):
             return ret
         def ltConstraints(fs: list[Fixture]):
             for i in range(len(fs)-1):
-                yield fs[i].pycsp3 < fs[i+1].pycsp3 # type: ignore
+                yield fs[i].pycsp3 < fs[i+1].pycsp3 # pyright: ignore [reportOperatorIssue]
         optHomeAway = pycsp3.Sum(
                 c
                 for d in self.league.divisions
@@ -147,16 +147,16 @@ class Solver(SolverBase):
             pycsp3.NValues(f.pycsp3 for f in v.fixtures if f.weekday == wd)
             for (v, wd) in self.league.venues
             if v.minimizeEmptyDays
-        ) # type: ignore
+        ) # pyright: ignore [reportOperatorIssue]
 
         # Optimization: space out the matches of a team (and thus of the division).
         optDivision = pycsp3.Sum(
-            pycsp3.Minimum(pycsp3.abs(f1.pycsp3 - f2.pycsp3) for (f1, f2) in pairs(t.fixtures)) # type: ignore
+            pycsp3.Minimum(pycsp3.abs(f1.pycsp3 - f2.pycsp3) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue]
             for d in self.league.divisions
             for t in d.teams
         )
 
-        pycsp3.maximize(30*optDivision + optVenues + 5*optVenuesEmptyDays + optHomeAway + optAdjacentTeams + optFixturePairs) # type: ignore
+        pycsp3.maximize(30*optDivision + optVenues + 5*optVenuesEmptyDays + optHomeAway + optAdjacentTeams + optFixturePairs) # pyright: ignore [reportOperatorIssue]
 
     def solve(self) -> None:
         self.__createConstraints()
