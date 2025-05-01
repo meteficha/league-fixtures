@@ -23,9 +23,10 @@ class Venue:
 
     Multiple clubs may play on the same venue.
     """
-    def __init__(self, name: str, maxMatchesPerDay: int = 2):
+    def __init__(self, name: str, maxMatchesPerDay: int = 2, minimizeEmptyDays: bool = False):
         self.name = name
         self.maxMatchesPerDay = maxMatchesPerDay
+        self.minimizeEmptyDays = minimizeEmptyDays
         self.fixtures: list[Fixture] = []
 
 class Club:

@@ -98,7 +98,7 @@ class Solver(SolverBase):
 
         # Constraint and optimization: fixture pairs played with time between them.
         pycsp3.satisfy(
-            pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*5   # type: ignore
+            pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*7   # type: ignore
             for d in self.league.divisions
             for (f1, f2) in d.fixturePairs
         )
@@ -139,7 +139,15 @@ class Solver(SolverBase):
         optVenues = pycsp3.Sum(
             pycsp3.NValues(f.pycsp3 for f in v.fixtures if f.weekday == wd)
             for (v, wd) in self.league.venues
+            if not v.minimizeEmptyDays
         )
+
+        # Optimization: venues can choose to minimize empty days.
+        optVenuesEmptyDays = -1 * pycsp3.Sum(
+            pycsp3.NValues(f.pycsp3 for f in v.fixtures if f.weekday == wd)
+            for (v, wd) in self.league.venues
+            if v.minimizeEmptyDays
+        ) # type: ignore
 
         # Optimization: space out the matches of a team (and thus of the division).
         optDivision = pycsp3.Sum(
@@ -148,7 +156,7 @@ class Solver(SolverBase):
             for t in d.teams
         )
 
-        pycsp3.maximize(30*optDivision + optVenues + optHomeAway + optAdjacentTeams + optFixturePairs) # type: ignore
+        pycsp3.maximize(30*optDivision + optVenues + 5*optVenuesEmptyDays + optHomeAway + optAdjacentTeams + optFixturePairs) # type: ignore
 
     def solve(self) -> None:
         self.__createConstraints()

@@ -1,7 +1,7 @@
 from league import *
 
 def season202425() -> League:
-    bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=3)
+    bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=3, minimizeEmptyDays=True)
     brownCow = Venue("Brown Cow")
     coronation = Venue("Coronation Social Club")
     embankment = Venue("The Embankment Pub", maxMatchesPerDay=3)
@@ -39,4 +39,10 @@ def season202425() -> League:
         , date(2025, 1, 1)
         ])
 
-    return League("Notts League 2024/25", date(2024, 9, 1), date(2025, 4, 15), [div1, div2, div3, div4, div5], calendar)
+    return League(
+            "Notts League 2024/25",
+            date(2024, 9, 1),
+            date(2025, 4, 15),
+            [div1, div2, div3, div4, div5],
+            calendar
+            )
