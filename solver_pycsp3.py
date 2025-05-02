@@ -103,10 +103,6 @@ class Solver(SolverBase):
             pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*7 # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
             for (f1, f2) in self.league.fixturePairs
         )
-        optFixturePairs = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
-            pycsp3.abs(f1.pycsp3 - f2.pycsp3) # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
-            for (f1, f2) in self.league.fixturePairs
-        )
 
         # Optimization: teams alternate between playing away and at home.
         def homeAwaySequence(t: Team) -> list[Fixture]:
@@ -151,13 +147,25 @@ class Solver(SolverBase):
             if v.minimizeEmptyDays
         )
 
-        # Optimization: space out the matches of a team (and thus of the division).
-        optDivision = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
+        # Optimization: space out the matches of a team.
+        optSpaceTeams = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
             pycsp3.Minimum(pycsp3.abs(f1.pycsp3 - f2.pycsp3) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
             for t in self.league.teams
         )
 
-        pycsp3.maximize(30*optDivision + 5*optVenues + 5*optVenuesEmptyDays + optHomeAway + optAdjacentTeams + optFixturePairs) # pyright: ignore [reportOperatorIssue]
+        # Optimization: division should have matches on as many days as possible.
+        optSpaceDivision = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
+            pycsp3.NValues(f.pycsp3 for f in d.fixtures)
+            for d in self.league.divisions
+        )
+
+        pycsp3.maximize(0 # pyright: ignore [reportOperatorIssue]
+                + optSpaceTeams
+                + optSpaceDivision
+                + optVenues
+                + optVenuesEmptyDays
+              #  + optHomeAway
+                + optAdjacentTeams)
 
     def solve(self) -> None:
         self.__createConstraints()
