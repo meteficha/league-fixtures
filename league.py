@@ -31,10 +31,11 @@ class Venue:
 
 class Club:
     """A chess club."""
-    def __init__(self, name: str, venue: Venue, weekday: Weekday):
+    def __init__(self, name: str, venue: Venue, weekday: Weekday, lateStart: date | None = None):
         self.name = name
         self.venue = venue
         self.weekday = weekday
+        self.lateStart = lateStart
         self.teams: list[Team] = []
 
 class Team:

@@ -21,7 +21,7 @@ def season202425() -> League:
     newark = Club("Newark", railway, Weekday.MONDAY)
     nomads = Club("Nomads", embankment, Weekday.MONDAY)
     radcliffeBingham = Club("Radcliffe & Bingham", legion, Weekday.MONDAY)
-    university = Club("University", monica, Weekday.WEDNESDAY)
+    university = Club("University", monica, Weekday.WEDNESDAY, lateStart=date(2024, 10, 15))
     westBridgford = Club("West Bridgford", wolds, Weekday.MONDAY)
     westNottingham = Club("West Nottingham", bramcote, Weekday.TUESDAY)
 

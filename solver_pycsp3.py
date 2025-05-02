@@ -26,9 +26,12 @@ class Solver(SolverBase):
         self.adjacentTeamsAsConstraint = True
 
     def dom(self, f: Fixture) -> set[int]:
+        # Constraint: respects club late starts.
+        start: int = max(self.dateToInt(d) for d in [self.league.start, f.home.club.lateStart, f.away.club.lateStart] if d is not None)
+
         # Constraint: played within start/end dates.
         # Constraint: played on venue's weekday.
-        ret = {d for d in self.possibleDays(f.weekday)}
+        ret = {d for d in self.possibleDays(f.weekday) if d >= start}
 
         # Constraint: not played on a holiday.
         ret.difference_update(self.dateToInt(d) for d in self.league.holidays.get(f.weekday, frozenset()))
@@ -61,8 +64,9 @@ class Solver(SolverBase):
                 pycsp3.satisfy(pycsp3.AllDifferent([f.pycsp3 for f in t.fixtures]))
 
         # Constraint: venues have a maximum number of matches per day.
-        for (v, wd) in self.league.venues:
-            pycsp3.satisfy(pycsp3.Cardinality([f.pycsp3 for f in v.fixtures], occurrences={d:range(0, v.maxMatchesPerDay+1) for d in self.possibleDays(wd)}))
+        for (v, _wd) in self.league.venues:
+            dom: set[date] = {d for f in v.fixtures if f.pycsp3 is not None for d in f.pycsp3.dom.all_values()} # pyright: ignore[reportUnknownVariableType]
+            pycsp3.satisfy(pycsp3.Cardinality([f.pycsp3 for f in v.fixtures], occurrences={d:range(0, v.maxMatchesPerDay+1) for d in dom}))
 
         # Constraint: first matches of a club's teams in a division are between themselves.
         hasFirstMatchConstraint: set[Team] = set()
@@ -165,10 +169,11 @@ class Solver(SolverBase):
     def solve(self) -> None:
         self.__createConstraints()
         r = pycsp3.solve()
-        if r is pycsp3.UNSAT:
-            raise UnsatisfiableConstraints("UNSAT")
-        elif r is not pycsp3.SAT:
-            raise UnsatisfiableConstraints("Not SAT: " + str(r))
+        if r is not pycsp3.SAT:
+            print("Not SAT, trying to extract CORE.")
+            if pycsp3.solve(verbose=2, extraction=True) is pycsp3.CORE:
+                print(pycsp3.core())
+            raise UnsatisfiableConstraints(str(r))
 
         for d in self.league.divisions:
             for f in d.fixtures:
