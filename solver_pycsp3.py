@@ -49,19 +49,17 @@ class Solver(SolverBase):
         pycsp3.clear()
 
         # Constraints on single fixtures
-        for d in self.league.divisions:
-            for f in d.fixtures:
-                if f.date is not None:
-                    # Allow for fixture dates to be decided manually.
-                    f.pycsp3 = pycsp3.Var(dom=self.dateToInt(f.date), id=f.sanitized_name)
-                else:
-                    # Implement single fixture constraints via the domain.
-                    f.pycsp3 = pycsp3.Var(dom=self.dom(f), id=f.sanitized_name)
+        for f in self.league.fixtures:
+            if f.date is not None:
+                # Allow for fixture dates to be decided manually.
+                f.pycsp3 = pycsp3.Var(dom=self.dateToInt(f.date), id=f.sanitized_name)
+            else:
+                # Implement single fixture constraints via the domain.
+                f.pycsp3 = pycsp3.Var(dom=self.dom(f), id=f.sanitized_name)
 
         # Constraint: teams can only play one fixture per day.
-        for d in self.league.divisions:
-            for t in d.teams:
-                pycsp3.satisfy(pycsp3.AllDifferent([f.pycsp3 for f in t.fixtures]))
+        for t in self.league.teams:
+            pycsp3.satisfy(pycsp3.AllDifferent([f.pycsp3 for f in t.fixtures]))
 
         # Constraint: venues have a maximum number of matches per day.
         for (v, _wd) in self.league.venues:
@@ -71,17 +69,16 @@ class Solver(SolverBase):
         # Constraint: first matches of a club's teams in a division are between themselves.
         hasFirstMatchConstraint: set[Team] = set()
         firstMatches: set[Fixture] = set()
-        for d in self.league.divisions:
-            for t in d.teams:
-                if t not in hasFirstMatchConstraint:
-                    hasFirstMatchConstraint.add(t)
-                    candidates = [f for f in t.fixtures if f.home == t and f.sameClub()]
-                    if len(candidates) > 0:
-                        best = [f for f in candidates if f.away not in hasFirstMatchConstraint]
-                        chosen = best[0] if len(best) > 0 else candidates[0]
-                        firstMatches.add(chosen)
-                        pycsp3.satisfy(chosen.pycsp3 < pycsp3.Minimum(f.pycsp3 for u in chosen.teams for f in u.fixtures if f not in firstMatches)) # pyright: ignore [reportOperatorIssue]
-                        hasFirstMatchConstraint.add(chosen.away)
+        for t in self.league.teams:
+            if t not in hasFirstMatchConstraint:
+                hasFirstMatchConstraint.add(t)
+                candidates = [f for f in t.fixtures if f.home == t and f.sameClub()]
+                if len(candidates) > 0:
+                    best = [f for f in candidates if f.away not in hasFirstMatchConstraint]
+                    chosen = best[0] if len(best) > 0 else candidates[0]
+                    firstMatches.add(chosen)
+                    pycsp3.satisfy(chosen.pycsp3 < pycsp3.Minimum(f.pycsp3 for u in chosen.teams for f in u.fixtures if f not in firstMatches)) # pyright: ignore [reportOperatorIssue]
+                    hasFirstMatchConstraint.add(chosen.away)
 
         # Constraint or optimization: adjacent teams of a club shouldn't play on the same day.
         adjacentTeams = [ # pyright: ignore[reportUnknownVariableType]
@@ -104,13 +101,11 @@ class Solver(SolverBase):
         # Constraint and optimization: fixture pairs played with time between them.
         pycsp3.satisfy(
             pycsp3.abs(f1.pycsp3 - f2.pycsp3) >= 7*7 # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
-            for d in self.league.divisions
-            for (f1, f2) in d.fixturePairs
+            for (f1, f2) in self.league.fixturePairs
         )
         optFixturePairs = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
             pycsp3.abs(f1.pycsp3 - f2.pycsp3) # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
-            for d in self.league.divisions
-            for (f1, f2) in d.fixturePairs
+            for (f1, f2) in self.league.fixturePairs
         )
 
         # Optimization: teams alternate between playing away and at home.
@@ -138,8 +133,7 @@ class Solver(SolverBase):
 
         optHomeAway = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
                 c
-                for d in self.league.divisions
-                for t in d.teams
+                for t in self.league.teams
                 for c in ltConstraints(homeAwaySequence(t))
             )
 
@@ -160,11 +154,10 @@ class Solver(SolverBase):
         # Optimization: space out the matches of a team (and thus of the division).
         optDivision = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
             pycsp3.Minimum(pycsp3.abs(f1.pycsp3 - f2.pycsp3) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue, reportUnknownArgumentType]
-            for d in self.league.divisions
-            for t in d.teams
+            for t in self.league.teams
         )
 
-        pycsp3.maximize(30*optDivision + optVenues + 5*optVenuesEmptyDays + optHomeAway + optAdjacentTeams + optFixturePairs) # pyright: ignore [reportOperatorIssue]
+        pycsp3.maximize(30*optDivision + 5*optVenues + 5*optVenuesEmptyDays + optHomeAway + optAdjacentTeams + optFixturePairs) # pyright: ignore [reportOperatorIssue]
 
     def solve(self) -> None:
         self.__createConstraints()
@@ -175,10 +168,9 @@ class Solver(SolverBase):
                 print(pycsp3.core())
             raise UnsatisfiableConstraints(str(r))
 
-        for d in self.league.divisions:
-            for f in d.fixtures:
-                v = pycsp3.value(f.pycsp3) # pyright: ignore[reportUnknownVariableType]
-                if isinstance(v, int):
-                    f.date = self.intToDate(v)
-                else:
-                    raise Exception(f"pycsp3.value({f.pycsp3}) is {v}, not an int")
+        for f in self.league.fixtures:
+            v = pycsp3.value(f.pycsp3) # pyright: ignore[reportUnknownVariableType]
+            if isinstance(v, int):
+                f.date = self.intToDate(v)
+            else:
+                raise Exception(f"pycsp3.value({f.pycsp3}) is {v}, not an int")

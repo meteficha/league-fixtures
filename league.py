@@ -166,3 +166,21 @@ class League:
     @cached_property
     def clubs(self) -> frozenset[Club]:
         return frozenset(t.club for d in self.divisions for t in d.teams)
+
+    @property
+    def teams(self) -> Iterable[Team]:
+        for d in self.divisions:
+            for t in d.teams:
+                yield t
+
+    @property
+    def fixtures(self) -> Iterable[Fixture]:
+        for d in self.divisions:
+            for f in d.fixtures:
+                yield f
+
+    @property
+    def fixturePairs(self) -> Iterable[frozenset[Fixture]]:
+        for d in self.divisions:
+            for p in d.fixturePairs:
+                yield p
