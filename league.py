@@ -1,11 +1,11 @@
 from datetime import date
-from enum import Enum
+from enum import IntEnum
 from functools import cached_property
 from pycsp3.classes.main.variables import Variable # pyright: ignore [reportMissingTypeStubs]
 from typing import Iterable, Self
 from z3 import z3 # pyright: ignore [reportMissingTypeStubs]
 
-class Weekday(Enum):
+class Weekday(IntEnum):
     MONDAY = 1
     TUESDAY = 2
     WEDNESDAY = 3
@@ -87,6 +87,10 @@ class Fixture:
         dateStr = str(self.date) if self.date else "????-??-??"
         return f"{dateStr} {self.name}"
 
+def byDate(fixtures: Iterable[Fixture]) -> list[Fixture]:
+    """Sort fixtures by their date."""
+    return sorted(fixtures, key=lambda f: (f.date or date(2000, 1, 1), f.name))
+
 class Division:
     """A division in the chess league."""
     def __init__(self, name: str, teams: list[Team]):
@@ -100,7 +104,7 @@ class Division:
             r += '    ' + ts + '\n'
 
         r += '\nFixtures:\n'
-        for f in sorted(self.fixtures, key=lambda f: (f.date or date(2000, 1, 1), f.name)):
+        for f in byDate(self.fixtures):
             r += '    ' + str(f) + '\n'
 
         return r

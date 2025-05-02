@@ -22,6 +22,7 @@ Desirable properties:
 from notts import season202425
 import solver_pycsp3 as solver
 # import solver_z3 as solver
+from report import Report
 
 
 print("Creating league data...")
@@ -32,3 +33,4 @@ print("Solving...")
 solver.solve()
 print("Done!")
 print(league)
+Report(league).saveTo("report.html")
