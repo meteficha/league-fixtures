@@ -132,6 +132,9 @@ class Calendar:
     def empty(cls: type[Self]) -> Self:
         return cls([])
 
+    def isHoliday(self, date: date) -> bool:
+        return date in self.holidays
+
 class League:
     """A chess league."""
     def __init__(self, name: str, start: date, end: date, divisions: list[Division], calendar: Calendar = Calendar.empty()):

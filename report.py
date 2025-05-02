@@ -40,7 +40,7 @@ class Heatmap:
         for i in range(7):
             cur: list[tuple[date, int]] = []
             d = self.start + timedelta(days=i)
-            for w in range(self.weekCount):
+            for _ in range(self.weekCount):
                 cur.append((d, self.points.get(d, 0)))
                 d += timedelta(days=7)
             ret.append(cur)
@@ -51,8 +51,9 @@ class Heatmap:
             with a.tbody():
                 for row in self.table():
                     with a.tr():
-                        for (_date, count) in row:
-                            a.td(klass='heat-' + str(max(0, min(4, count))))
+                        for (date, count) in row:
+                            holiday = ' heat-holiday' if self.league.calendar.isHoliday(date) else ''
+                            a.td(klass='heat-' + str(max(0, min(4, count))) + holiday + ' heat-day-' + str(date))
 
 class Report:
     def __init__(self, league: League):
@@ -73,6 +74,7 @@ class Report:
 
     def render(self, a: Airium) -> None:
         a.h1(_t=self.league.name)
+        self.renderHeatmap(a, self.league.fixtures)
         self.renderByDivision(a)
         self.renderByVenue(a)
         self.renderByTeam(a)
@@ -98,9 +100,7 @@ class Report:
                 self.renderFixtureTable(a, byDate(t.fixtures))
 
     def renderFixtureTable(self, a: Airium, fixtures: Iterable[Fixture]) -> None:
-        h = Heatmap(self.league)
-        h.addAll(fixtures)
-        h.render(a)
+        self.renderHeatmap(a, fixtures)
 
         with a.table(klass='fixture'):
             with a.thead():
@@ -119,8 +119,10 @@ class Report:
                         a.td(_t=f.venue.name, klass='venue')
                         a.td(_t=f.weekday.name.capitalize(), klass='weekday')
 
-    def heatmap(self, fixtures: Iterable[Fixture]) -> list[list[int]]:
-        raise "oi"
+    def renderHeatmap(self, a: Airium, fixtures: Iterable[Fixture]) -> None:
+        h = Heatmap(self.league)
+        h.addAll(fixtures)
+        h.render(a)
 
     @cached_property
     def weekCount(self) -> int:
@@ -173,6 +175,7 @@ class Report:
 
             .heatmap td {
                 padding: 0.5em;
+                border: 1px solid transparent;
             }
 
             .heatmap .heat-0 {
@@ -193,5 +196,9 @@ class Report:
 
             .heatmap .heat-4 {
                 background: rgb(17, 99, 41);
+            }
+
+            .heatmap .heat-holiday {
+                border: 1px solid blueviolet;
             }
             ''')
