@@ -8,9 +8,16 @@ from league import *
 from solver_base import SolverBase, UnsatisfiableConstraints
 
 def pairs[T](xs: list[T]) -> Iterator[tuple[T, T]]:
+    """All pairs (x[i], x[j]) where i < j."""
     for i in range(len(xs)):
         for j in range(i+1, len(xs)):
             yield (xs[i], xs[j])
+
+def extract[T](xs: list[T]) -> Iterator[tuple[T, Iterable[T]]]:
+    """All pairs (x[i], xs_i) where { xs_i = xs.copy; del xs_i[i] }"""
+    for i in range(len(xs)):
+        rest = (xs[j] for j in range(len(xs)) if i != j)
+        yield (xs[i], rest)
 
 class Solver(SolverBase):
     """Update every fixture of the given league with dates that
@@ -105,32 +112,37 @@ class Solver(SolverBase):
         )
 
         # Optimization: teams alternate between playing away and at home.
-        def homeAwaySequence(t: Team) -> list[Fixture]:
-            home: list[Fixture] = []
-            away: list[Fixture] = []
-            for f in t.fixtures:
-                if f.home == t:
-                    home.append(f)
-                else:
-                    away.append(f)
-            ret: list[Fixture] = []
-            while home:
-                ret.append(home.pop(0))
-                try:
-                    ret.append(away.pop(0))
-                except:
-                    pass
-            ret.extend(away)
-            return ret
+        def homeAwayConstraint(t: Team) -> Any:
+            homeFixtures: list[Fixture] = [f for f in t.fixtures if f.home == t]
+            awayFixtures: list[Fixture] = [f for f in t.fixtures if f.home != t]
 
-        def ltConstraints(fs: list[Fixture]) -> Iterator[Any]:
-            for i in range(len(fs)-1):
-                yield fs[i].pycsp3 < fs[i+1].pycsp3 # pyright: ignore [reportOperatorIssue]
+            def mkConstraint(homeFixture: Fixture, homeRest: Iterable[Fixture]) -> Any:
+                # If all fixtures alternated, then
+                #
+                #    (x - y) in {0, 1}
+                #
+                # where
+                #
+                #    x := number of away fixtures after this fixture
+                #    y := humber of home fixtures after this fixture
+                #
+                #
+                # Since we're interested in making this an optimization constraint,
+                # we can ask for the number - abs(x - y) to be maximized instead.
+                count = lambda fs: pycsp3.NValues(within=(pycsp3.Maximum(homeFixture.pycsp3, f.pycsp3) - homeFixture.pycsp3 for f in fs), excepting=0) # pyright: ignore
+                x = count(awayFixtures)
+                y = count(homeRest)
+                print('.', end='')
+                return - pycsp3.abs(x - y) # pyright: ignore
+
+            print('\t', end='')
+            c = pycsp3.Sum(mkConstraint(homeFixture, homeRest) for (homeFixture, homeRest) in extract(homeFixtures)) # pyright: ignore[reportUnknownVariableType]
+            print('')
+            return c # pyright: ignore[reportUnknownVariableType]
 
         optHomeAway = pycsp3.Sum( # pyright: ignore[reportUnknownVariableType]
-                c
+                homeAwayConstraint(t)
                 for t in self.league.teams
-                for c in ltConstraints(homeAwaySequence(t))
             )
 
         # Optimization: venues have matches assigned to most of their days.
@@ -164,11 +176,13 @@ class Solver(SolverBase):
                 + optSpaceDivision
                 + optVenues
                 + optVenuesEmptyDays
-              #  + optHomeAway
+                + optHomeAway
                 + optAdjacentTeams)
 
     def solve(self) -> None:
+        print("\tCreating constraints...")
         self.__createConstraints()
+        print("\tAsking for a solution...")
         r = pycsp3.solve()
         if r is not pycsp3.SAT:
             print("Not SAT, trying to extract CORE.")
@@ -176,6 +190,7 @@ class Solver(SolverBase):
                 print(pycsp3.core())
             raise UnsatisfiableConstraints(str(r))
 
+        print("\tExtracting solution")
         for f in self.league.fixtures:
             v = pycsp3.value(f.pycsp3) # pyright: ignore[reportUnknownVariableType]
             if isinstance(v, int):
