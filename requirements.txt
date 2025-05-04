@@ -3,4 +3,3 @@ click==8.1.8
 lxml==5.4.0
 pycsp3==2.4.3
 strongtyping==3.12.1
-z3-solver==4.14.1.0

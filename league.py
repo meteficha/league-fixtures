@@ -5,7 +5,6 @@ from functools import cached_property, partial
 from pycsp3.classes.main.variables import Variable
 from strongtyping.strong_typing import match_typing # pyright: ignore[reportUnknownVariableType]
 from typing import Any, Iterable, Self, Union
-from z3 import z3 # pyright: ignore [reportMissingTypeStubs]
 
 def dateOrNone(v: str | None) -> date | None:
     if v is None:
@@ -97,7 +96,6 @@ class Fixture:
 
         # TODO: Get rid of these fields
         self.pycsp3: Variable | None = None
-        self.z3 = z3.BitVec(self.name, 10) # pyright: ignore [reportUnknownMemberType]
 
 
         home.fixtures.append(self)
