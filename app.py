@@ -21,6 +21,7 @@ Desirable properties:
 
 import click
 import json
+from typing import Literal
 
 from league import League
 from report import Report
@@ -58,8 +59,9 @@ def save(example: str, output: str) -> None:
 
 @cli.command()
 @click.option('--output', help='Output to a different file, instead of overwriting input')
+@click.option('--solver', default='ACE', help='Which solver to use (ACE or CHOCO)')
 @click.argument('input')
-def solve(input: str, output: str | None) -> None:
+def solve(input: str, output: str | None, solver: Literal['ACE', 'CHOCO']) -> None:
     '''Solve any fixtures without dates from the input file.'''
     output = input if output is None else output
 
@@ -70,10 +72,10 @@ def solve(input: str, output: str | None) -> None:
 
     print('Creating solver')
     from solver_pycsp3 import Solver
-    solver = Solver(league)
+    s = Solver(league, solver)
 
     print('Solving')
-    solver.solve()
+    s.solve()
 
     print('Saving solved league file')
     with open(output, "w") as f:

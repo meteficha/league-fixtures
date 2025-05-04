@@ -1,7 +1,7 @@
 # pyright: strict, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
 from datetime import date
 from itertools import pairwise
-from typing import Any, Iterator
+from typing import Any, Iterator, Literal
 import pycsp3
 import pycsp3.functions as pycsp3f
 import pycsp3.classes.entities as pycsp3ce
@@ -26,13 +26,18 @@ class Solver(SolverBase):
     fit the necessary constraints."""
     created = False
 
-    def __init__(self, league: League):
+    def __init__(self, league: League, solver: Literal['ACE', 'CHOCO'] = 'ACE'):
         if Solver.created:
             raise Exception("pycsp3 is silly, you can't create two Solvers")
         Solver.created = True
         super().__init__(league)
         self.constraints = False
         self.adjacentTeamsAsConstraint = True
+        match solver:
+            case 'CHOCO':
+                pycsp3.solver(pycsp3.CHOCO)
+            case _:
+                pycsp3.solver(pycsp3.ACE)
 
     def dom(self, f: Fixture) -> set[int]:
         # Constraint: respects club late starts.
@@ -53,9 +58,8 @@ class Solver(SolverBase):
 
     def __createConstraints(self) -> None:
         if self.constraints:
-            return
+            pycsp3ce.clear()
         self.constraints = True
-        pycsp3ce.clear()
 
         # Constraints on single fixtures
         for f in self.league.fixtures:
