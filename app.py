@@ -60,19 +60,22 @@ def save(example: str, output: str) -> None:
 @cli.command()
 @click.option('--output', help='Output to a different file, instead of overwriting input')
 @click.option('--solver', default='ACE', help='Which solver to use (ACE or CHOCO)')
+@click.option('--options', help='Options to pass to the solver (e.g., "-rr" for ACE to use ACE-mix or "-p 6" for CHOCO to use 6 threads)')
 @click.argument('input')
-def solve(input: str, output: str | None, solver: Literal['ACE', 'CHOCO']) -> None:
+def solve(input: str, output: str | None, solver: Literal['ACE', 'CHOCO'], options: str | None) -> None:
     '''Solve any fixtures without dates from the input file.'''
     output = input if output is None else output
+    if options is None:
+        options = '-rr' if solver == 'ACE' else ''
 
     print('Loading data')
     league = None
     with open(input, "r") as f:
         league = League.from_json(json.load(f))
 
-    print('Creating solver')
+    print(f'Creating solver ({solver} {options})')
     from solver_pycsp3 import Solver
-    s = Solver(league, solver)
+    s = Solver(league, solver, options)
 
     print('Solving')
     s.solve()

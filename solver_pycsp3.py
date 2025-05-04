@@ -27,7 +27,7 @@ class Solver(SolverBase):
     fit the necessary constraints."""
     created = False
 
-    def __init__(self, league: League, solver: Literal['ACE', 'CHOCO'] = 'ACE'):
+    def __init__(self, league: League, solver: Literal['ACE', 'CHOCO'] = 'ACE', solverOptions: str = ''):
         if Solver.created:
             raise Exception("pycsp3 is silly, you can't create two Solvers")
         Solver.created = True
@@ -35,11 +35,8 @@ class Solver(SolverBase):
         self.constraints = False
         self.adjacentTeamsAsConstraint = True
         self.vars: dict[Fixture, Variable] = {}
-        match solver:
-            case 'CHOCO':
-                pycsp3.solver(pycsp3.CHOCO)
-            case _:
-                pycsp3.solver(pycsp3.ACE)
+        self.solver = pycsp3.CHOCO if solver == 'CHOCO' else pycsp3.ACE
+        self.solverOptions = solverOptions
 
     def dom(self, f: Fixture) -> set[int]:
         # Constraint: respects club late starts.
@@ -192,10 +189,10 @@ class Solver(SolverBase):
         print("\tCreating constraints...")
         self.__createConstraints()
         print("\tAsking for a solution... (press Ctrl-C to save best solution so far)")
-        r = pycsp3.solve(verbose=0)
+        r = pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0)
         if r is not pycsp3.SAT and r is not pycsp3.OPTIMUM:
             print("Not SAT, trying to extract CORE.")
-            if pycsp3.solve(verbose=0, extraction=True) is pycsp3.CORE:
+            if pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0, extraction=True) is pycsp3.CORE:
                 print(pycsp3.core())
             raise UnsatisfiableConstraints(str(r))
 
