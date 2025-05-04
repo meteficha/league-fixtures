@@ -2,6 +2,7 @@
 from datetime import date
 from itertools import pairwise
 from typing import Any, Iterator, Literal
+from pycsp3.classes.main.variables import Variable
 import pycsp3
 import pycsp3.functions as pycsp3f
 import pycsp3.classes.entities as pycsp3ce
@@ -33,6 +34,7 @@ class Solver(SolverBase):
         super().__init__(league)
         self.constraints = False
         self.adjacentTeamsAsConstraint = True
+        self.vars: dict[Fixture, Variable] = {}
         match solver:
             case 'CHOCO':
                 pycsp3.solver(pycsp3.CHOCO)
@@ -58,6 +60,7 @@ class Solver(SolverBase):
 
     def __createConstraints(self) -> None:
         if self.constraints:
+            self.vars = {}
             pycsp3ce.clear()
         self.constraints = True
 
@@ -65,19 +68,19 @@ class Solver(SolverBase):
         for f in self.league.fixtures:
             if f.date is not None:
                 # Allow for fixture dates to be decided manually.
-                f.pycsp3 = pycsp3f.Var(dom=self.dateToInt(f.date), id=f.sanitized_name)
+                self.vars[f] = pycsp3f.Var(dom=self.dateToInt(f.date), id=f.sanitized_name)
             else:
                 # Implement single fixture constraints via the domain.
-                f.pycsp3 = pycsp3f.Var(dom=self.dom(f), id=f.sanitized_name)
+                self.vars[f] = pycsp3f.Var(dom=self.dom(f), id=f.sanitized_name)
 
         # Constraint: teams can only play one fixture per day.
         for t in self.league.teams:
-            pycsp3f.satisfy(pycsp3f.AllDifferent([f.pycsp3 for f in t.fixtures]))
+            pycsp3f.satisfy(pycsp3f.AllDifferent([self.vars[f] for f in t.fixtures]))
 
         # Constraint: venues have a maximum number of matches per day.
         for v in self.league.venues:
-            dom: set[date] = {d for f in v.fixtures if f.pycsp3 is not None for d in f.pycsp3.dom.all_values()} # pyright: ignore[reportAttributeAccessIssue]
-            pycsp3f.satisfy(pycsp3f.Cardinality([f.pycsp3 for f in v.fixtures], occurrences={d:range(0, v.maxMatchesPerDay+1) for d in dom}))
+            dom: set[date] = {d for f in v.fixtures for d in self.vars[f].dom.all_values()} # pyright: ignore[reportAttributeAccessIssue]
+            pycsp3f.satisfy(pycsp3f.Cardinality([self.vars[f] for f in v.fixtures], occurrences={d:range(0, v.maxMatchesPerDay+1) for d in dom}))
 
         # Constraint: first matches of a club's teams in a division are between themselves.
         hasFirstMatchConstraint: set[Team] = set()
@@ -90,12 +93,12 @@ class Solver(SolverBase):
                     best = [f for f in candidates if f.away not in hasFirstMatchConstraint]
                     chosen = best[0] if len(best) > 0 else candidates[0]
                     firstMatches.add(chosen)
-                    pycsp3f.satisfy(chosen.pycsp3 < pycsp3f.Minimum(f.pycsp3 for u in chosen.teams for f in u.fixtures if f not in firstMatches))
+                    pycsp3f.satisfy(self.vars[chosen] < pycsp3f.Minimum(self.vars[f] for u in chosen.teams for f in u.fixtures if f not in firstMatches))
                     hasFirstMatchConstraint.add(chosen.away)
 
         # Constraint or optimization: adjacent teams of a club shouldn't play on the same day.
         adjacentTeams = [
-            f1.pycsp3 == f2.pycsp3
+            self.vars[f1] == self.vars[f2]
             for c in self.league.clubs
             for (t1, t2) in pairwise(c.teams)
             for f1 in t1.fixtures
@@ -113,7 +116,7 @@ class Solver(SolverBase):
 
         # Constraint and optimization: fixture pairs played with time between them.
         pycsp3f.satisfy(
-            pycsp3f.abs(f1.pycsp3 - f2.pycsp3) >= 7*7 # pyright: ignore [reportOperatorIssue]
+            pycsp3f.abs(self.vars[f1] - self.vars[f2]) >= 7*7 # pyright: ignore [reportOperatorIssue]
             for (f1, f2) in self.league.fixturePairs
         )
 
@@ -135,7 +138,7 @@ class Solver(SolverBase):
                 #
                 # Since we're interested in making this an optimization constraint,
                 # we can ask for the number - abs(x - y) to be maximized instead.
-                count = lambda fs: pycsp3f.NValues(within=(pycsp3f.Maximum(homeFixture.pycsp3, f.pycsp3) - homeFixture.pycsp3 for f in fs), excepting=0) # pyright: ignore[reportUnknownLambdaType]
+                count = lambda fs: pycsp3f.NValues(within=(pycsp3f.Maximum(self.vars[homeFixture], self.vars[f]) - self.vars[homeFixture] for f in fs), excepting=0) # pyright: ignore[reportUnknownLambdaType]
                 x = count(awayFixtures)
                 y = count(homeRest)
                 print('.', end='', flush=True)
@@ -153,27 +156,27 @@ class Solver(SolverBase):
 
         # Optimization: venues have matches assigned to most of their days.
         optVenues = pycsp3f.Sum(
-            pycsp3f.NValues(f.pycsp3 for f in v.fixtures)
+            pycsp3f.NValues(self.vars[f] for f in v.fixtures)
             for v in self.league.venues
             if not v.minimizeEmptyDays
         )
 
         # Optimization: venues can choose to minimize empty days.
         optVenuesEmptyDays = -1 * pycsp3f.Sum(
-            pycsp3f.NValues(f.pycsp3 for f in v.fixtures)
+            pycsp3f.NValues(self.vars[f] for f in v.fixtures)
             for v in self.league.venues
             if v.minimizeEmptyDays
         )
 
         # Optimization: space out the matches of a team.
         optSpaceTeams = pycsp3f.Sum(
-            pycsp3f.Minimum(pycsp3f.abs(f1.pycsp3 - f2.pycsp3) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue]
+            pycsp3f.Minimum(pycsp3f.abs(self.vars[f1] - self.vars[f2]) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue]
             for t in self.league.teams
         )
 
         # Optimization: division should have matches on as many days as possible.
         optSpaceDivision = pycsp3f.Sum(
-            pycsp3f.NValues(f.pycsp3 for f in d.fixtures)
+            pycsp3f.NValues(self.vars[f] for f in d.fixtures)
             for d in self.league.divisions
         )
 
@@ -200,8 +203,8 @@ class Solver(SolverBase):
             print('\tFound the best solution. Wow!')
         print("\tExtracting solution")
         for f in self.league.fixtures:
-            v = pycsp3f.value(f.pycsp3)
+            v = pycsp3f.value(self.vars[f])
             if isinstance(v, int):
                 f.date = self.intToDate(v)
             else:
-                raise Exception(f"pycsp3f.value({f.pycsp3}) is {v}, not an int")
+                raise Exception(f"pycsp3f.value({self.vars[f]}) is {v}, not an int")

@@ -2,7 +2,6 @@
 from datetime import date
 from enum import IntEnum
 from functools import cached_property, partial
-from pycsp3.classes.main.variables import Variable
 from strongtyping.strong_typing import match_typing # pyright: ignore[reportUnknownVariableType]
 from typing import Any, Iterable, Self, Union
 
@@ -93,11 +92,6 @@ class Fixture:
         self.home = home
         self.away = away
         self.date = date
-
-        # TODO: Get rid of these fields
-        self.pycsp3: Variable | None = None
-
-
         home.fixtures.append(self)
         away.fixtures.append(self)
         self.venue.fixtures.append(self)
