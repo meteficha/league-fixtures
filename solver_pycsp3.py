@@ -134,7 +134,7 @@ class Solver(SolverBase):
                 count = lambda fs: pycsp3f.NValues(within=(pycsp3f.Maximum(homeFixture.pycsp3, f.pycsp3) - homeFixture.pycsp3 for f in fs), excepting=0) # pyright: ignore[reportUnknownLambdaType]
                 x = count(awayFixtures)
                 y = count(homeRest)
-                print('.', end='')
+                print('.', end='', flush=True)
                 return - pycsp3f.abs(x - y)
 
             print('\t', end='')
@@ -184,14 +184,16 @@ class Solver(SolverBase):
     def solve(self) -> None:
         print("\tCreating constraints...")
         self.__createConstraints()
-        print("\tAsking for a solution...")
-        r = pycsp3.solve()
-        if r is not pycsp3.SAT:
+        print("\tAsking for a solution... (press Ctrl-C to save best solution so far)")
+        r = pycsp3.solve(verbose=0)
+        if r is not pycsp3.SAT and r is not pycsp3.OPTIMUM:
             print("Not SAT, trying to extract CORE.")
-            if pycsp3.solve(verbose=2, extraction=True) is pycsp3.CORE:
+            if pycsp3.solve(verbose=0, extraction=True) is pycsp3.CORE:
                 print(pycsp3.core())
             raise UnsatisfiableConstraints(str(r))
 
+        if r is pycsp3.OPTIMUM:
+            print('\tFound the best solution. Wow!')
         print("\tExtracting solution")
         for f in self.league.fixtures:
             v = pycsp3f.value(f.pycsp3)

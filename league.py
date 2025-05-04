@@ -1,11 +1,17 @@
 # pyright: strict, reportUntypedFunctionDecorator=false
 from datetime import date
 from enum import IntEnum
-from functools import cached_property
+from functools import cached_property, partial
 from pycsp3.classes.main.variables import Variable
 from strongtyping.strong_typing import match_typing # pyright: ignore[reportUnknownVariableType]
-from typing import Iterable, Self
+from typing import Any, Iterable, Self, Union
 from z3 import z3 # pyright: ignore [reportMissingTypeStubs]
+
+def dateOrNone(v: str | None) -> date | None:
+    if v is None:
+        return None
+    else:
+        return date.fromisoformat(v)
 
 class Weekday(IntEnum):
     MONDAY = 1
@@ -32,6 +38,17 @@ class Venue:
         self.minimizeEmptyDays = minimizeEmptyDays
         self.fixtures: list[Fixture] = []
 
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "maxMatchesPerDay": self.maxMatchesPerDay,
+            "minimizeEmptyDays": self.minimizeEmptyDays,
+            }
+
+    @classmethod
+    def from_json(cls: type[Self], o: dict[str, Any]) -> Self:
+        return cls(name=o["name"], maxMatchesPerDay=o["maxMatchesPerDay"], minimizeEmptyDays=o["minimizeEmptyDays"])
+
 class Club:
     """A chess club."""
     @match_typing
@@ -41,6 +58,22 @@ class Club:
         self.weekday = weekday
         self.lateStart = lateStart
         self.teams: list[Team] = []
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "venue": self.venue.name,
+            "weekday": self.weekday.value,
+            "lateStart": str(self.lateStart) if self.lateStart else None,
+            "teams": [t.name for t in self.teams],
+            }
+
+    @classmethod
+    def from_json(cls: type[Self], venues: dict[str, Venue], o: dict[str, Any]) -> Self:
+        club = cls(name=o["name"], venue=venues[o["venue"]], weekday=Weekday(o["weekday"]), lateStart=dateOrNone(o.get("lateStart", None)))
+        for t in o["teams"]:
+            Team(club, name=t)
+        return club
 
 class Team:
     """A team from a chess club."""
@@ -61,11 +94,33 @@ class Fixture:
         self.home = home
         self.away = away
         self.date = date
+
+        # TODO: Get rid of these fields
         self.pycsp3: Variable | None = None
         self.z3 = z3.BitVec(self.name, 10) # pyright: ignore [reportUnknownMemberType]
+
+
         home.fixtures.append(self)
         away.fixtures.append(self)
         self.venue.fixtures.append(self)
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "home": self.home.name,
+            "away": self.away.name,
+            "date": str(self.date) if self.date is not None else None,
+            }
+
+    @classmethod
+    def from_json(cls: type[Self], teams: dict[str, Team], o: dict[str, Any]) -> Self:
+        return cls(home=teams[o["home"]], away=teams[o["away"]], date=dateOrNone(o.get("date", None)))
+
+    def sameClub(self) -> bool:
+        return self.home.club == self.away.club
+
+    def __str__(self) -> str:
+        dateStr = str(self.date) if self.date else "????-??-??"
+        return f"{dateStr} {self.name}"
 
     @property
     def venue(self) -> Venue:
@@ -87,13 +142,6 @@ class Fixture:
     def teams(self) -> frozenset[Team]:
         return frozenset([self.home, self.away])
 
-    def sameClub(self) -> bool:
-        return self.home.club == self.away.club
-
-    def __str__(self) -> str:
-        dateStr = str(self.date) if self.date else "????-??-??"
-        return f"{dateStr} {self.name}"
-
 def byDate(fixtures: Iterable[Fixture]) -> list[Fixture]:
     """Sort fixtures by their date."""
     return sorted(fixtures, key=lambda f: (f.date or date(2000, 1, 1), f.name))
@@ -101,10 +149,10 @@ def byDate(fixtures: Iterable[Fixture]) -> list[Fixture]:
 class Division:
     """A division in the chess league."""
     @match_typing
-    def __init__(self, name: str, teams: list[Team]):
+    def __init__(self, name: str, teams: list[Team], fixtures: Union[list[Fixture], None] = None):
         self.name = name
         self.teams = teams
-        self.fixtures = [Fixture(home, away) for home in teams for away in teams if home != away]
+        self.fixtures = fixtures if fixtures is not None else [Fixture(home, away) for home in teams for away in teams if home != away]
 
     def __str__(self) -> str:
         r = f'= {self.name} =\nTeams:\n'
@@ -116,6 +164,17 @@ class Division:
             r += '    ' + str(f) + '\n'
 
         return r
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "teams": [t.name for t in self.teams],
+            "fixtures": [f.to_json() for f in self.fixtures],
+            }
+
+    @classmethod
+    def from_json(cls: type[Self], teams: dict[str, Team], o: dict[str, Any]) -> Self:
+        return cls(name=o["name"], teams=[teams[t] for t in o["teams"]], fixtures=[Fixture.from_json(teams, o) for o in o["fixtures"]])
 
     @cached_property
     def fixturePairs(self) -> frozenset[frozenset[Fixture]]:
@@ -135,6 +194,13 @@ class Calendar:
     @match_typing
     def __init__(self, holidays: Iterable[date]):
         self.holidays = frozenset(holidays)
+
+    def to_json(self) -> dict[str, Any]:
+        return { "holidays": [str(d) for d in self.holidays] }
+
+    @classmethod
+    def from_json(cls: type[Self], o: dict[str, Any]) -> Self:
+        return cls(holidays=[date.fromisoformat(d) for d in o["holidays"]])
 
     @classmethod
     def empty(cls: type[Self]) -> Self:
@@ -160,13 +226,33 @@ class League:
             r += '\n' + str(d)
         return r
 
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "start": str(self.start),
+            "end": str(self.end),
+            "venues": [v.to_json() for v in self.venues],
+            "clubs": [c.to_json() for c in self.clubs],
+            "divisions": [d.to_json() for d in self.divisions],
+            "calendar": self.calendar.to_json(),
+            }
+
+    @classmethod
+    def from_json(cls: type[Self], o: dict[str, Any]) -> Self:
+        venues = {v.name: v for v in map(Venue.from_json, o["venues"])}
+        clubs = {c.name: c for c in map(partial(Club.from_json, venues), o["clubs"])}
+        teams = {t.name: t for c in clubs.values() for t in c.teams}
+        divisions = [Division.from_json(teams, o) for o in o["divisions"]]
+        calendar = Calendar.from_json(o["calendar"])
+        return cls(name=o["name"], start=date.fromisoformat(o["start"]), end=date.fromisoformat(o["end"]), divisions=divisions, calendar=calendar)
+
     @cached_property
     def venues(self) -> frozenset[Venue]:
         return frozenset(c.venue for c in self.clubs)
 
     @cached_property
     def venuesWeekdays(self) -> frozenset[tuple[Venue, Weekday]]:
-        return frozenset((t.club.venue, t.club.weekday) for d in self.divisions for t in d.teams)
+        return frozenset((c.venue, c.weekday) for c in self.clubs)
 
     @cached_property
     def holidays(self) -> dict[Weekday, frozenset[date]]:
