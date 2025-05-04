@@ -44,7 +44,7 @@ class Solver(SolverBase):
                 self.solver.add(z3.Distinct(*[f.z3 for f in t.fixtures]))
 
         # Constraint: venues have a maximum number of matches per day.
-        for (v, wd) in self.league.venues:
+        for (v, wd) in self.league.venuesWeekdays:
             for d in self.possibleDays(wd):
                 self.solver.add(z3.PbLe([(f.z3 == d, 1) for f in v.fixtures], v.maxMatchesPerDay))
 

@@ -87,7 +87,7 @@ class Report:
 
     def renderByVenue(self, a: Airium) -> None:
         a.h2(_t='Fixtures by venue')
-        for (v, wd) in sorted(self.league.venues, key=lambda t: (t[0].name, t[1])):
+        for (v, wd) in sorted(self.league.venuesWeekdays, key=lambda t: (t[0].name, t[1])):
             a.h3(_t=v.name + ' on a ' + wd.name.capitalize())
             self.renderFixtureTable(a, byDate(f for f in v.fixtures if f.weekday == wd))
 

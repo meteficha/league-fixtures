@@ -1,7 +1,9 @@
+# pyright: strict, reportUntypedFunctionDecorator=false
 from datetime import date
 from enum import IntEnum
 from functools import cached_property
-from pycsp3.classes.main.variables import Variable # pyright: ignore [reportMissingTypeStubs]
+from pycsp3.classes.main.variables import Variable
+from strongtyping.strong_typing import match_typing # pyright: ignore[reportUnknownVariableType]
 from typing import Iterable, Self
 from z3 import z3 # pyright: ignore [reportMissingTypeStubs]
 
@@ -23,6 +25,7 @@ class Venue:
 
     Multiple clubs may play on the same venue.
     """
+    @match_typing
     def __init__(self, name: str, maxMatchesPerDay: int = 2, minimizeEmptyDays: bool = False):
         self.name = name
         self.maxMatchesPerDay = maxMatchesPerDay
@@ -31,6 +34,7 @@ class Venue:
 
 class Club:
     """A chess club."""
+    @match_typing
     def __init__(self, name: str, venue: Venue, weekday: Weekday, lateStart: date | None = None):
         self.name = name
         self.venue = venue
@@ -40,6 +44,7 @@ class Club:
 
 class Team:
     """A team from a chess club."""
+    @match_typing
     def __init__(self, club: Club, name: str | None = None):
         self.club = club
         self.name = club.name + " " + str(len(club.teams) + 1) if name is None else name
@@ -51,6 +56,7 @@ class Team:
 
 class Fixture:
     """A match between two teams."""
+    @match_typing
     def __init__(self, home: Team, away: Team, date: date | None = None):
         self.home = home
         self.away = away
@@ -94,6 +100,7 @@ def byDate(fixtures: Iterable[Fixture]) -> list[Fixture]:
 
 class Division:
     """A division in the chess league."""
+    @match_typing
     def __init__(self, name: str, teams: list[Team]):
         self.name = name
         self.teams = teams
@@ -125,6 +132,7 @@ class Division:
 
 class Calendar:
     """A set of holidays."""
+    @match_typing
     def __init__(self, holidays: Iterable[date]):
         self.holidays = frozenset(holidays)
 
@@ -137,6 +145,7 @@ class Calendar:
 
 class League:
     """A chess league."""
+    @match_typing
     def __init__(self, name: str, start: date, end: date, divisions: list[Division], calendar: Calendar = Calendar.empty()):
         assert(end > start)
         self.name = name
@@ -152,7 +161,11 @@ class League:
         return r
 
     @cached_property
-    def venues(self) -> frozenset[tuple[Venue, Weekday]]:
+    def venues(self) -> frozenset[Venue]:
+        return frozenset(c.venue for c in self.clubs)
+
+    @cached_property
+    def venuesWeekdays(self) -> frozenset[tuple[Venue, Weekday]]:
         return frozenset((t.club.venue, t.club.weekday) for d in self.divisions for t in d.teams)
 
     @cached_property

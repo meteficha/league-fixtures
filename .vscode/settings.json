@@ -5,6 +5,7 @@
         "klass",
         "Lato",
         "pycsp",
+        "strongtyping",
         "unsat"
     ]
 }
