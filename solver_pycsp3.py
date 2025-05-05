@@ -34,7 +34,10 @@ class Solver(SolverBase):
         Solver.created = True
         super().__init__(league)
         self.constraints = False
+
         self.adjacentTeamsAsConstraint = True
+        self.strictHomeAwayConstraint: int | None = 1
+
         self.vars: dict[Fixture, Variable] = {}
         self.solver = pycsp3.CHOCO if solver == 'CHOCO' else pycsp3.ACE
         self.solverOptions = solverOptions
@@ -119,7 +122,6 @@ class Solver(SolverBase):
         )
 
         # Optimization: teams alternate between playing away and at home.
-        two = pycsp3cn.Node(pycsp3cn.TypeNode.INT, 2) # pyright: ignore[reportAttributeAccessIssue]
         def mkConstraint(a: Fixture, as_: Iterable[Fixture], bs: Iterable[Fixture]) -> Any:
             # If all fixtures alternated, then
             #
@@ -133,13 +135,11 @@ class Solver(SolverBase):
             #
             # Since we're interested in making this an optimization constraint,
             # we can ask for the number -abs(x-y) to be maximized instead.
-            # And because we want 3+ runs at home or away to be avoided,
-            # make them costlier by maximizing -2**abs(x-y).
             count = lambda fs: pycsp3f.NValues(within=(pycsp3f.Maximum(self.vars[a], self.vars[f]) - self.vars[a] for f in fs), excepting=0) # pyright: ignore[reportUnknownLambdaType]
             x = count(bs)
             y = count(as_)
             print('.', end='', flush=True)
-            return - (two ** pycsp3f.abs(x - y))
+            return pycsp3f.abs(x - y)
 
         def homeAwayConstraint(t: Team) -> Any:
             homeFixtures: list[Fixture] = [f for f in t.fixtures if f.home == t]
@@ -147,14 +147,24 @@ class Solver(SolverBase):
 
 
             print('\t', end='')
-            c = pycsp3f.Sum(mkConstraint(a, as_, bs) for (as_, bs) in [(homeFixtures, awayFixtures), (awayFixtures, homeFixtures)] for (a, as_) in extract(as_))
+            cs = [mkConstraint(a, as_, bs) for (as_, bs) in [(homeFixtures, awayFixtures), (awayFixtures, homeFixtures)] for (a, as_) in extract(as_)]
+            # for c in cs:
+            #     pycsp3f.satisfy(c >= -2)
+            # c = pycsp3f.Sum(cs)
             print('')
-            return c
+            return cs
 
-        optHomeAway = pycsp3f.Sum(
-                homeAwayConstraint(t)
-                for t in self.league.teams
-            )
+        homeAwayConstraints = [c for t in self.league.teams for c in homeAwayConstraint(t)]
+
+        if self.strictHomeAwayConstraint is not None:
+            pycsp3f.satisfy(pycsp3f.Maximum(homeAwayConstraints) <= max(1, self.strictHomeAwayConstraint))
+
+        optHomeAway = 0
+        if self.strictHomeAwayConstraint is None or self.strictHomeAwayConstraint > 1:
+            # Because we want 3+ runs at home or away to be avoided,
+            # make them costlier by maximizing -2**abs(x-y).
+            two = pycsp3cn.Node(pycsp3cn.TypeNode.INT, 2) # pyright: ignore[reportAttributeAccessIssue]
+            optHomeAway = - pycsp3f.Sum(two ** c for c in homeAwayConstraints)
 
         # Optimization: venues have matches assigned to most of their days.
         optVenues = pycsp3f.Sum(
