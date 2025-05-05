@@ -6,6 +6,7 @@ from pycsp3.classes.main.variables import Variable
 import pycsp3
 import pycsp3.functions as pycsp3f
 import pycsp3.classes.entities as pycsp3ce
+import pycsp3.classes.nodes as pycsp3cn
 
 from league import *
 from solver_base import SolverBase, UnsatisfiableConstraints
@@ -111,13 +112,14 @@ class Solver(SolverBase):
             # As an optimization
             optAdjacentTeams = -50 * pycsp3f.Sum(adjacentTeams)
 
-        # Constraint: fixture pairs played with time between them.
+        # Constraint: fixture pairs played with time between them (7 weeks).
         pycsp3f.satisfy(
             pycsp3f.abs(self.vars[f1] - self.vars[f2]) >= 7*7 # pyright: ignore [reportOperatorIssue]
             for (f1, f2) in self.league.fixturePairs
         )
 
         # Optimization: teams alternate between playing away and at home.
+        two = pycsp3cn.Node(pycsp3cn.TypeNode.INT, 2) # pyright: ignore[reportAttributeAccessIssue]
         def homeAwayConstraint(t: Team) -> Any:
             homeFixtures: list[Fixture] = [f for f in t.fixtures if f.home == t]
             awayFixtures: list[Fixture] = [f for f in t.fixtures if f.home != t]
@@ -139,7 +141,8 @@ class Solver(SolverBase):
                 x = count(awayFixtures)
                 y = count(homeRest)
                 print('.', end='', flush=True)
-                return - pycsp3f.abs(x - y)
+
+                return - (two ** pycsp3f.abs(x - y))
 
             print('\t', end='')
             c = pycsp3f.Sum(mkConstraint(homeFixture, homeRest) for (homeFixture, homeRest) in extract(homeFixtures))
