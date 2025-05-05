@@ -111,7 +111,7 @@ class Solver(SolverBase):
             # As an optimization
             optAdjacentTeams = -50 * pycsp3f.Sum(adjacentTeams)
 
-        # Constraint and optimization: fixture pairs played with time between them.
+        # Constraint: fixture pairs played with time between them.
         pycsp3f.satisfy(
             pycsp3f.abs(self.vars[f1] - self.vars[f2]) >= 7*7 # pyright: ignore [reportOperatorIssue]
             for (f1, f2) in self.league.fixturePairs
