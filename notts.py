@@ -35,14 +35,23 @@ def season202425() -> League:
         [ date(2024, 12, 23)
         , date(2024, 12, 24)
         , date(2024, 12, 25)
+        , date(2024, 12, 26)
+        , date(2024, 12, 27)
+        , date(2024, 12, 28)
+        , date(2024, 12, 29)
+        , date(2024, 12, 30)
         , date(2024, 12, 31)
         , date(2025, 1, 1)
+        , date(2025, 1, 2)
+        , date(2025, 1, 3)
+        , date(2025, 1, 4)
+        , date(2025, 1, 5)
         ])
 
     return League(
             "Notts League 2024/25",
-            date(2024, 9, 1),
-            date(2025, 4, 15),
+            date(2024, 9, 9),
+            date(2025, 5, 1),
             [div1, div2, div3, div4, div5],
             calendar
             )
