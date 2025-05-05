@@ -120,32 +120,34 @@ class Solver(SolverBase):
 
         # Optimization: teams alternate between playing away and at home.
         two = pycsp3cn.Node(pycsp3cn.TypeNode.INT, 2) # pyright: ignore[reportAttributeAccessIssue]
+        def mkConstraint(a: Fixture, as_: Iterable[Fixture], bs: Iterable[Fixture]) -> Any:
+            # If all fixtures alternated, then
+            #
+            #    (x - y) in {0, 1}
+            #
+            # where
+            #
+            #    x := number of away fixtures after this fixture
+            #    y := humber of home fixtures after this fixture
+            #
+            #
+            # Since we're interested in making this an optimization constraint,
+            # we can ask for the number -abs(x-y) to be maximized instead.
+            # And because we want 3+ runs at home or away to be avoided,
+            # make them costlier by maximizing -2**abs(x-y).
+            count = lambda fs: pycsp3f.NValues(within=(pycsp3f.Maximum(self.vars[a], self.vars[f]) - self.vars[a] for f in fs), excepting=0) # pyright: ignore[reportUnknownLambdaType]
+            x = count(bs)
+            y = count(as_)
+            print('.', end='', flush=True)
+            return - (two ** pycsp3f.abs(x - y))
+
         def homeAwayConstraint(t: Team) -> Any:
             homeFixtures: list[Fixture] = [f for f in t.fixtures if f.home == t]
             awayFixtures: list[Fixture] = [f for f in t.fixtures if f.home != t]
 
-            def mkConstraint(homeFixture: Fixture, homeRest: Iterable[Fixture]) -> Any:
-                # If all fixtures alternated, then
-                #
-                #    (x - y) in {0, 1}
-                #
-                # where
-                #
-                #    x := number of away fixtures after this fixture
-                #    y := humber of home fixtures after this fixture
-                #
-                #
-                # Since we're interested in making this an optimization constraint,
-                # we can ask for the number - abs(x - y) to be maximized instead.
-                count = lambda fs: pycsp3f.NValues(within=(pycsp3f.Maximum(self.vars[homeFixture], self.vars[f]) - self.vars[homeFixture] for f in fs), excepting=0) # pyright: ignore[reportUnknownLambdaType]
-                x = count(awayFixtures)
-                y = count(homeRest)
-                print('.', end='', flush=True)
-
-                return - (two ** pycsp3f.abs(x - y))
 
             print('\t', end='')
-            c = pycsp3f.Sum(mkConstraint(homeFixture, homeRest) for (homeFixture, homeRest) in extract(homeFixtures))
+            c = pycsp3f.Sum(mkConstraint(a, as_, bs) for (as_, bs) in [(homeFixtures, awayFixtures), (awayFixtures, homeFixtures)] for (a, as_) in extract(as_))
             print('')
             return c
 
