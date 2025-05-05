@@ -9,6 +9,11 @@
             "type": "debugpy",
             "request": "launch",
             "program": "app.py",
+            "args": [
+                "solve",
+                "notts-debug.json",
+                "--output=notts-debug-out.json"
+            ],
             "console": "integratedTerminal"
         }
     ]
