@@ -24,5 +24,17 @@ class SolverBase:
     def possibleDays(self, x: Weekday) -> range:
         return range(self.weekdayToInt(x), self.dateToInt(self.league.end) - 1, 7)
 
+    @cached_property
+    def holidaysLeague(self) -> frozenset[int]:
+        return frozenset(self.dateToInt(d) for d in self.league.calendar.holidays)
+
+    @cached_property
+    def holidaysPerClub(self) -> dict[Club, frozenset[int]]:
+        return {c: frozenset(self.dateToInt(d) for d in c.calendar.holidays) for c in self.league.clubs}
+
+    @cached_property
+    def holidaysPerVenue(self) -> dict[Venue, frozenset[int]]:
+        return {v: frozenset(self.dateToInt(d) for d in v.calendar.holidays) for v in self.league.venues}
+
     def solve(self) -> None:
         raise UnsatisfiableConstraints("SolverBase can't solve")

@@ -1,12 +1,14 @@
 # pyright: strict, reportCallIssue=false, reportGeneralTypeIssues=false
 from airium import Airium # pyright: ignore[reportMissingTypeStubs]
 from datetime import timedelta
+from itertools import chain
 
 from league import *
 
 class Heatmap:
-    def __init__(self, league: League):
+    def __init__(self, league: League, extraCalendars: Iterable[Calendar] = []):
         self.league = league
+        self.extraCalendars = extraCalendars
         self.points: dict[date, int] = dict()
 
     def add(self, point: Fixture | date) -> None:
@@ -35,6 +37,9 @@ class Heatmap:
         """Number of weeks in heatmap"""
         return ((self.end - self.start).days + 1) // 7
 
+    def isHoliday(self, date: date) -> bool:
+        return any(c.isHoliday(date) for c in chain([self.league.calendar], self.extraCalendars))
+
     def table(self) -> list[list[tuple[date, int]]]:
         ret: list[list[tuple[date, int]]] = []
         for i in range(7):
@@ -52,7 +57,7 @@ class Heatmap:
                 for row in self.table():
                     with a.tr():
                         for (date, count) in row:
-                            holiday = ' heat-holiday' if self.league.calendar.isHoliday(date) else ''
+                            holiday = ' heat-holiday' if self.isHoliday(date) else ''
                             a.td(klass='heat-' + str(max(0, min(4, count))) + holiday + ' heat-day-' + str(date))
 
 class Report:
@@ -89,7 +94,7 @@ class Report:
         a.h2(_t='Fixtures by venue')
         for (v, wd) in sorted(self.league.venuesWeekdays, key=lambda t: (t[0].name, t[1])):
             a.h3(_t=v.name + ' on a ' + wd.name.capitalize())
-            self.renderFixtureTable(a, byDate(f for f in v.fixtures if f.weekday == wd))
+            self.renderFixtureTable(a, byDate(f for f in v.fixtures if f.weekday == wd), [v.calendar])
 
     def renderByTeam(self, a: Airium) -> None:
         a.h2(_t='Fixtures by team')
@@ -97,10 +102,10 @@ class Report:
             a.h3(_t=c.name)
             for t in c.teams:
                 a.h4(_t=t.name)
-                self.renderFixtureTable(a, byDate(t.fixtures))
+                self.renderFixtureTable(a, byDate(t.fixtures), [c.calendar])
 
-    def renderFixtureTable(self, a: Airium, fixtures: Iterable[Fixture]) -> None:
-        self.renderHeatmap(a, fixtures)
+    def renderFixtureTable(self, a: Airium, fixtures: Iterable[Fixture], extraCalendars: Iterable[Calendar] = []) -> None:
+        self.renderHeatmap(a, fixtures, extraCalendars)
 
         with a.table(klass='fixture'):
             with a.thead():
@@ -119,8 +124,8 @@ class Report:
                         a.td(_t=f.venue.name, klass='venue')
                         a.td(_t=f.weekday.name.capitalize(), klass='weekday')
 
-    def renderHeatmap(self, a: Airium, fixtures: Iterable[Fixture]) -> None:
-        h = Heatmap(self.league)
+    def renderHeatmap(self, a: Airium, fixtures: Iterable[Fixture], extraCalendars: Iterable[Calendar] = []) -> None:
+        h = Heatmap(self.league, extraCalendars)
         h.addAll(fixtures)
         h.render(a)
 

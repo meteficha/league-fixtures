@@ -27,38 +27,62 @@ class Weekday(IntEnum):
     def fromDate(cls: type[Self], d: date) -> Self:
         return cls(d.isoweekday())
 
+class Calendar:
+    """A set of holidays."""
+    @match_typing
+    def __init__(self, holidays: Iterable[date] = []):
+        self.holidays = frozenset(holidays)
+
+    def to_json(self) -> dict[str, Any]:
+        return { "holidays": [str(d) for d in self.holidays] }
+
+    @classmethod
+    def from_json(cls: type[Self], o: dict[str, Any]) -> Self:
+        return cls(holidays=[date.fromisoformat(d) for d in o["holidays"]])
+
+    @classmethod
+    def empty(cls: type[Self]) -> Self:
+        return cls([])
+
+    def isHoliday(self, date: date) -> bool:
+        return date in self.holidays
+
 class Venue:
     """A venue is a place that clubs use to schedule their matches.
 
     Multiple clubs may play on the same venue.
     """
     @match_typing
-    def __init__(self, name: str, maxMatchesPerDay: int = 2, minimizeEmptyDays: bool = False):
+    def __init__(self, name: str, maxMatchesPerDay: int = 2, minimizeEmptyDays: bool = False, calendar: Calendar | None = None):
         self.name = name
         self.maxMatchesPerDay = maxMatchesPerDay
         self.minimizeEmptyDays = minimizeEmptyDays
         self.fixtures: list[Fixture] = []
+        self.calendar = calendar if calendar else Calendar()
 
     def to_json(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "maxMatchesPerDay": self.maxMatchesPerDay,
             "minimizeEmptyDays": self.minimizeEmptyDays,
+            "calendar": self.calendar.to_json(),
             }
 
     @classmethod
     def from_json(cls: type[Self], o: dict[str, Any]) -> Self:
-        return cls(name=o["name"], maxMatchesPerDay=o["maxMatchesPerDay"], minimizeEmptyDays=o["minimizeEmptyDays"])
+        calendar = Calendar.from_json(o["calendar"]) if "calendar" in o else None
+        return cls(name=o["name"], maxMatchesPerDay=o["maxMatchesPerDay"], minimizeEmptyDays=o["minimizeEmptyDays"], calendar=calendar)
 
 class Club:
     """A chess club."""
     @match_typing
-    def __init__(self, name: str, venue: Venue, weekday: Weekday, lateStart: date | None = None):
+    def __init__(self, name: str, venue: Venue, weekday: Weekday, lateStart: date | None = None, calendar: Calendar | None = None):
         self.name = name
         self.venue = venue
         self.weekday = weekday
         self.lateStart = lateStart
         self.teams: list[Team] = []
+        self.calendar = calendar if calendar else Calendar()
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -67,11 +91,13 @@ class Club:
             "weekday": self.weekday.value,
             "lateStart": str(self.lateStart) if self.lateStart else None,
             "teams": [t.name for t in self.teams],
+            "calendar": self.calendar.to_json(),
             }
 
     @classmethod
     def from_json(cls: type[Self], venues: dict[str, Venue], o: dict[str, Any]) -> Self:
-        club = cls(name=o["name"], venue=venues[o["venue"]], weekday=Weekday(o["weekday"]), lateStart=dateOrNone(o.get("lateStart", None)))
+        calendar = Calendar.from_json(o["calendar"]) if "calendar" in o else None
+        club = cls(name=o["name"], venue=venues[o["venue"]], weekday=Weekday(o["weekday"]), lateStart=dateOrNone(o.get("lateStart", None)), calendar=calendar)
         for t in o["teams"]:
             Team(club, name=t)
         return club
@@ -196,26 +222,6 @@ class Division:
             ret.add(frozenset({f1, f2}))
         return frozenset(ret)
 
-class Calendar:
-    """A set of holidays."""
-    @match_typing
-    def __init__(self, holidays: Iterable[date]):
-        self.holidays = frozenset(holidays)
-
-    def to_json(self) -> dict[str, Any]:
-        return { "holidays": [str(d) for d in self.holidays] }
-
-    @classmethod
-    def from_json(cls: type[Self], o: dict[str, Any]) -> Self:
-        return cls(holidays=[date.fromisoformat(d) for d in o["holidays"]])
-
-    @classmethod
-    def empty(cls: type[Self]) -> Self:
-        return cls([])
-
-    def isHoliday(self, date: date) -> bool:
-        return date in self.holidays
-
 class League:
     """A chess league."""
     @match_typing
@@ -260,14 +266,6 @@ class League:
     @cached_property
     def venuesWeekdays(self) -> frozenset[tuple[Venue, Weekday]]:
         return frozenset((c.venue, c.weekday) for c in self.clubs)
-
-    @cached_property
-    def holidays(self) -> dict[Weekday, frozenset[date]]:
-        r: dict[Weekday, set[date]] = dict()
-        for d in self.calendar.holidays:
-            if self.start <= d <= self.end:
-                r.setdefault(Weekday.fromDate(d), set()).add(d)
-        return {k: frozenset(v) for (k, v) in r.items()}
 
     @cached_property
     def clubs(self) -> frozenset[Club]:

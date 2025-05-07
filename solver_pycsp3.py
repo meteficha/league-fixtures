@@ -62,6 +62,7 @@ class Solver(SolverBase):
         self.solver = pycsp3.CHOCO if solver == 'CHOCO' else pycsp3.ACE
         self.solverOptions = solverOptions
 
+
     def dom(self, f: Fixture) -> set[int]:
         # Allow for fixture dates to be decided manually.
         if f.date is not None:
@@ -75,7 +76,10 @@ class Solver(SolverBase):
         ret = {d for d in self.possibleDays(f.weekday) if d >= start}
 
         # Constraint: not played on a holiday.
-        ret.difference_update(self.dateToInt(d) for d in self.league.holidays.get(f.weekday, frozenset()))
+        ret.difference_update(self.holidaysLeague)
+        ret.difference_update(self.holidaysPerVenue[f.venue])
+        ret.difference_update(self.holidaysPerClub[f.home.club])
+        ret.difference_update(self.holidaysPerClub[f.away.club])
 
         # Constraint: matches between teams of the same club must be played by 31 Jan.
         if f.sameClub():
