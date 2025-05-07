@@ -11,6 +11,9 @@ def dateOrNone(v: str | None) -> date | None:
     else:
         return date.fromisoformat(v)
 
+def sanitize(v: str) -> str:
+    return v.replace(" ", "_").replace("&", "_")
+
 class Weekday(IntEnum):
     MONDAY = 1
     TUESDAY = 2
@@ -82,6 +85,18 @@ class Team:
         self.fixtures: list[Fixture] = []
         club.teams.append(self)
 
+    @property
+    def homeFixtures(self) -> Iterable['Fixture']:
+        return (f for f in self.fixtures if f.home == self)
+
+    @property
+    def awayFixtures(self) -> Iterable['Fixture']:
+        return (f for f in self.fixtures if f.home != self)
+
+    @cached_property
+    def sanitized_name(self) -> str:
+        return sanitize(self.name)
+
     def __str__(self) -> str:
         return self.name
 
@@ -128,7 +143,7 @@ class Fixture:
 
     @cached_property
     def sanitized_name(self) -> str:
-        return self.name.replace(" ", "_").replace("&", "_")
+        return sanitize(self.name)
 
     @cached_property
     def teams(self) -> frozenset[Team]:

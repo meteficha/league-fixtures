@@ -1,12 +1,12 @@
 # pyright: strict, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
 from datetime import date
-from itertools import pairwise
+from itertools import chain, pairwise
 from typing import Any, Iterator, Literal
 from pycsp3.classes.main.variables import Variable
+from pycsp3.tools.curser import ListVar
 import pycsp3
 import pycsp3.functions as pycsp3f
 import pycsp3.classes.entities as pycsp3ce
-import pycsp3.classes.nodes as pycsp3cn
 
 from league import *
 from solver_base import SolverBase, UnsatisfiableConstraints
@@ -23,6 +23,24 @@ def extract[T](xs: list[T]) -> Iterator[tuple[T, Iterable[T]]]:
         rest = (xs[j] for j in range(len(xs)) if i != j)
         yield (xs[i], rest)
 
+def alternate[T](xs: Iterable[T], ys: Iterable[T]) -> Iterable[T]:
+    """alternate([a0, ..., ak], [b0, ..., bk]) = [a0, b0, a1, b1, ..., ak, bk]
+
+    >>> list(alternate([1,3,5,7], [2,4,6,8]))
+    [1, 2, 3, 4, 5, 6, 7, 8]
+    """
+    ai = xs.__iter__()
+    bi = ys.__iter__()
+    try:
+        while True:
+            yield next(ai)
+            (ai, bi) = (bi, ai)
+    except StopIteration:
+        return
+
+def domUnion(vs: Iterable[Variable]) -> set[int]:
+    return set(x for v in vs for x in v.dom) # pyright: ignore[reportAttributeAccessIssue]
+
 class Solver(SolverBase):
     """Update every fixture of the given league with dates that
     fit the necessary constraints."""
@@ -35,14 +53,20 @@ class Solver(SolverBase):
         super().__init__(league)
         self.constraints = False
 
-        self.adjacentTeamsAsConstraint = True
-        self.strictHomeAwayConstraint: int | None = 1
+        self.adjacentTeamsAsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
+        self.strictHomeAwayConstraint: int | None = 2 # Maximum number of back-to-back games at home or away.
 
-        self.vars: dict[Fixture, Variable] = {}
+        self.homeFixtureArrays: dict[Team, ListVar] = dict()
+        self.homeFixtureDomains: dict[Team, set[int]] = dict()
+        self.vars: dict[Fixture, Variable] = dict()
         self.solver = pycsp3.CHOCO if solver == 'CHOCO' else pycsp3.ACE
         self.solverOptions = solverOptions
 
     def dom(self, f: Fixture) -> set[int]:
+        # Allow for fixture dates to be decided manually.
+        if f.date is not None:
+            return { self.dateToInt(f.date) }
+
         # Constraint: respects club late starts.
         start: int = max(self.dateToInt(d) for d in [self.league.start, f.home.club.lateStart, f.away.club.lateStart] if d is not None)
 
@@ -66,13 +90,15 @@ class Solver(SolverBase):
         self.constraints = True
 
         # Constraints on single fixtures
-        for f in self.league.fixtures:
-            if f.date is not None:
-                # Allow for fixture dates to be decided manually.
-                self.vars[f] = pycsp3f.Var(dom=self.dateToInt(f.date), id=f.sanitized_name)
-            else:
-                # Implement single fixture constraints via the domain.
-                self.vars[f] = pycsp3f.Var(dom=self.dom(f), id=f.sanitized_name)
+        for t in self.league.teams:
+            # For every fixture f, there is one, and only one, team for which f is a home fixture.
+            # Therefore, we only need to go through home fixtures here.
+            homeFixtures = list(t.homeFixtures)
+            doms = list(map(self.dom, homeFixtures)) # Implement single fixture constraints via the domain.
+            self.homeFixtureArrays[t] = pycsp3f.VarArray(size=len(homeFixtures), dom=lambda i=0: doms[i], id='homeFixtures_' + t.sanitized_name, comment=str([f.name for f in homeFixtures]))
+            self.homeFixtureDomains[t] = set.union(*doms)
+            for (f, v) in zip(homeFixtures, self.homeFixtureArrays[t]):
+                self.vars[f] = v
 
         # Constraint: teams can only play one fixture per day.
         for t in self.league.teams:
@@ -80,7 +106,7 @@ class Solver(SolverBase):
 
         # Constraint: venues have a maximum number of matches per day.
         for v in self.league.venues:
-            dom: set[date] = {d for f in v.fixtures for d in self.vars[f].dom.all_values()} # pyright: ignore[reportAttributeAccessIssue]
+            dom: set[date] = {d for f in v.fixtures for d in self.vars[f].dom} # pyright: ignore[reportAttributeAccessIssue]
             pycsp3f.satisfy(pycsp3f.Cardinality([self.vars[f] for f in v.fixtures], occurrences={d:range(0, v.maxMatchesPerDay+1) for d in dom}))
 
         # Constraint: first matches of a club's teams in a division are between themselves.
@@ -122,49 +148,66 @@ class Solver(SolverBase):
         )
 
         # Optimization: teams alternate between playing away and at home.
-        def mkConstraint(a: Fixture, as_: Iterable[Fixture], bs: Iterable[Fixture]) -> Any:
-            # If all fixtures alternated, then
-            #
-            #    (x - y) in {0, 1}
-            #
-            # where
-            #
-            #    x := number of away fixtures after this fixture
-            #    y := humber of home fixtures after this fixture
-            #
-            #
-            # Since we're interested in making this an optimization constraint,
-            # we can ask for the number -abs(x-y) to be maximized instead.
-            count = lambda fs: pycsp3f.NValues(within=(pycsp3f.Maximum(self.vars[a], self.vars[f]) - self.vars[a] for f in fs), excepting=0) # pyright: ignore[reportUnknownLambdaType]
-            x = count(bs)
-            y = count(as_)
-            print('.', end='', flush=True)
-            return pycsp3f.abs(x - y)
-
-        def homeAwayConstraint(t: Team) -> Any:
-            homeFixtures: list[Fixture] = [f for f in t.fixtures if f.home == t]
-            awayFixtures: list[Fixture] = [f for f in t.fixtures if f.home != t]
-
-
-            print('\t', end='')
-            cs = [mkConstraint(a, as_, bs) for (as_, bs) in [(homeFixtures, awayFixtures), (awayFixtures, homeFixtures)] for (a, as_) in extract(as_)]
-            # for c in cs:
-            #     pycsp3f.satisfy(c >= -2)
-            # c = pycsp3f.Sum(cs)
-            print('')
-            return cs
-
-        homeAwayConstraints = [c for t in self.league.teams for c in homeAwayConstraint(t)]
-
-        if self.strictHomeAwayConstraint is not None:
-            pycsp3f.satisfy(pycsp3f.Maximum(homeAwayConstraints) <= max(1, self.strictHomeAwayConstraint))
-
         optHomeAway = 0
-        if self.strictHomeAwayConstraint is None or self.strictHomeAwayConstraint > 1:
-            # Because we want 3+ runs at home or away to be avoided,
-            # make them costlier by maximizing -2**abs(x-y).
-            two = pycsp3cn.Node(pycsp3cn.TypeNode.INT, 2) # pyright: ignore[reportAttributeAccessIssue]
-            optHomeAway = - pycsp3f.Sum(two ** c for c in homeAwayConstraints)
+        def satisfyHomeAwayConstraint(t: Team) -> Any:
+            awayFixtures: list[Fixture] = list(t.awayFixtures)
+            n = len(awayFixtures)
+            if n < 1:
+                return
+            homeFixtureArr = self.homeFixtureArrays[t]
+            assert len(homeFixtureArr) == n
+            awayDomain = domUnion(self.vars[f] for f in awayFixtures)
+            awayFixtureArr = pycsp3f.VarArray(size=n, dom=awayDomain, id="awayFixtureArr_" + t.sanitized_name)
+            homeIxArr = pycsp3f.VarArray(size=n, dom=range(n), id="homeIxArr_" + t.sanitized_name)
+            awayIxArr = pycsp3f.VarArray(size=n, dom=range(n), id="awayIxArr_" + t.sanitized_name)
+            sortedHomeFixtureArr = pycsp3f.VarArray(size=n, dom=self.homeFixtureDomains[t], id="sortedHomeFixtureArr_" + t.sanitized_name)
+            sortedAwayFixtureArr = pycsp3f.VarArray(size=n, dom=awayDomain, id="sortedAwayFixtureArr_" + t.sanitized_name)
+            pycsp3f.satisfy(list(chain([
+                    awayFixtureArr[i] == self.vars[awayFixtures[i]],
+                    sortedHomeFixtureArr[i] == homeFixtureArr[homeIxArr[i]],
+                    sortedAwayFixtureArr[i] == awayFixtureArr[awayIxArr[i]],
+                ] for i in range(n))))
+            pycsp3f.satisfy([
+                pycsp3f.AllDifferent(homeIxArr),
+                pycsp3f.AllDifferent(awayIxArr),
+                pycsp3f.Increasing(sortedHomeFixtureArr, strict=True),
+                pycsp3f.Increasing(sortedAwayFixtureArr, strict=True),
+            ])
+            print('.', end='', flush=True)
+            if self.strictHomeAwayConstraint == 1:
+                pycsp3f.satisfy(pycsp3f.Or(
+                    pycsp3f.Increasing(alternate(sortedHomeFixtureArr, sortedAwayFixtureArr), strict=True),
+                    pycsp3f.Increasing(alternate(sortedAwayFixtureArr, sortedHomeFixtureArr), strict=True),
+                    ))
+                return None
+            else:
+                toConsider = []
+                if not any(f in firstMatches for f in awayFixtures):
+                    toConsider.append((sortedHomeFixtureArr, sortedAwayFixtureArr, "homeAway"))
+                if not any(f in firstMatches for f in t.homeFixtures):
+                    toConsider.append((sortedAwayFixtureArr, sortedHomeFixtureArr, "awayHome"))
+                if not toConsider:
+                    return None
+
+                def buildArr(as_: list[Any], bs: list[Any], id: str) -> Variable:
+                    pairs = list(pairwise(alternate(as_, bs)))
+                    arr = pycsp3f.VarArray(size=len(pairs), dom=[0, 1], id=id)
+                    pycsp3f.satisfy(
+                        arr[i] == (a < b)
+                        for (i, (a, b)) in enumerate(pairs)
+                    )
+                    return arr
+
+                arrays = [buildArr(as_, bs, prefix + 'ConstraintArr_' + t.sanitized_name) for (as_, bs, prefix) in toConsider]
+                countWrong = pycsp3f.Minimum(pycsp3f.Count(array, value=0) for array in arrays)
+                if self.strictHomeAwayConstraint:
+                    pycsp3f.satisfy(countWrong < self.strictHomeAwayConstraint)
+                return countWrong
+        print("\tHome/away constraints", end='', flush=True)
+        optTerms = [c for c in map(satisfyHomeAwayConstraint, self.league.teams) if c is not None]
+        if optTerms:
+            optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-10)
+        print('')
 
         # Optimization: venues have matches assigned to most of their days.
         optVenues = pycsp3f.Sum(
@@ -206,9 +249,6 @@ class Solver(SolverBase):
         print("\tAsking for a solution... (press Ctrl-C to save best solution so far)")
         r = pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0)
         if r is not pycsp3.SAT and r is not pycsp3.OPTIMUM:
-            print("Not SAT, trying to extract CORE.")
-            if pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0, extraction=True) is pycsp3.CORE:
-                print(pycsp3.core())
             raise UnsatisfiableConstraints(str(r))
 
         if r is pycsp3.OPTIMUM:
