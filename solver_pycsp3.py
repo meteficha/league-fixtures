@@ -89,7 +89,7 @@ class Solver(SolverBase):
             pycsp3ce.clear()
         self.constraints = True
 
-        # Constraints on single fixtures
+        print("\t\tSingle fixture constraints")
         for t in self.league.teams:
             # For every fixture f, there is one, and only one, team for which f is a home fixture.
             # Therefore, we only need to go through home fixtures here.
@@ -100,16 +100,16 @@ class Solver(SolverBase):
             for (f, v) in zip(homeFixtures, self.homeFixtureArrays[t]):
                 self.vars[f] = v
 
-        # Constraint: teams can only play one fixture per day.
+        print("\t\tTeams can only play one fixture per day")
         for t in self.league.teams:
             pycsp3f.satisfy(pycsp3f.AllDifferent([self.vars[f] for f in t.fixtures]))
 
-        # Constraint: venues have a maximum number of matches per day.
+        print("\t\tVenues have a maximum number of matches per day")
         for v in self.league.venues:
             dom: set[date] = {d for f in v.fixtures for d in self.vars[f].dom} # pyright: ignore[reportAttributeAccessIssue]
             pycsp3f.satisfy(pycsp3f.Cardinality([self.vars[f] for f in v.fixtures], occurrences={d:range(0, v.maxMatchesPerDay+1) for d in dom}))
 
-        # Constraint: first matches of a club's teams in a division are between themselves.
+        print("\t\tFirst matches of a club's teams in a division are between themselves")
         hasFirstMatchConstraint: set[Team] = set()
         firstMatches: set[Fixture] = set()
         for t in self.league.teams:
@@ -123,7 +123,7 @@ class Solver(SolverBase):
                     pycsp3f.satisfy(self.vars[chosen] < pycsp3f.Minimum(self.vars[f] for u in chosen.teams for f in u.fixtures if f not in firstMatches))
                     hasFirstMatchConstraint.add(chosen.away)
 
-        # Constraint or optimization: adjacent teams of a club shouldn't play on the same day.
+        print("\t\tAdjacent teams of a club shouldn't play on the same day")
         adjacentTeams = [
             self.vars[f1] == self.vars[f2]
             for c in self.league.clubs
@@ -141,13 +141,13 @@ class Solver(SolverBase):
             # As an optimization
             optAdjacentTeams = -50 * pycsp3f.Sum(adjacentTeams)
 
-        # Constraint: fixture pairs played with time between them (7 weeks).
+        print("\t\tFixture pairs played with time between them (7 weeks)")
         pycsp3f.satisfy(
             pycsp3f.abs(self.vars[f1] - self.vars[f2]) >= 7*7 # pyright: ignore [reportOperatorIssue]
             for (f1, f2) in self.league.fixturePairs
         )
 
-        # Optimization: teams alternate between playing away and at home.
+        print("\t\tTeams alternate between playing away and at home", end='', flush=True)
         optHomeAway = 0
         def satisfyHomeAwayConstraint(t: Team) -> Any:
             awayFixtures: list[Fixture] = list(t.awayFixtures)
@@ -203,33 +203,32 @@ class Solver(SolverBase):
                 if self.strictHomeAwayConstraint:
                     pycsp3f.satisfy(countWrong < self.strictHomeAwayConstraint)
                 return countWrong
-        print("\tHome/away constraints", end='', flush=True)
         optTerms = [c for c in map(satisfyHomeAwayConstraint, self.league.teams) if c is not None]
         if optTerms:
             optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-10)
         print('')
 
-        # Optimization: venues have matches assigned to most of their days.
+        print("\t\tVenues have matches assigned to most of their days")
         optVenues = pycsp3f.Sum(
             pycsp3f.NValues(self.vars[f] for f in v.fixtures)
             for v in self.league.venues
             if not v.minimizeEmptyDays
         )
 
-        # Optimization: venues can choose to minimize empty days.
+        print("\t\tVenues can choose to minimize empty days")
         optVenuesEmptyDays = -1 * pycsp3f.Sum(
             pycsp3f.NValues(self.vars[f] for f in v.fixtures)
             for v in self.league.venues
             if v.minimizeEmptyDays
         )
 
-        # Optimization: space out the matches of a team.
+        print("\t\tSpace out the matches of a team")
         optSpaceTeams = pycsp3f.Sum(
             pycsp3f.Minimum(pycsp3f.abs(self.vars[f1] - self.vars[f2]) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue]
             for t in self.league.teams
         )
 
-        # Optimization: division should have matches on as many days as possible.
+        print("\t\tDivision should have matches on as many days as possible")
         optSpaceDivision = pycsp3f.Sum(
             pycsp3f.NValues(self.vars[f] for f in d.fixtures)
             for d in self.league.divisions
@@ -246,14 +245,14 @@ class Solver(SolverBase):
     def solve(self) -> None:
         print("\tCreating constraints...")
         self.__createConstraints()
-        print("\tAsking for a solution... (press Ctrl-C to save best solution so far)")
+        print("\tAsking for a solution... (press Ctrl-C to save best solution so far)\n\n\n")
         r = pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0)
         if r is not pycsp3.SAT and r is not pycsp3.OPTIMUM:
             raise UnsatisfiableConstraints(str(r))
 
         if r is pycsp3.OPTIMUM:
-            print('\tFound the best solution. Wow!')
-        print("\tExtracting solution")
+            print('\n\n\tFound the best solution. Wow!')
+        print("\n\n\tExtracting solution")
         for f in self.league.fixtures:
             v = pycsp3f.value(self.vars[f])
             if isinstance(v, int):
