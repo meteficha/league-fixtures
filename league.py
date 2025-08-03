@@ -90,7 +90,7 @@ class Club:
             "venue": self.venue.name,
             "weekday": self.weekday.value,
             "lateStart": str(self.lateStart) if self.lateStart else None,
-            "teams": [t.name for t in self.teams],
+            "teams": [t.to_json() for t in self.teams],
             "calendar": self.calendar.to_json(),
             }
 
@@ -99,15 +99,16 @@ class Club:
         calendar = Calendar.from_json(o["calendar"]) if "calendar" in o else None
         club = cls(name=o["name"], venue=venues[o["venue"]], weekday=Weekday(o["weekday"]), lateStart=dateOrNone(o.get("lateStart", None)), calendar=calendar)
         for t in o["teams"]:
-            Team(club, name=t)
+            Team.from_json(club, t)
         return club
 
 class Team:
     """A team from a chess club."""
     @match_typing
-    def __init__(self, club: Club, name: str | None = None):
+    def __init__(self, club: Club, name: str | None = None, calendar: Calendar | None = None):
         self.club = club
         self.name = club.name + " " + str(len(club.teams) + 1) if name is None else name
+        self.calendar = calendar if calendar else Calendar()
         self.fixtures: list[Fixture] = []
         club.teams.append(self)
 
@@ -122,6 +123,18 @@ class Team:
     @cached_property
     def sanitized_name(self) -> str:
         return sanitize(self.name)
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "calendar": self.calendar.to_json(),
+            }
+
+    @classmethod
+    def from_json(cls: type[Self], club: Club, o: dict[str, Any] | str) -> Self:
+        name = o if isinstance(o, str) else o["name"]
+        calendar = Calendar.from_json(o["calendar"]) if isinstance(o, dict) and "calendar" in o else None
+        return cls(club, name, calendar)
 
     def __str__(self) -> str:
         return self.name
