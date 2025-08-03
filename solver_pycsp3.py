@@ -148,11 +148,9 @@ class Solver(SolverBase):
             print("\t\t\t" + ow.constrained.name + " plays at home only when " + ow.reference.name + " plays at home", end='', flush=True)
             for t in ow.constrained.teams:
                 for f in t.homeFixtures:
-                    pycsp3f.satisfy(pycsp3f.Or(
-                        self.vars[f] == self.vars[f2]
-                        for t2 in ow.reference.teams
-                        for f2 in t2.homeFixtures
-                    ))
+                    pycsp3f.satisfy(
+                        pycsp3f.Exist([self.homeFixtureArrays[t2] for t2 in ow.reference.teams], value = self.vars[f])
+                    )
             print(".")
 
         print("\t\tTeams alternate between playing away and at home", end='', flush=True)
