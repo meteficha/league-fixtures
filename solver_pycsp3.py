@@ -55,6 +55,7 @@ class Solver(SolverBase):
 
         self.adjacentTeamsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
         self.strictHomeAwayConstraint: int | None = 2 # Maximum number of back-to-back games at home or away.
+        self.strictMatchSpaceOut: int | None = 5 # Minimum number of days between back-to-back games of a team.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
         self.homeFixtureDomains: dict[Team, set[int]] = dict()
@@ -229,10 +230,13 @@ class Solver(SolverBase):
         )
 
         print("\t\tSpace out the matches of a team")
-        optSpaceTeams = pycsp3f.Sum(
-            pycsp3f.Minimum(pycsp3f.abs(self.vars[f1] - self.vars[f2]) for (f1, f2) in pairs(t.fixtures)) # pyright: ignore [reportOperatorIssue]
+        spaceTeamsTerms = [
+            [pycsp3f.abs(self.vars[f1] - self.vars[f2]) for (f1, f2) in pairs(t.fixtures)] # pyright: ignore [reportOperatorIssue]
             for t in self.league.teams
-        )
+        ]
+        optSpaceTeams = pycsp3f.Sum(x for xs in spaceTeamsTerms for x in xs)
+        if self.strictMatchSpaceOut:
+            pycsp3f.satisfy(t >= self.strictMatchSpaceOut for ts in spaceTeamsTerms for t in ts)
 
         print("\t\tDivision should have matches on as many days as possible")
         optSpaceDivision = pycsp3f.Sum(
