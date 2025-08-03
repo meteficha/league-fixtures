@@ -126,7 +126,7 @@ class Solver(SolverBase):
                     best = [f for f in candidates if f.away not in hasFirstMatchConstraint]
                     chosen = best[0] if len(best) > 0 else candidates[0]
                     firstMatches.add(chosen)
-                    pycsp3f.satisfy(self.vars[chosen] < pycsp3f.Minimum(self.vars[f] for u in chosen.teams for f in u.fixtures if f not in firstMatches))
+                    pycsp3f.satisfy(self.vars[chosen] < self.vars[f] for u in chosen.teams for f in u.fixtures if f not in firstMatches) # pyright: ignore[reportOperatorIssue]
                     hasFirstMatchConstraint.add(chosen.away)
 
         if self.adjacentTeamsConstraint:
