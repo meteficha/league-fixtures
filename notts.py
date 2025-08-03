@@ -199,12 +199,14 @@ def season202526() -> League:
 
     return League(
             name="Notts League 2025/26",
-            start=date(2025, 9, 9),
+            start=date(2025, 9, 6),
             end=date(2026, 5, 1),
             divisions=[div1, div2, div3, div4, div5],
             onlyWhen={ OnlyWhen(constrained=beeston, reference=westNottingham) },
             calendar=Calendar(
-                { date(2025, 12, i) for i in range(21, 32) } |
-                { date(2026, 1, i) for i in range(1, 5) } |
-                { date(2026, 4, 1), date(2026, 5, 5) }
+                { date(2025, 12, i) for i in range(21, 32) } | # Christmas
+                { date(2026, 1, i) for i in range(1, 5) } | # New Year
+                { date(2026, 4, 3), date(2026, 4, 6) } | # Easter
+                { date(2026, 5, 4) } | # Early May bank holiday
+                { date(2026, 5, 25) } # Spring bank holiday
             ))
