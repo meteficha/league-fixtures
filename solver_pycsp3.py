@@ -53,7 +53,7 @@ class Solver(SolverBase):
         super().__init__(league)
         self.constraints = False
 
-        self.adjacentTeamsAsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
+        self.adjacentTeamsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
         self.strictHomeAwayConstraint: int | None = 2 # Maximum number of back-to-back games at home or away.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
@@ -129,23 +129,13 @@ class Solver(SolverBase):
                     pycsp3f.satisfy(self.vars[chosen] < pycsp3f.Minimum(self.vars[f] for u in chosen.teams for f in u.fixtures if f not in firstMatches))
                     hasFirstMatchConstraint.add(chosen.away)
 
-        print("\t\tAdjacent teams of a club shouldn't play on the same day")
-        adjacentTeams = [
-            self.vars[f1] == self.vars[f2]
-            for c in self.league.clubs
-            for (t1, t2) in pairwise(c.teams)
-            for f1 in t1.fixtures
-            if f1.teams != frozenset({t1, t2})
-            for f2 in t2.fixtures
-            if f2.teams != frozenset({t1, t2})
-        ]
-        optAdjacentTeams = 0
-        if self.adjacentTeamsAsConstraint:
-            # As a constraint
-            pycsp3f.satisfy(pycsp3f.NoneHold(adjacentTeams))
-        else:
-            # As an optimization
-            optAdjacentTeams = -50 * pycsp3f.Sum(adjacentTeams)
+        if self.adjacentTeamsConstraint:
+            print("\t\tAdjacent teams of a club shouldn't play on the same day")
+            pycsp3f.satisfy(
+                pycsp3f.AllDifferent(self.vars[f] for t in [t1, t2] for f in t.fixtures if not f.sameClub())
+                for c in self.league.clubs
+                for (t1, t2) in pairwise(c.teams)
+            )
 
         print("\t\tFixture pairs played with time between them (7 weeks)")
         pycsp3f.satisfy(
@@ -258,7 +248,7 @@ class Solver(SolverBase):
                 + optVenues
                 + optVenuesEmptyDays
                 + optHomeAway
-                + optAdjacentTeams)
+                )
 
     def solve(self) -> None:
         print("\tCreating constraints...")
