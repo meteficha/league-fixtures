@@ -1,5 +1,5 @@
-airium==0.2.6
-click==8.1.8
-lxml==5.4.0
-pycsp3==2.4.3
-strongtyping==3.12.1
+airium==0.2.7
+click==8.2.1
+lxml==6.0.0
+pycsp3==2.5.1
+strongtyping==3.13.2
