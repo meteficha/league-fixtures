@@ -44,7 +44,7 @@ def season202425() -> League:
 
 
 def season202526() -> League:
-    bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=2, minimizeEmptyDays=True)
+    bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=3, minimizeEmptyDays=True)
     brownCow = Venue("Brown Cow", calendar=Calendar({date(2025, 12, i) for i in range(1,32)}))
     coronation = Venue("Coronation Social Club", maxMatchesPerDay=2)
     embankment = Venue("The Embankment Pub", maxMatchesPerDay=3)
