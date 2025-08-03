@@ -235,15 +235,35 @@ class Division:
             ret.add(frozenset({f1, f2}))
         return frozenset(ret)
 
+class OnlyWhen:
+    """Constraint that requires a constrained club's home matches to be played
+    only when the reference club is playing a home match."""
+    def __init__(self, constrained: Club, reference: Club):
+        assert(constrained is not reference)
+        self.constrained = constrained
+        self.reference = reference
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "constrained": self.constrained.name,
+            "reference": self.reference.name,
+            }
+
+    @classmethod
+    def from_json(cls: type[Self], clubs: dict[str, Club], o: dict[str, Any]) -> Self:
+        return cls(constrained=clubs[o["constrained"]], reference=clubs[o["reference"]])
+
+
 class League:
     """A chess league."""
     @match_typing
-    def __init__(self, name: str, start: date, end: date, divisions: list[Division], calendar: Calendar = Calendar.empty()):
+    def __init__(self, name: str, start: date, end: date, divisions: list[Division], onlyWhen: Iterable[OnlyWhen] | None = None, calendar: Calendar = Calendar.empty()):
         assert(end > start)
         self.name = name
         self.start = start
         self.end = end
         self.divisions = divisions
+        self.onlyWhen = frozenset(onlyWhen if onlyWhen else {})
         self.calendar = calendar
 
     def __str__(self) -> str:
@@ -260,6 +280,7 @@ class League:
             "venues": [v.to_json() for v in self.venues],
             "clubs": [c.to_json() for c in self.clubs],
             "divisions": [d.to_json() for d in self.divisions],
+            "onlyWhen": [ow.to_json() for ow in self.onlyWhen],
             "calendar": self.calendar.to_json(),
             }
 
@@ -269,8 +290,9 @@ class League:
         clubs = {c.name: c for c in map(partial(Club.from_json, venues), o["clubs"])}
         teams = {t.name: t for c in clubs.values() for t in c.teams}
         divisions = [Division.from_json(teams, o) for o in o["divisions"]]
+        onlyWhen = frozenset(map(partial(OnlyWhen.from_json, clubs), o.get("onlyWhen", [])))
         calendar = Calendar.from_json(o["calendar"])
-        return cls(name=o["name"], start=date.fromisoformat(o["start"]), end=date.fromisoformat(o["end"]), divisions=divisions, calendar=calendar)
+        return cls(name=o["name"], start=date.fromisoformat(o["start"]), end=date.fromisoformat(o["end"]), divisions=divisions, onlyWhen=onlyWhen, calendar=calendar)
 
     @cached_property
     def venues(self) -> frozenset[Venue]:
