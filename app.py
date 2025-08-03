@@ -26,23 +26,12 @@ from typing import Literal
 from league import League
 from report import Report
 
-
-# print('Creating league data...')
-# league = season202425()
-# print('Creating solver...')
-# solver = solver.Solver(league)
-# print('Solving...')
-# solver.solve()
-# # print(league)
-# print('Generating report...')
-# Report(league).saveTo('report.html')
-
 @click.group()
 def cli():
     pass
 
 @cli.command()
-@click.option('--example', default='notts_season202425', help='The example league to save')
+@click.option('--example', default='notts_season202526', help='The example league to save')
 @click.argument('output')
 def save(example: str, output: str) -> None:
     '''Save a hardcoded league example as a JSON file.'''
@@ -51,6 +40,9 @@ def save(example: str, output: str) -> None:
         case 'notts_season202425':
             import notts
             league = notts.season202425()
+        case 'notts_season202526':
+            import notts
+            league = notts.season202526()
         case _:
             raise Exception("Unknown example " + example)
     print('Saving example league file')
