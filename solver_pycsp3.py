@@ -142,7 +142,7 @@ class Solver(SolverBase):
         if self.adjacentTeamsConstraint:
             print("\t\tAdjacent teams of a club shouldn't play on the same day")
             pycsp3f.satisfy(
-                pycsp3f.AllDifferent(self.vars[f] for t in [t1, t2] for f in t.fixtures if not f.sameClub())
+                pycsp3f.AllDifferent(self.vars[f] for t in [t1, t2] for f in t.fixtures if not f.teams == frozenset([t1, t2]))
                 for c in self.league.clubs
                 for (t1, t2) in pairwise(c.teams)
             )
