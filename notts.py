@@ -44,16 +44,18 @@ def season202425() -> League:
 
 
 def season202526() -> League:
-    bramcote = Venue(
-        "Bramcote Memorial Hall",
-        maxMatchesPerDay=3,
-        minimizeEmptyDays=True,
-        calendar=Calendar(
-            { date(2025, 10, i) for i in range(20, 32) } |
-            { date(2026, 2, i) for i in range(16, 21) } |
-            { date(2026, 5, i) for i in range(25, 30) }
-            )
+    westNottsSchoolHolidays = Calendar(
+        { date(2025, 10, i) for i in range(20, 32) } |
+        { date(2026, 2, i) for i in range(16, 21) } |
+        { date(2026, 5, i) for i in range(25, 30) }
         )
+    universityHolidays = Calendar(
+        { date(2026, 1, i) for i in range(1, 12) } |
+        { date(2026, 3, i) for i in range(28, 31) } |
+        { date(2026, 4, i) for i in range(1, 27) }
+        )
+
+    bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=3, minimizeEmptyDays=True)
     brownCow = Venue("Brown Cow", calendar=Calendar({date(2025, 12, i) for i in range(1,32)}))
     coronation = Venue("Coronation Social Club", maxMatchesPerDay=2)
     embankment = Venue("The Embankment Pub", maxMatchesPerDay=3)
@@ -62,11 +64,7 @@ def season202526() -> League:
     monica = Venue(
         "Monica Partridge Building",
         maxMatchesPerDay=1,
-        calendar=Calendar(
-            { date(2026, 1, i) for i in range(1, 12) } |
-            { date(2026, 3, i) for i in range(28, 31) } |
-            { date(2026, 4, i) for i in range(1, 27) }
-            )
+        calendar=universityHolidays
         )
     poacher = Venue("The Lincolnshire Poacher", maxMatchesPerDay=2) # max 2 "if possible"
     railway = Venue("The Railway Club", maxMatchesPerDay=1, calendar=Calendar({date(2025, 10, i) for i in range(1,7)}))
@@ -134,7 +132,8 @@ def season202526() -> League:
         "University",
         monica,
         Weekday.WEDNESDAY,
-        lateStart=date(2025, 9, 27)
+        lateStart=date(2025, 9, 27),
+        calendar=universityHolidays
         )
     westBridgford = Club(
         "West Bridgford",
@@ -169,7 +168,7 @@ def season202526() -> League:
         [Team(gambit),
          Team(nomads),
          Team(westBridgford),
-         Team(westNottingham),
+         Team(westNottingham, calendar=westNottsSchoolHolidays),
          Team(grantham),
          Team(gambit),
          Team(radcliffeBingham),
@@ -194,7 +193,7 @@ def season202526() -> League:
          Team(radcliffeBingham),
          Team(radcliffeBingham),
          Team(gambit),
-         Team(westNottingham),
+         Team(westNottingham, calendar=westNottsSchoolHolidays),
          Team(grantham)
          ])
     div5 = Division(
