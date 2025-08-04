@@ -54,7 +54,7 @@ class Solver(SolverBase):
         self.constraints = False
 
         self.adjacentTeamsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
-        self.strictHomeAwayConstraint: int | None = 2 # Maximum number of back-to-back games at home or away.
+        self.strictHomeAwayConstraint: int | None = 3 # Maximum number of mismatches of back-to-back game at home or away.
         self.strictMatchSpaceOut: int | None = 5 # Minimum number of days between back-to-back games of a team.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
@@ -191,10 +191,12 @@ class Solver(SolverBase):
             ])
             print('.', end='', flush=True)
             if self.strictHomeAwayConstraint == 1:
-                pycsp3f.satisfy(pycsp3f.Or(
-                    pycsp3f.Increasing(alternate(sortedHomeFixtureArr, sortedAwayFixtureArr), strict=True),
-                    pycsp3f.Increasing(alternate(sortedAwayFixtureArr, sortedHomeFixtureArr), strict=True),
-                    ))
+                toConsider = []
+                if not any(f in firstMatches for f in awayFixtures):
+                    toConsider.append(pycsp3f.Increasing(alternate(sortedHomeFixtureArr, sortedAwayFixtureArr), strict=True))
+                if not any(f in firstMatches for f in t.homeFixtures):
+                    toConsider.append(pycsp3f.Increasing(alternate(sortedAwayFixtureArr, sortedHomeFixtureArr), strict=True))
+                pycsp3f.satisfy(pycsp3f.Or(toConsider))
                 return None
             else:
                 toConsider = []
@@ -209,19 +211,19 @@ class Solver(SolverBase):
                     pairs = list(pairwise(alternate(as_, bs)))
                     arr = pycsp3f.VarArray(size=len(pairs), dom=[0, 1], id=id)
                     pycsp3f.satisfy(
-                        arr[i] == (a < b)
+                        arr[i] == (a >= b) # 1 iff the wrong way around
                         for (i, (a, b)) in enumerate(pairs)
                     )
                     return arr
 
                 arrays = [buildArr(as_, bs, prefix + 'ConstraintArr_' + t.sanitized_name) for (as_, bs, prefix) in toConsider]
-                countWrong = pycsp3f.Minimum(pycsp3f.Count(array, value=0) for array in arrays)
+                countWrongs = [pycsp3f.Sum(array) for array in arrays]
                 if self.strictHomeAwayConstraint:
-                    pycsp3f.satisfy(countWrong < self.strictHomeAwayConstraint)
-                return countWrong
+                    pycsp3f.satisfy(pycsp3f.Or(cw <= self.strictHomeAwayConstraint for cw in countWrongs))
+                return pycsp3f.Minimum(countWrongs)
         optTerms = [c for c in map(satisfyHomeAwayConstraint, self.league.teams) if c is not None]
         if optTerms:
-            optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-10)
+            optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-1000)
         print('')
 
         print("\t\tVenues have matches assigned to most of their days")
