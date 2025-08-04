@@ -124,6 +124,13 @@ class Team:
     def sanitized_name(self) -> str:
         return sanitize(self.name)
 
+    @cached_property
+    def acronym(self) -> str:
+        if len([c for c in self.name if c.isupper()]) == 1:
+            return ''.join([self.name[0:2]] + [c for c in self.name if c.isnumeric()] )
+        else:
+            return ''.join(c for c in self.name if c.isupper() or c.isnumeric())
+
     def to_json(self) -> dict[str, Any]:
         return {
             "name": self.name,
