@@ -107,9 +107,18 @@ class Solver(SolverBase):
             for (f, v) in zip(homeFixtures, self.homeFixtureArrays[t]):
                 self.vars[f] = v
 
-        print("\t\tTeams can only play one fixture per day")
+        print("\t\tTeams can only play one fixture per day / Space out the matches of a team")
+        optSpaceTeams = 0
+        spaceNoMoreOpt = pycsp3f.Var(dom=[7*3], id='spaceNoMoreOpt') # Spacing bigger than this shouldn't count for optimization.
         for t in self.league.teams:
-            pycsp3f.satisfy(pycsp3f.AllDifferent([self.vars[f] for f in t.fixtures]))
+            minimum = self.strictMatchSpaceOut if self.strictMatchSpaceOut else 1
+            arr = pycsp3f.VarArray(
+                size=len(t.fixtures),
+                dom=range(minimum, 365),
+                id="SpaceOut_NoOverlap_"+t.sanitized_name
+                )
+            pycsp3f.satisfy(pycsp3f.NoOverlap(origins=[self.vars[f] for f in t.fixtures], lengths=arr))
+            optSpaceTeams += pycsp3f.Sum(pycsp3f.Minimum(v, spaceNoMoreOpt) for v in arr)
 
         print("\t\tVenues have a maximum number of matches per day")
         for v in self.league.venues:
@@ -228,15 +237,6 @@ class Solver(SolverBase):
             for v in self.league.venues
             if v.minimizeEmptyDays
         )
-
-        print("\t\tSpace out the matches of a team")
-        spaceTeamsTerms = [
-            [pycsp3f.abs(self.vars[f1] - self.vars[f2]) for (f1, f2) in pairs(t.fixtures)] # pyright: ignore [reportOperatorIssue]
-            for t in self.league.teams
-        ]
-        optSpaceTeams = pycsp3f.Sum(x for xs in spaceTeamsTerms for x in xs)
-        if self.strictMatchSpaceOut:
-            pycsp3f.satisfy(t >= self.strictMatchSpaceOut for ts in spaceTeamsTerms for t in ts)
 
         print("\t\tDivision should have matches on as many days as possible")
         optSpaceDivision = pycsp3f.Sum(
