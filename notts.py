@@ -59,7 +59,15 @@ def season202526() -> League:
     embankment = Venue("The Embankment Pub", maxMatchesPerDay=3)
     gonerby = Venue("Great Gonerby Social Club", maxMatchesPerDay=2)
     legion = Venue("Royal British Legion Club", maxMatchesPerDay=3)
-    monica = Venue("Monica Partridge Building", maxMatchesPerDay=1)
+    monica = Venue(
+        "Monica Partridge Building",
+        maxMatchesPerDay=1,
+        calendar=Calendar(
+            { date(2026, 1, i) for i in range(1, 12) } |
+            { date(2026, 3, i) for i in range(28, 31) } |
+            { date(2026, 4, i) for i in range(1, 27) }
+            )
+        )
     poacher = Venue("The Lincolnshire Poacher", maxMatchesPerDay=2) # max 2 "if possible"
     railway = Venue("The Railway Club", maxMatchesPerDay=1, calendar=Calendar({date(2025, 10, i) for i in range(1,7)}))
     wolds = Venue("The Wolds Pub")
@@ -126,12 +134,7 @@ def season202526() -> League:
         "University",
         monica,
         Weekday.WEDNESDAY,
-        lateStart=date(2025, 9, 27),
-        calendar=Calendar(
-            {date(2026, 1, i) for i in range(1, 12)} |
-            {date(2026, 3, i) for i in range(28, 31)} |
-            {date(2026, 4, i) for i in range(1, 27)}
-            )
+        lateStart=date(2025, 9, 27)
         )
     westBridgford = Club(
         "West Bridgford",
