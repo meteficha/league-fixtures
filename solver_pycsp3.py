@@ -56,6 +56,7 @@ class Solver(SolverBase):
         self.adjacentTeamsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
         self.strictHomeAwayConstraint: int | None = 3 # Maximum number of mismatches of back-to-back game at home or away.
         self.strictMatchSpaceOut: int | None = 5 # Minimum number of days between back-to-back games of a team.
+        self.strictMaxNoWeeksWithMatches: int | None = 3 # Maximum number of weeks with back to back fixtures.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
         self.homeFixtureDomains: dict[Team, set[int]] = dict()
@@ -118,7 +119,13 @@ class Solver(SolverBase):
                 id="SpaceOut_NoOverlap_"+t.sanitized_name
                 )
             pycsp3f.satisfy(pycsp3f.NoOverlap(origins=[self.vars[f] for f in t.fixtures], lengths=arr))
-            optSpaceTeams += pycsp3f.Sum(pycsp3f.Minimum(v, spaceNoMoreOpt) for v in arr)
+            optSpaceTeams += pycsp3f.Sum(10 * pycsp3f.Minimum(v, spaceNoMoreOpt) for v in arr)
+
+        if self.strictMaxNoWeeksWithMatches:
+            print("\t\tTeams can only have " + str(self.strictMaxNoWeeksWithMatches) + " consecutive weeks with matches")
+            for t in self.league.teams:
+                pycsp3f.satisfy(pycsp3f.Cumulative(origins=[self.vars[f] for f in t.fixtures], lengths=(self.strictMaxNoWeeksWithMatches+1)*7, heights=1) <= self.strictMaxNoWeeksWithMatches)
+
 
         print("\t\tVenues have a maximum number of matches per day")
         for v in self.league.venues:
