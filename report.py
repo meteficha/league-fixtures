@@ -88,9 +88,6 @@ class BaseSummary(WeekSection):
         a.abbr(_t=t.acronym, title=t.name)
 
 class TeamSummary(BaseSummary):
-    # def __init__(self, league: League):
-    #     super().__init__(league)
-
     def table(self) -> list[tuple[date, list[list[Fixture]]]]: # weeks, home team, fixture list for that week
         fixturesByWeek: dict[int, dict[Team, list[Fixture]]] = dict()
         for f in self.league.fixtures:
