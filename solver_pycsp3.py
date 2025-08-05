@@ -81,8 +81,8 @@ class Solver(SolverBase):
         ret.difference_update(self.holidaysPerVenue[f.venue])
         ret.difference_update(self.holidaysPerClub[f.home.club])
         ret.difference_update(self.holidaysPerClub[f.away.club])
-        ret.difference_update(f.home.calendar.holidays)
-        ret.difference_update(f.away.calendar.holidays)
+        ret.difference_update(self.holidaysPerTeam[f.home])
+        ret.difference_update(self.holidaysPerTeam[f.away])
 
         # Constraint: matches between teams of the same club must be played by 31 Jan.
         if f.sameClub():

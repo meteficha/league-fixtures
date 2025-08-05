@@ -33,6 +33,10 @@ class SolverBase:
         return {c: frozenset(self.dateToInt(d) for d in c.calendar.holidays) for c in self.league.clubs}
 
     @cached_property
+    def holidaysPerTeam(self) -> dict[Team, frozenset[int]]:
+        return {t: frozenset(self.dateToInt(d) for d in t.calendar.holidays) for t in self.league.teams}
+
+    @cached_property
     def holidaysPerVenue(self) -> dict[Venue, frozenset[int]]:
         return {v: frozenset(self.dateToInt(d) for d in v.calendar.holidays) for v in self.league.venues}
 
