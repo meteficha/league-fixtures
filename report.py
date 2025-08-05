@@ -75,10 +75,7 @@ class Heatmap(WeekSection):
                             holiday = ' heat-holiday' if self.isHoliday(date) else ''
                             a.td(klass='heat-' + str(max(0, min(4, count))) + holiday + ' heat-day-' + str(date))
 
-class TeamSummary(WeekSection):
-    def __init__(self, league: League):
-        super().__init__(league)
-
+class BaseSummary(WeekSection):
     @cached_property
     def teams(self) -> Iterable[Team]:
         return [t for c in sorted(self.league.clubs, key=lambda c: c.name) for t in c.teams]
@@ -86,6 +83,13 @@ class TeamSummary(WeekSection):
     @cached_property
     def divisionOf(self) -> dict[Team, int]:
         return { t: i+1 for (i, d) in enumerate(self.league.divisions) for t in d.teams }
+
+    def renderTeam(self, a: Airium, t: Team):
+        a.abbr(_t=t.acronym, title=t.name)
+
+class TeamSummary(BaseSummary):
+    # def __init__(self, league: League):
+    #     super().__init__(league)
 
     def table(self) -> list[tuple[date, list[list[Fixture]]]]: # weeks, home team, fixture list for that week
         fixturesByWeek: dict[int, dict[Team, list[Fixture]]] = dict()
@@ -99,17 +103,18 @@ class TeamSummary(WeekSection):
         with a.table(klass='team_summary'):
             with a.thead():
                 with a.tr():
-                    a.th()
+                    a.th(colspan='2')
                     for (c, ts) in groupby(self.teams, key=lambda t: t.club):
                         a.th(_t=c.name, klass='club', colspan=str(len(list(ts))))
                 with a.tr():
-                    a.th(_t='Week commencing', klass='week')
+                    a.th(_t='Week commencing', klass='week', colspan='2')
                     for t in self.teams:
                         with a.th(klass='team division_' + str(self.divisionOf[t])):
                             self.renderTeam(a, t)
             with a.tbody():
-                for (date, row) in self.table():
+                for (i, (date, row)) in enumerate(self.table()):
                     with a.tr():
+                        a.td(_t=str(i+1), klass='week')
                         a.td(_t=str(date), klass='week')
                         for (team, fixtures) in zip(self.teams, row):
                             if not fixtures:
@@ -126,8 +131,51 @@ class TeamSummary(WeekSection):
                                             a(" | ")
                                         self.renderTeam(a, atHome and f.away or f.home)
 
-    def renderTeam(self, a: Airium, t: Team):
-        a.abbr(_t=t.acronym, title=t.name)
+class DivisionSummary(BaseSummary):
+    def table(self) -> list[dict[date, list[list[Fixture]]]]: # weeks, fixture date, division, fixtures list for that day/division
+        ret: list[dict[date, list[list[Fixture]]]] = [dict() for _ in range(self.weekCount)]
+        for f in self.league.fixtures:
+            if f.date:
+                ret[self.weekOf(f)].setdefault(f.date, [[] for _ in self.league.divisions])[self.divisionOf[f.home]-1].append(f)
+        return ret
+
+    def render(self, a: Airium) -> None:
+        with a.table(klass='division_summary'):
+            with a.thead():
+                with a.tr():
+                    a.th(_t='Week', klass='week', rowspan='2')
+                    a.th(_t='Date', klass='date', rowspan='2', colspan='2')
+                    for d in self.league.divisions:
+                        a.th(_t=d.name, colspan='2')
+                with a.tr():
+                    for _ in self.league.divisions:
+                        a.th(_t='Home', klass='home')
+                        a.th(_t='Away', klass='away')
+            with a.tbody():
+                for (i, weekDict) in enumerate(self.table()):
+                    weekNoStr = str(i+1)
+                    weekRowCount = sum(max(len(fixtures) for fixtures in day) for day in weekDict.values())
+                    for (date, divisions) in sorted(weekDict.items()):
+                        dateRowCount = max(len(fixtures) for fixtures in divisions)
+                        for dateRow in range(dateRowCount):
+                            with a.tr():
+                                if weekNoStr:
+                                    a.td(_t=str(i+1), klass='week', rowspan=str(weekRowCount))
+                                    weekNoStr = None
+                                if date:
+                                    a.td(_t=str(date), klass='date', rowspan=str(dateRowCount))
+                                    a.td(_t=Weekday.fromDate(date).name.capitalize(), klass='date', rowspan=str(dateRowCount))
+                                    date = None
+                                for division in divisions:
+                                    if dateRow < len(division):
+                                        fixture = division[dateRow]
+                                        with a.td(klass='home empty'):
+                                            self.renderTeam(a, fixture.home)
+                                        with a.td(klass='away empty'):
+                                            self.renderTeam(a, fixture.away)
+                                    else:
+                                        a.td(klass='home empty')
+                                        a.td(klass='away empty')
 
 class Report:
     def __init__(self, league: League):
@@ -148,14 +196,20 @@ class Report:
 
     def render(self, a: Airium) -> None:
         a.h1(_t=self.league.name)
+        self.renderHeatmap(a, self.league.fixtures)
         self.renderTeamSummary(a)
+        self.renderDivisionSummary(a)
         self.renderByDivision(a)
-        self.renderByVenue(a)
         self.renderByTeam(a)
+        self.renderByVenue(a)
 
     def renderTeamSummary(self, a: Airium) -> None:
-        self.renderHeatmap(a, self.league.fixtures)
+        a.h2(_t='Team summary')
         TeamSummary(self.league).render(a)
+
+    def renderDivisionSummary(self, a: Airium) -> None:
+        a.h2(_t='Division summary')
+        DivisionSummary(self.league).render(a)
 
     def renderByDivision(self, a: Airium) -> None:
         a.h2(_t='Fixtures by division')
@@ -282,6 +336,12 @@ class Report:
 
             .team_summary, .team_summary th, .team_summary td {
                 font-size: 10pt;
+                border: 1px solid rgb(200, 200, 200);
+                border-collapse: collapse;
+            }
+
+            .division_summary, .division_summary th, .division_summary td {
+                font-size: 12pt;
                 border: 1px solid rgb(200, 200, 200);
                 border-collapse: collapse;
             }
