@@ -171,7 +171,7 @@ class Report:
 
     def renderByTeam(self, a: Airium) -> None:
         a.h2(_t='Fixtures by team')
-        for c in self.league.clubs:
+        for c in sorted(self.league.clubs, key=lambda c: c.name):
             a.h3(_t=c.name)
             for t in c.teams:
                 a.h4(_t=t.name)
