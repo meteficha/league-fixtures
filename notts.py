@@ -47,11 +47,11 @@ def season202526() -> League:
     westNottsSchoolHolidays = Calendar(
         { date(2025, 10, i) for i in range(20, 32) } |
         { date(2026, 2, i) for i in range(16, 21) } |
-        { date(2026, 5, i) for i in range(25, 30) }
+        { date(2026, 5, i) for i in range(25, 32) }
         )
     universityHolidays = Calendar(
         { date(2026, 1, i) for i in range(1, 12) } |
-        { date(2026, 3, i) for i in range(28, 31) } |
+        { date(2026, 3, i) for i in range(28, 32) } |
         { date(2026, 4, i) for i in range(1, 27) }
         )
 
