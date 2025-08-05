@@ -149,19 +149,20 @@ class DivisionSummary(BaseSummary):
                         a.th(_t='Home', klass='home')
                         a.th(_t='Away', klass='away')
             with a.tbody():
+                odd = True
                 for (i, weekDict) in enumerate(self.table()):
                     weekNoStr = str(i+1)
                     weekRowCount = sum(max(len(fixtures) for fixtures in day) for day in weekDict.values())
                     for (date, divisions) in sorted(weekDict.items()):
                         dateRowCount = max(len(fixtures) for fixtures in divisions)
                         for dateRow in range(dateRowCount):
-                            with a.tr():
+                            with a.tr(klass=odd and 'odd' or 'even'):
                                 if weekNoStr:
                                     a.td(_t=str(i+1), klass='week', rowspan=str(weekRowCount))
                                     weekNoStr = None
                                 if date:
                                     a.td(_t=str(date), klass='date', rowspan=str(dateRowCount))
-                                    a.td(_t=Weekday.fromDate(date).name.capitalize(), klass='date', rowspan=str(dateRowCount))
+                                    a.td(_t=Weekday.fromDate(date).name.capitalize()[:3], klass='date', rowspan=str(dateRowCount))
                                     date = None
                                 for division in divisions:
                                     if dateRow < len(division):
@@ -173,6 +174,8 @@ class DivisionSummary(BaseSummary):
                                     else:
                                         a.td(klass='home empty')
                                         a.td(klass='away empty')
+                    if weekRowCount >= 1:
+                        odd = not odd
 
 class Report:
     def __init__(self, league: League):
@@ -337,12 +340,6 @@ class Report:
                 border-collapse: collapse;
             }
 
-            .division_summary, .division_summary th, .division_summary td {
-                font-size: 12pt;
-                border: 1px solid rgb(200, 200, 200);
-                border-collapse: collapse;
-            }
-
             .team_summary .team.home.division_1, .team_summary .team.home.division_6 {
                 background: rgb(172, 238, 187);
             }
@@ -365,5 +362,15 @@ class Report:
 
             .team_summary .team.away {
                 background: rgb(200, 200, 200);
+            }
+
+            .division_summary, .division_summary th, .division_summary td {
+                font-size: 12pt;
+                border: 1px solid rgb(200, 200, 200);
+                border-collapse: collapse;
+            }
+
+            .division_summary tr.odd td {
+                background: rgb(225, 225, 225);
             }
             ''')
