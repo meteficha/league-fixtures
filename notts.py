@@ -211,7 +211,7 @@ def season202526() -> League:
     return League(
             name="Notts League 2025/26",
             start=date(2025, 9, 6),
-            end=date(2026, 5, 1),
+            end=date(2026, 5, 9),
             divisions=[div1, div2, div3, div4, div5],
             onlyWhen={ OnlyWhen(constrained=beeston, reference=westNottingham) },
             calendar=Calendar(
