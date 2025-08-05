@@ -171,7 +171,7 @@ def season202526() -> League:
          Team(westNottingham, calendar=westNottsSchoolHolidays),
          Team(grantham),
          Team(gambit),
-         Team(radcliffeBingham),
+         Team(radcliffeBingham, calendar=Calendar({date(2025, 9, 8)})),
          Team(ashfield)
          ])
     div3 = Division(
