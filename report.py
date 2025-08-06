@@ -243,8 +243,13 @@ class Report:
                     a.th(_t='Venue', klass='venue')
                     a.th(_t='Weekday', klass='weekday')
             with a.tbody():
+                odd = True
+                prevDate = None
                 for f in byDate(fixtures):
-                    with a.tr():
+                    if prevDate and prevDate != f.date:
+                        odd = not odd
+                    prevDate = f.date
+                    with a.tr(klass=odd and 'odd' or 'even'):
                         a.td(_t=str(f.date), klass='date')
                         a.td(_t=f.home.name, klass='home')
                         a.td(_t=f.away.name, klass='away')
@@ -370,8 +375,8 @@ class Report:
                 border-collapse: collapse;
             }
 
-            .division_summary tr.odd td {
-                background: rgb(225, 225, 225);
+            .division_summary tr.odd td, .fixture tr.odd td {
+                background: rgb(232, 232, 232);
             }
 
             .division_summary .home {
