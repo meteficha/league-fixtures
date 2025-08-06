@@ -373,4 +373,8 @@ class Report:
             .division_summary tr.odd td {
                 background: rgb(225, 225, 225);
             }
+
+            .division_summary .home {
+                text-align: right;
+            }
             ''')
