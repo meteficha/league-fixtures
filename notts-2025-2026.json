@@ -1,0 +1,2269 @@
+{
+    "calendar": {
+        "holidays": [
+            "2026-01-01",
+            "2026-01-03",
+            "2026-04-03",
+            "2026-04-06",
+            "2026-05-04",
+            "2026-01-02",
+            "2025-12-30",
+            "2025-12-25",
+            "2025-12-24",
+            "2026-01-04",
+            "2025-12-22",
+            "2026-05-25",
+            "2025-12-31",
+            "2025-12-28",
+            "2025-12-27",
+            "2025-12-21",
+            "2025-12-29",
+            "2025-12-26",
+            "2025-12-23"
+        ]
+    },
+    "clubs": [
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": null,
+            "name": "Grantham",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Grantham 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Grantham 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Grantham 3"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Grantham 4"
+                }
+            ],
+            "venue": "Great Gonerby Social Club",
+            "weekday": 3
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": null,
+            "name": "Beeston",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Beeston 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Beeston 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Beeston 3"
+                }
+            ],
+            "venue": "Bramcote Memorial Hall",
+            "weekday": 2
+        },
+        {
+            "calendar": {
+                "holidays": [
+                    "2026-05-04",
+                    "2026-04-06",
+                    "2026-05-11"
+                ]
+            },
+            "lateStart": "2025-09-08",
+            "name": "Radcliffe & Bingham",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Radcliffe & Bingham 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": [
+                            "2025-09-08"
+                        ]
+                    },
+                    "name": "Radcliffe & Bingham 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Radcliffe & Bingham 3"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Radcliffe & Bingham 4"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Radcliffe & Bingham 5"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Radcliffe & Bingham 6"
+                }
+            ],
+            "venue": "Royal British Legion Club",
+            "weekday": 1
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": null,
+            "name": "Nomads",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Nomads 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Nomads 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Nomads 3"
+                }
+            ],
+            "venue": "The Embankment Pub",
+            "weekday": 1
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": "2025-09-08",
+            "name": "West Nottingham",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": [
+                            "2025-10-21",
+                            "2026-02-18",
+                            "2026-05-29",
+                            "2026-02-20",
+                            "2025-10-30",
+                            "2025-10-28",
+                            "2026-05-27",
+                            "2025-10-22",
+                            "2025-10-20",
+                            "2026-05-30",
+                            "2025-10-27",
+                            "2025-10-31",
+                            "2025-10-29",
+                            "2026-05-25",
+                            "2026-02-17",
+                            "2026-02-19",
+                            "2026-05-31",
+                            "2026-05-28",
+                            "2025-10-26",
+                            "2025-10-23",
+                            "2026-05-26",
+                            "2025-10-25",
+                            "2025-10-24",
+                            "2026-02-16"
+                        ]
+                    },
+                    "name": "West Nottingham 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "West Nottingham 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": [
+                            "2025-10-21",
+                            "2026-02-18",
+                            "2026-05-29",
+                            "2026-02-20",
+                            "2025-10-30",
+                            "2025-10-28",
+                            "2026-05-27",
+                            "2025-10-22",
+                            "2025-10-20",
+                            "2026-05-30",
+                            "2025-10-27",
+                            "2025-10-31",
+                            "2025-10-29",
+                            "2026-05-25",
+                            "2026-02-17",
+                            "2026-02-19",
+                            "2026-05-31",
+                            "2026-05-28",
+                            "2025-10-26",
+                            "2025-10-23",
+                            "2026-05-26",
+                            "2025-10-25",
+                            "2025-10-24",
+                            "2026-02-16"
+                        ]
+                    },
+                    "name": "West Nottingham 3"
+                }
+            ],
+            "venue": "Bramcote Memorial Hall",
+            "weekday": 2
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": "2025-10-06",
+            "name": "Newark",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Newark 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Newark 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Newark 3"
+                }
+            ],
+            "venue": "The Railway Club",
+            "weekday": 1
+        },
+        {
+            "calendar": {
+                "holidays": [
+                    "2026-04-15",
+                    "2026-04-10",
+                    "2026-03-31",
+                    "2026-04-12",
+                    "2026-04-25",
+                    "2026-01-07",
+                    "2026-01-01",
+                    "2026-04-26",
+                    "2026-04-05",
+                    "2026-01-03",
+                    "2026-04-11",
+                    "2026-04-03",
+                    "2026-04-16",
+                    "2026-04-09",
+                    "2026-04-06",
+                    "2026-04-17",
+                    "2026-01-05",
+                    "2026-01-08",
+                    "2026-01-11",
+                    "2026-04-02",
+                    "2026-03-30",
+                    "2026-04-21",
+                    "2026-04-01",
+                    "2026-01-02",
+                    "2026-04-04",
+                    "2026-01-04",
+                    "2026-04-24",
+                    "2026-01-10",
+                    "2026-03-28",
+                    "2026-01-09",
+                    "2026-04-14",
+                    "2026-01-06",
+                    "2026-04-07",
+                    "2026-04-18",
+                    "2026-04-22",
+                    "2026-03-29",
+                    "2026-04-20",
+                    "2026-04-19",
+                    "2026-04-23",
+                    "2026-04-08",
+                    "2026-04-13"
+                ]
+            },
+            "lateStart": "2025-09-27",
+            "name": "University",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "University 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "University 2"
+                }
+            ],
+            "venue": "Monica Partridge Building",
+            "weekday": 3
+        },
+        {
+            "calendar": {
+                "holidays": [
+                    "2026-01-27",
+                    "2025-12-09"
+                ]
+            },
+            "lateStart": "2025-09-16",
+            "name": "Nottingham Central",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Central 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Central 2"
+                }
+            ],
+            "venue": "The Embankment Pub",
+            "weekday": 2
+        },
+        {
+            "calendar": {
+                "holidays": [
+                    "2026-02-02",
+                    "2025-12-17",
+                    "2025-12-19",
+                    "2026-03-31",
+                    "2026-02-04",
+                    "2026-02-03",
+                    "2026-04-02",
+                    "2025-12-22",
+                    "2025-12-18",
+                    "2026-03-30",
+                    "2025-12-21",
+                    "2026-04-01",
+                    "2026-02-05",
+                    "2025-12-20",
+                    "2025-12-23"
+                ]
+            },
+            "lateStart": "2025-09-29",
+            "name": "West Bridgford",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": [
+                            "2025-10-20",
+                            "2025-10-21",
+                            "2025-10-30",
+                            "2026-02-18",
+                            "2025-10-26",
+                            "2025-10-27",
+                            "2026-02-16",
+                            "2025-10-29",
+                            "2025-10-28",
+                            "2026-02-17",
+                            "2025-10-25",
+                            "2025-10-23",
+                            "2025-10-22",
+                            "2025-10-24",
+                            "2026-02-20",
+                            "2026-02-19"
+                        ]
+                    },
+                    "name": "West Bridgford 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "West Bridgford 2"
+                }
+            ],
+            "venue": "The Wolds Pub",
+            "weekday": 1
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": "2025-09-22",
+            "name": "Mansfield",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Mansfield 1"
+                }
+            ],
+            "venue": "Brown Cow",
+            "weekday": 4
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": null,
+            "name": "Gambit",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Gambit 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Gambit 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Gambit 3"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Gambit 4"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Gambit 5"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Gambit 6"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Gambit 7"
+                }
+            ],
+            "venue": "The Lincolnshire Poacher",
+            "weekday": 2
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "lateStart": "2025-09-15",
+            "name": "Ashfield",
+            "teams": [
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Ashfield 1"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Ashfield 2"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Ashfield 3"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Ashfield 4"
+                },
+                {
+                    "calendar": {
+                        "holidays": []
+                    },
+                    "name": "Ashfield 5"
+                }
+            ],
+            "venue": "Coronation Social Club",
+            "weekday": 3
+        }
+    ],
+    "divisions": [
+        {
+            "fixtures": [
+                {
+                    "away": "University 1",
+                    "date": "2026-02-12",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2026-03-26",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2026-01-08",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2025-11-13",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2025-10-09",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2026-05-07",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2026-03-05",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2025-11-20",
+                    "home": "Mansfield 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2025-12-03",
+                    "home": "University 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2026-02-18",
+                    "home": "University 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2026-04-29",
+                    "home": "University 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2026-01-28",
+                    "home": "University 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2025-10-15",
+                    "home": "University 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2026-03-11",
+                    "home": "University 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2025-11-05",
+                    "home": "University 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2026-01-14",
+                    "home": "University 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2025-10-21",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "University 1",
+                    "date": "2025-11-25",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2026-03-31",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2026-01-20",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2026-01-13",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2025-12-16",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2026-04-28",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2025-10-07",
+                    "home": "Gambit 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2026-04-22",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "University 1",
+                    "date": "2026-02-25",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2025-09-17",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2025-11-19",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2026-02-04",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2025-10-29",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2025-12-10",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2026-05-06",
+                    "home": "Grantham 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2026-02-23",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "University 1",
+                    "date": "2026-03-23",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2025-11-03",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2025-09-29",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2026-03-09",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2025-12-01",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2025-10-13",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2025-12-15",
+                    "home": "West Bridgford 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2026-03-16",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "University 1",
+                    "date": "2025-12-15",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2025-11-17",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2025-12-01",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2026-01-05",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2026-01-19",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2026-04-13",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2026-02-23",
+                    "home": "Newark 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2025-09-23",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "University 1",
+                    "date": "2025-09-30",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2026-04-21",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2026-02-17",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2025-10-07",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2026-03-31",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2026-01-13",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2025-11-04",
+                    "home": "Beeston 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2025-12-15",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "University 1",
+                    "date": "2026-01-19",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2025-09-29",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2025-09-08",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2026-04-20",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2025-10-20",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2025-11-24",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "Ashfield 1",
+                    "date": "2026-03-30",
+                    "home": "Radcliffe & Bingham 1"
+                },
+                {
+                    "away": "Mansfield 1",
+                    "date": "2026-01-28",
+                    "home": "Ashfield 1"
+                },
+                {
+                    "away": "University 1",
+                    "date": "2025-10-22",
+                    "home": "Ashfield 1"
+                },
+                {
+                    "away": "Gambit 1",
+                    "date": "2026-01-07",
+                    "home": "Ashfield 1"
+                },
+                {
+                    "away": "Grantham 1",
+                    "date": "2025-10-15",
+                    "home": "Ashfield 1"
+                },
+                {
+                    "away": "West Bridgford 1",
+                    "date": "2026-03-18",
+                    "home": "Ashfield 1"
+                },
+                {
+                    "away": "Newark 1",
+                    "date": "2025-12-10",
+                    "home": "Ashfield 1"
+                },
+                {
+                    "away": "Beeston 1",
+                    "date": "2026-04-15",
+                    "home": "Ashfield 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 1",
+                    "date": "2025-09-17",
+                    "home": "Ashfield 1"
+                }
+            ],
+            "name": "Division 1",
+            "teams": [
+                "Mansfield 1",
+                "University 1",
+                "Gambit 1",
+                "Grantham 1",
+                "West Bridgford 1",
+                "Newark 1",
+                "Beeston 1",
+                "Radcliffe & Bingham 1",
+                "Ashfield 1"
+            ]
+        },
+        {
+            "fixtures": [
+                {
+                    "away": "Nomads 1",
+                    "date": "2025-09-30",
+                    "home": "Gambit 2"
+                },
+                {
+                    "away": "West Bridgford 2",
+                    "date": "2026-01-27",
+                    "home": "Gambit 2"
+                },
+                {
+                    "away": "West Nottingham 1",
+                    "date": "2025-12-09",
+                    "home": "Gambit 2"
+                },
+                {
+                    "away": "Grantham 2",
+                    "date": "2025-11-11",
+                    "home": "Gambit 2"
+                },
+                {
+                    "away": "Gambit 3",
+                    "date": "2025-09-16",
+                    "home": "Gambit 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 2",
+                    "date": "2026-03-03",
+                    "home": "Gambit 2"
+                },
+                {
+                    "away": "Ashfield 2",
+                    "date": "2026-04-14",
+                    "home": "Gambit 2"
+                },
+                {
+                    "away": "Gambit 2",
+                    "date": "2026-02-16",
+                    "home": "Nomads 1"
+                },
+                {
+                    "away": "West Bridgford 2",
+                    "date": "2025-10-06",
+                    "home": "Nomads 1"
+                },
+                {
+                    "away": "West Nottingham 1",
+                    "date": "2025-09-08",
+                    "home": "Nomads 1"
+                },
+                {
+                    "away": "Grantham 2",
+                    "date": "2026-03-23",
+                    "home": "Nomads 1"
+                },
+                {
+                    "away": "Gambit 3",
+                    "date": "2025-12-15",
+                    "home": "Nomads 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 2",
+                    "date": "2025-12-01",
+                    "home": "Nomads 1"
+                },
+                {
+                    "away": "Ashfield 2",
+                    "date": "2026-01-19",
+                    "home": "Nomads 1"
+                },
+                {
+                    "away": "Gambit 2",
+                    "date": "2025-10-20",
+                    "home": "West Bridgford 2"
+                },
+                {
+                    "away": "Nomads 1",
+                    "date": "2025-11-24",
+                    "home": "West Bridgford 2"
+                },
+                {
+                    "away": "West Nottingham 1",
+                    "date": "2026-04-13",
+                    "home": "West Bridgford 2"
+                },
+                {
+                    "away": "Grantham 2",
+                    "date": "2026-02-09",
+                    "home": "West Bridgford 2"
+                },
+                {
+                    "away": "Gambit 3",
+                    "date": "2026-03-16",
+                    "home": "West Bridgford 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 2",
+                    "date": "2026-01-12",
+                    "home": "West Bridgford 2"
+                },
+                {
+                    "away": "Ashfield 2",
+                    "date": "2025-12-08",
+                    "home": "West Bridgford 2"
+                },
+                {
+                    "away": "Gambit 2",
+                    "date": "2026-03-10",
+                    "home": "West Nottingham 1"
+                },
+                {
+                    "away": "Nomads 1",
+                    "date": "2025-11-04",
+                    "home": "West Nottingham 1"
+                },
+                {
+                    "away": "West Bridgford 2",
+                    "date": "2026-01-06",
+                    "home": "West Nottingham 1"
+                },
+                {
+                    "away": "Grantham 2",
+                    "date": "2026-04-28",
+                    "home": "West Nottingham 1"
+                },
+                {
+                    "away": "Gambit 3",
+                    "date": "2025-11-25",
+                    "home": "West Nottingham 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 2",
+                    "date": "2025-09-16",
+                    "home": "West Nottingham 1"
+                },
+                {
+                    "away": "Ashfield 2",
+                    "date": "2026-03-31",
+                    "home": "West Nottingham 1"
+                },
+                {
+                    "away": "Gambit 2",
+                    "date": "2026-04-01",
+                    "home": "Grantham 2"
+                },
+                {
+                    "away": "Nomads 1",
+                    "date": "2026-01-07",
+                    "home": "Grantham 2"
+                },
+                {
+                    "away": "West Bridgford 2",
+                    "date": "2025-12-03",
+                    "home": "Grantham 2"
+                },
+                {
+                    "away": "West Nottingham 1",
+                    "date": "2025-09-24",
+                    "home": "Grantham 2"
+                },
+                {
+                    "away": "Gambit 3",
+                    "date": "2026-01-21",
+                    "home": "Grantham 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 2",
+                    "date": "2025-10-22",
+                    "home": "Grantham 2"
+                },
+                {
+                    "away": "Ashfield 2",
+                    "date": "2026-03-04",
+                    "home": "Grantham 2"
+                },
+                {
+                    "away": "Gambit 2",
+                    "date": "2026-01-06",
+                    "home": "Gambit 3"
+                },
+                {
+                    "away": "Nomads 1",
+                    "date": "2026-04-07",
+                    "home": "Gambit 3"
+                },
+                {
+                    "away": "West Bridgford 2",
+                    "date": "2025-11-04",
+                    "home": "Gambit 3"
+                },
+                {
+                    "away": "West Nottingham 1",
+                    "date": "2026-02-10",
+                    "home": "Gambit 3"
+                },
+                {
+                    "away": "Grantham 2",
+                    "date": "2025-10-14",
+                    "home": "Gambit 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 2",
+                    "date": "2026-05-05",
+                    "home": "Gambit 3"
+                },
+                {
+                    "away": "Ashfield 2",
+                    "date": "2025-09-23",
+                    "home": "Gambit 3"
+                },
+                {
+                    "away": "Gambit 2",
+                    "date": "2025-09-22",
+                    "home": "Radcliffe & Bingham 2"
+                },
+                {
+                    "away": "Nomads 1",
+                    "date": "2026-02-02",
+                    "home": "Radcliffe & Bingham 2"
+                },
+                {
+                    "away": "West Bridgford 2",
+                    "date": "2026-04-27",
+                    "home": "Radcliffe & Bingham 2"
+                },
+                {
+                    "away": "West Nottingham 1",
+                    "date": "2026-03-23",
+                    "home": "Radcliffe & Bingham 2"
+                },
+                {
+                    "away": "Grantham 2",
+                    "date": "2026-02-16",
+                    "home": "Radcliffe & Bingham 2"
+                },
+                {
+                    "away": "Gambit 3",
+                    "date": "2025-10-06",
+                    "home": "Radcliffe & Bingham 2"
+                },
+                {
+                    "away": "Ashfield 2",
+                    "date": "2025-11-10",
+                    "home": "Radcliffe & Bingham 2"
+                },
+                {
+                    "away": "Gambit 2",
+                    "date": "2025-11-19",
+                    "home": "Ashfield 2"
+                },
+                {
+                    "away": "Nomads 1",
+                    "date": "2026-03-11",
+                    "home": "Ashfield 2"
+                },
+                {
+                    "away": "West Bridgford 2",
+                    "date": "2026-02-18",
+                    "home": "Ashfield 2"
+                },
+                {
+                    "away": "West Nottingham 1",
+                    "date": "2025-10-08",
+                    "home": "Ashfield 2"
+                },
+                {
+                    "away": "Grantham 2",
+                    "date": "2025-12-17",
+                    "home": "Ashfield 2"
+                },
+                {
+                    "away": "Gambit 3",
+                    "date": "2026-04-29",
+                    "home": "Ashfield 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 2",
+                    "date": "2026-04-08",
+                    "home": "Ashfield 2"
+                }
+            ],
+            "name": "Division 2",
+            "teams": [
+                "Gambit 2",
+                "Nomads 1",
+                "West Bridgford 2",
+                "West Nottingham 1",
+                "Grantham 2",
+                "Gambit 3",
+                "Radcliffe & Bingham 2",
+                "Ashfield 2"
+            ]
+        },
+        {
+            "fixtures": [
+                {
+                    "away": "University 2",
+                    "date": "2026-01-12",
+                    "home": "Nomads 2"
+                },
+                {
+                    "away": "Gambit 4",
+                    "date": "2026-03-30",
+                    "home": "Nomads 2"
+                },
+                {
+                    "away": "Newark 2",
+                    "date": "2026-03-02",
+                    "home": "Nomads 2"
+                },
+                {
+                    "away": "Gambit 5",
+                    "date": "2025-10-20",
+                    "home": "Nomads 2"
+                },
+                {
+                    "away": "Ashfield 3",
+                    "date": "2025-09-22",
+                    "home": "Nomads 2"
+                },
+                {
+                    "away": "Ashfield 4",
+                    "date": "2025-11-17",
+                    "home": "Nomads 2"
+                },
+                {
+                    "away": "Grantham 3",
+                    "date": "2026-04-27",
+                    "home": "Nomads 2"
+                },
+                {
+                    "away": "Nomads 2",
+                    "date": "2025-10-29",
+                    "home": "University 2"
+                },
+                {
+                    "away": "Gambit 4",
+                    "date": "2026-05-06",
+                    "home": "University 2"
+                },
+                {
+                    "away": "Newark 2",
+                    "date": "2025-12-17",
+                    "home": "University 2"
+                },
+                {
+                    "away": "Gambit 5",
+                    "date": "2026-03-04",
+                    "home": "University 2"
+                },
+                {
+                    "away": "Ashfield 3",
+                    "date": "2025-11-26",
+                    "home": "University 2"
+                },
+                {
+                    "away": "Ashfield 4",
+                    "date": "2026-03-18",
+                    "home": "University 2"
+                },
+                {
+                    "away": "Grantham 3",
+                    "date": "2026-03-25",
+                    "home": "University 2"
+                },
+                {
+                    "away": "Nomads 2",
+                    "date": "2025-10-07",
+                    "home": "Gambit 4"
+                },
+                {
+                    "away": "University 2",
+                    "date": "2026-02-24",
+                    "home": "Gambit 4"
+                },
+                {
+                    "away": "Newark 2",
+                    "date": "2026-01-20",
+                    "home": "Gambit 4"
+                },
+                {
+                    "away": "Gambit 5",
+                    "date": "2025-09-09",
+                    "home": "Gambit 4"
+                },
+                {
+                    "away": "Ashfield 3",
+                    "date": "2026-04-21",
+                    "home": "Gambit 4"
+                },
+                {
+                    "away": "Ashfield 4",
+                    "date": "2025-12-16",
+                    "home": "Gambit 4"
+                },
+                {
+                    "away": "Grantham 3",
+                    "date": "2025-11-18",
+                    "home": "Gambit 4"
+                },
+                {
+                    "away": "Nomads 2",
+                    "date": "2026-04-20",
+                    "home": "Newark 2"
+                },
+                {
+                    "away": "University 2",
+                    "date": "2025-10-13",
+                    "home": "Newark 2"
+                },
+                {
+                    "away": "Gambit 4",
+                    "date": "2025-10-27",
+                    "home": "Newark 2"
+                },
+                {
+                    "away": "Gambit 5",
+                    "date": "2025-11-24",
+                    "home": "Newark 2"
+                },
+                {
+                    "away": "Ashfield 3",
+                    "date": "2026-02-09",
+                    "home": "Newark 2"
+                },
+                {
+                    "away": "Ashfield 4",
+                    "date": "2026-01-26",
+                    "home": "Newark 2"
+                },
+                {
+                    "away": "Grantham 3",
+                    "date": "2026-01-12",
+                    "home": "Newark 2"
+                },
+                {
+                    "away": "Nomads 2",
+                    "date": "2026-02-10",
+                    "home": "Gambit 5"
+                },
+                {
+                    "away": "University 2",
+                    "date": "2026-04-28",
+                    "home": "Gambit 5"
+                },
+                {
+                    "away": "Gambit 4",
+                    "date": "2025-12-09",
+                    "home": "Gambit 5"
+                },
+                {
+                    "away": "Newark 2",
+                    "date": "2026-03-24",
+                    "home": "Gambit 5"
+                },
+                {
+                    "away": "Ashfield 3",
+                    "date": "2026-01-27",
+                    "home": "Gambit 5"
+                },
+                {
+                    "away": "Ashfield 4",
+                    "date": "2025-11-04",
+                    "home": "Gambit 5"
+                },
+                {
+                    "away": "Grantham 3",
+                    "date": "2025-09-30",
+                    "home": "Gambit 5"
+                },
+                {
+                    "away": "Nomads 2",
+                    "date": "2026-03-25",
+                    "home": "Ashfield 3"
+                },
+                {
+                    "away": "University 2",
+                    "date": "2026-02-04",
+                    "home": "Ashfield 3"
+                },
+                {
+                    "away": "Gambit 4",
+                    "date": "2026-01-07",
+                    "home": "Ashfield 3"
+                },
+                {
+                    "away": "Newark 2",
+                    "date": "2025-11-05",
+                    "home": "Ashfield 3"
+                },
+                {
+                    "away": "Gambit 5",
+                    "date": "2025-12-03",
+                    "home": "Ashfield 3"
+                },
+                {
+                    "away": "Ashfield 4",
+                    "date": "2025-09-17",
+                    "home": "Ashfield 3"
+                },
+                {
+                    "away": "Grantham 3",
+                    "date": "2026-02-25",
+                    "home": "Ashfield 3"
+                },
+                {
+                    "away": "Nomads 2",
+                    "date": "2026-05-06",
+                    "home": "Ashfield 4"
+                },
+                {
+                    "away": "University 2",
+                    "date": "2026-01-21",
+                    "home": "Ashfield 4"
+                },
+                {
+                    "away": "Gambit 4",
+                    "date": "2026-02-18",
+                    "home": "Ashfield 4"
+                },
+                {
+                    "away": "Newark 2",
+                    "date": "2025-11-12",
+                    "home": "Ashfield 4"
+                },
+                {
+                    "away": "Gambit 5",
+                    "date": "2026-04-08",
+                    "home": "Ashfield 4"
+                },
+                {
+                    "away": "Ashfield 3",
+                    "date": "2025-12-10",
+                    "home": "Ashfield 4"
+                },
+                {
+                    "away": "Grantham 3",
+                    "date": "2025-10-15",
+                    "home": "Ashfield 4"
+                },
+                {
+                    "away": "Nomads 2",
+                    "date": "2025-12-10",
+                    "home": "Grantham 3"
+                },
+                {
+                    "away": "University 2",
+                    "date": "2025-11-12",
+                    "home": "Grantham 3"
+                },
+                {
+                    "away": "Gambit 4",
+                    "date": "2025-09-17",
+                    "home": "Grantham 3"
+                },
+                {
+                    "away": "Newark 2",
+                    "date": "2025-10-08",
+                    "home": "Grantham 3"
+                },
+                {
+                    "away": "Gambit 5",
+                    "date": "2026-02-04",
+                    "home": "Grantham 3"
+                },
+                {
+                    "away": "Ashfield 3",
+                    "date": "2026-04-15",
+                    "home": "Grantham 3"
+                },
+                {
+                    "away": "Ashfield 4",
+                    "date": "2026-03-11",
+                    "home": "Grantham 3"
+                }
+            ],
+            "name": "Division 3",
+            "teams": [
+                "Nomads 2",
+                "University 2",
+                "Gambit 4",
+                "Newark 2",
+                "Gambit 5",
+                "Ashfield 3",
+                "Ashfield 4",
+                "Grantham 3"
+            ]
+        },
+        {
+            "fixtures": [
+                {
+                    "away": "Central 1",
+                    "date": "2025-09-30",
+                    "home": "West Nottingham 2"
+                },
+                {
+                    "away": "Nomads 3",
+                    "date": "2026-03-03",
+                    "home": "West Nottingham 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 3",
+                    "date": "2025-10-07",
+                    "home": "West Nottingham 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 4",
+                    "date": "2025-12-16",
+                    "home": "West Nottingham 2"
+                },
+                {
+                    "away": "Gambit 6",
+                    "date": "2026-01-13",
+                    "home": "West Nottingham 2"
+                },
+                {
+                    "away": "West Nottingham 3",
+                    "date": "2025-09-09",
+                    "home": "West Nottingham 2"
+                },
+                {
+                    "away": "Grantham 4",
+                    "date": "2026-02-17",
+                    "home": "West Nottingham 2"
+                },
+                {
+                    "away": "West Nottingham 2",
+                    "date": "2026-02-03",
+                    "home": "Central 1"
+                },
+                {
+                    "away": "Nomads 3",
+                    "date": "2025-09-16",
+                    "home": "Central 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 3",
+                    "date": "2026-03-17",
+                    "home": "Central 1"
+                },
+                {
+                    "away": "Radcliffe & Bingham 4",
+                    "date": "2025-11-25",
+                    "home": "Central 1"
+                },
+                {
+                    "away": "Gambit 6",
+                    "date": "2025-10-21",
+                    "home": "Central 1"
+                },
+                {
+                    "away": "West Nottingham 3",
+                    "date": "2026-01-06",
+                    "home": "Central 1"
+                },
+                {
+                    "away": "Grantham 4",
+                    "date": "2026-04-21",
+                    "home": "Central 1"
+                },
+                {
+                    "away": "West Nottingham 2",
+                    "date": "2025-10-27",
+                    "home": "Nomads 3"
+                },
+                {
+                    "away": "Central 1",
+                    "date": "2025-12-08",
+                    "home": "Nomads 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 3",
+                    "date": "2025-11-03",
+                    "home": "Nomads 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 4",
+                    "date": "2026-02-02",
+                    "home": "Nomads 3"
+                },
+                {
+                    "away": "Gambit 6",
+                    "date": "2025-09-08",
+                    "home": "Nomads 3"
+                },
+                {
+                    "away": "West Nottingham 3",
+                    "date": "2025-11-24",
+                    "home": "Nomads 3"
+                },
+                {
+                    "away": "Grantham 4",
+                    "date": "2026-03-23",
+                    "home": "Nomads 3"
+                },
+                {
+                    "away": "West Nottingham 2",
+                    "date": "2026-01-05",
+                    "home": "Radcliffe & Bingham 3"
+                },
+                {
+                    "away": "Central 1",
+                    "date": "2026-01-26",
+                    "home": "Radcliffe & Bingham 3"
+                },
+                {
+                    "away": "Nomads 3",
+                    "date": "2026-04-13",
+                    "home": "Radcliffe & Bingham 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 4",
+                    "date": "2025-09-15",
+                    "home": "Radcliffe & Bingham 3"
+                },
+                {
+                    "away": "Gambit 6",
+                    "date": "2025-11-17",
+                    "home": "Radcliffe & Bingham 3"
+                },
+                {
+                    "away": "West Nottingham 3",
+                    "date": "2026-02-23",
+                    "home": "Radcliffe & Bingham 3"
+                },
+                {
+                    "away": "Grantham 4",
+                    "date": "2025-10-20",
+                    "home": "Radcliffe & Bingham 3"
+                },
+                {
+                    "away": "West Nottingham 2",
+                    "date": "2025-09-22",
+                    "home": "Radcliffe & Bingham 4"
+                },
+                {
+                    "away": "Central 1",
+                    "date": "2026-04-27",
+                    "home": "Radcliffe & Bingham 4"
+                },
+                {
+                    "away": "Nomads 3",
+                    "date": "2025-11-10",
+                    "home": "Radcliffe & Bingham 4"
+                },
+                {
+                    "away": "Radcliffe & Bingham 3",
+                    "date": "2026-01-19",
+                    "home": "Radcliffe & Bingham 4"
+                },
+                {
+                    "away": "Gambit 6",
+                    "date": "2026-02-16",
+                    "home": "Radcliffe & Bingham 4"
+                },
+                {
+                    "away": "West Nottingham 3",
+                    "date": "2026-03-16",
+                    "home": "Radcliffe & Bingham 4"
+                },
+                {
+                    "away": "Grantham 4",
+                    "date": "2025-12-01",
+                    "home": "Radcliffe & Bingham 4"
+                },
+                {
+                    "away": "West Nottingham 2",
+                    "date": "2026-05-05",
+                    "home": "Gambit 6"
+                },
+                {
+                    "away": "Central 1",
+                    "date": "2026-02-24",
+                    "home": "Gambit 6"
+                },
+                {
+                    "away": "Nomads 3",
+                    "date": "2025-12-02",
+                    "home": "Gambit 6"
+                },
+                {
+                    "away": "Radcliffe & Bingham 3",
+                    "date": "2026-02-03",
+                    "home": "Gambit 6"
+                },
+                {
+                    "away": "Radcliffe & Bingham 4",
+                    "date": "2026-04-07",
+                    "home": "Gambit 6"
+                },
+                {
+                    "away": "West Nottingham 3",
+                    "date": "2025-11-11",
+                    "home": "Gambit 6"
+                },
+                {
+                    "away": "Grantham 4",
+                    "date": "2025-09-16",
+                    "home": "Gambit 6"
+                },
+                {
+                    "away": "West Nottingham 2",
+                    "date": "2025-11-18",
+                    "home": "West Nottingham 3"
+                },
+                {
+                    "away": "Central 1",
+                    "date": "2026-04-07",
+                    "home": "West Nottingham 3"
+                },
+                {
+                    "away": "Nomads 3",
+                    "date": "2025-09-23",
+                    "home": "West Nottingham 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 3",
+                    "date": "2025-12-09",
+                    "home": "West Nottingham 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 4",
+                    "date": "2025-10-14",
+                    "home": "West Nottingham 3"
+                },
+                {
+                    "away": "Gambit 6",
+                    "date": "2026-04-21",
+                    "home": "West Nottingham 3"
+                },
+                {
+                    "away": "Grantham 4",
+                    "date": "2026-01-27",
+                    "home": "West Nottingham 3"
+                },
+                {
+                    "away": "West Nottingham 2",
+                    "date": "2026-04-08",
+                    "home": "Grantham 4"
+                },
+                {
+                    "away": "Central 1",
+                    "date": "2025-11-05",
+                    "home": "Grantham 4"
+                },
+                {
+                    "away": "Nomads 3",
+                    "date": "2026-01-07",
+                    "home": "Grantham 4"
+                },
+                {
+                    "away": "Radcliffe & Bingham 3",
+                    "date": "2026-05-06",
+                    "home": "Grantham 4"
+                },
+                {
+                    "away": "Radcliffe & Bingham 4",
+                    "date": "2026-03-04",
+                    "home": "Grantham 4"
+                },
+                {
+                    "away": "Gambit 6",
+                    "date": "2026-03-18",
+                    "home": "Grantham 4"
+                },
+                {
+                    "away": "West Nottingham 3",
+                    "date": "2025-10-01",
+                    "home": "Grantham 4"
+                }
+            ],
+            "name": "Division 4",
+            "teams": [
+                "West Nottingham 2",
+                "Central 1",
+                "Nomads 3",
+                "Radcliffe & Bingham 3",
+                "Radcliffe & Bingham 4",
+                "Gambit 6",
+                "West Nottingham 3",
+                "Grantham 4"
+            ]
+        },
+        {
+            "fixtures": [
+                {
+                    "away": "Beeston 2",
+                    "date": "2025-12-17",
+                    "home": "Ashfield 5"
+                },
+                {
+                    "away": "Radcliffe & Bingham 5",
+                    "date": "2026-03-25",
+                    "home": "Ashfield 5"
+                },
+                {
+                    "away": "Radcliffe & Bingham 6",
+                    "date": "2025-11-05",
+                    "home": "Ashfield 5"
+                },
+                {
+                    "away": "Newark 3",
+                    "date": "2026-02-11",
+                    "home": "Ashfield 5"
+                },
+                {
+                    "away": "Beeston 3",
+                    "date": "2025-10-29",
+                    "home": "Ashfield 5"
+                },
+                {
+                    "away": "Gambit 7",
+                    "date": "2025-10-01",
+                    "home": "Ashfield 5"
+                },
+                {
+                    "away": "Central 2",
+                    "date": "2026-04-22",
+                    "home": "Ashfield 5"
+                },
+                {
+                    "away": "Ashfield 5",
+                    "date": "2026-04-28",
+                    "home": "Beeston 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 5",
+                    "date": "2025-12-09",
+                    "home": "Beeston 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 6",
+                    "date": "2025-11-25",
+                    "home": "Beeston 2"
+                },
+                {
+                    "away": "Newark 3",
+                    "date": "2026-01-06",
+                    "home": "Beeston 2"
+                },
+                {
+                    "away": "Beeston 3",
+                    "date": "2025-09-09",
+                    "home": "Beeston 2"
+                },
+                {
+                    "away": "Gambit 7",
+                    "date": "2026-03-03",
+                    "home": "Beeston 2"
+                },
+                {
+                    "away": "Central 2",
+                    "date": "2025-10-14",
+                    "home": "Beeston 2"
+                },
+                {
+                    "away": "Ashfield 5",
+                    "date": "2026-01-05",
+                    "home": "Radcliffe & Bingham 5"
+                },
+                {
+                    "away": "Beeston 2",
+                    "date": "2025-10-06",
+                    "home": "Radcliffe & Bingham 5"
+                },
+                {
+                    "away": "Radcliffe & Bingham 6",
+                    "date": "2025-09-08",
+                    "home": "Radcliffe & Bingham 5"
+                },
+                {
+                    "away": "Newark 3",
+                    "date": "2026-03-09",
+                    "home": "Radcliffe & Bingham 5"
+                },
+                {
+                    "away": "Beeston 3",
+                    "date": "2025-11-24",
+                    "home": "Radcliffe & Bingham 5"
+                },
+                {
+                    "away": "Gambit 7",
+                    "date": "2026-01-26",
+                    "home": "Radcliffe & Bingham 5"
+                },
+                {
+                    "away": "Central 2",
+                    "date": "2025-09-29",
+                    "home": "Radcliffe & Bingham 5"
+                },
+                {
+                    "away": "Ashfield 5",
+                    "date": "2026-01-19",
+                    "home": "Radcliffe & Bingham 6"
+                },
+                {
+                    "away": "Beeston 2",
+                    "date": "2026-04-13",
+                    "home": "Radcliffe & Bingham 6"
+                },
+                {
+                    "away": "Radcliffe & Bingham 5",
+                    "date": "2025-10-27",
+                    "home": "Radcliffe & Bingham 6"
+                },
+                {
+                    "away": "Newark 3",
+                    "date": "2025-11-17",
+                    "home": "Radcliffe & Bingham 6"
+                },
+                {
+                    "away": "Beeston 3",
+                    "date": "2026-03-02",
+                    "home": "Radcliffe & Bingham 6"
+                },
+                {
+                    "away": "Gambit 7",
+                    "date": "2025-09-15",
+                    "home": "Radcliffe & Bingham 6"
+                },
+                {
+                    "away": "Central 2",
+                    "date": "2025-12-15",
+                    "home": "Radcliffe & Bingham 6"
+                },
+                {
+                    "away": "Ashfield 5",
+                    "date": "2025-12-08",
+                    "home": "Newark 3"
+                },
+                {
+                    "away": "Beeston 2",
+                    "date": "2025-11-10",
+                    "home": "Newark 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 5",
+                    "date": "2025-11-03",
+                    "home": "Newark 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 6",
+                    "date": "2026-02-16",
+                    "home": "Newark 3"
+                },
+                {
+                    "away": "Beeston 3",
+                    "date": "2026-03-23",
+                    "home": "Newark 3"
+                },
+                {
+                    "away": "Gambit 7",
+                    "date": "2026-04-27",
+                    "home": "Newark 3"
+                },
+                {
+                    "away": "Central 2",
+                    "date": "2026-02-02",
+                    "home": "Newark 3"
+                },
+                {
+                    "away": "Ashfield 5",
+                    "date": "2026-04-07",
+                    "home": "Beeston 3"
+                },
+                {
+                    "away": "Beeston 2",
+                    "date": "2026-01-27",
+                    "home": "Beeston 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 5",
+                    "date": "2026-04-21",
+                    "home": "Beeston 3"
+                },
+                {
+                    "away": "Radcliffe & Bingham 6",
+                    "date": "2025-09-30",
+                    "home": "Beeston 3"
+                },
+                {
+                    "away": "Newark 3",
+                    "date": "2025-10-07",
+                    "home": "Beeston 3"
+                },
+                {
+                    "away": "Gambit 7",
+                    "date": "2025-12-16",
+                    "home": "Beeston 3"
+                },
+                {
+                    "away": "Central 2",
+                    "date": "2026-03-10",
+                    "home": "Beeston 3"
+                },
+                {
+                    "away": "Ashfield 5",
+                    "date": "2026-02-17",
+                    "home": "Gambit 7"
+                },
+                {
+                    "away": "Beeston 2",
+                    "date": "2025-11-18",
+                    "home": "Gambit 7"
+                },
+                {
+                    "away": "Radcliffe & Bingham 5",
+                    "date": "2025-09-23",
+                    "home": "Gambit 7"
+                },
+                {
+                    "away": "Radcliffe & Bingham 6",
+                    "date": "2026-01-06",
+                    "home": "Gambit 7"
+                },
+                {
+                    "away": "Newark 3",
+                    "date": "2025-10-14",
+                    "home": "Gambit 7"
+                },
+                {
+                    "away": "Beeston 3",
+                    "date": "2026-04-14",
+                    "home": "Gambit 7"
+                },
+                {
+                    "away": "Central 2",
+                    "date": "2026-03-31",
+                    "home": "Gambit 7"
+                },
+                {
+                    "away": "Ashfield 5",
+                    "date": "2025-10-07",
+                    "home": "Central 2"
+                },
+                {
+                    "away": "Beeston 2",
+                    "date": "2026-05-05",
+                    "home": "Central 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 5",
+                    "date": "2026-02-17",
+                    "home": "Central 2"
+                },
+                {
+                    "away": "Radcliffe & Bingham 6",
+                    "date": "2026-03-24",
+                    "home": "Central 2"
+                },
+                {
+                    "away": "Newark 3",
+                    "date": "2026-04-14",
+                    "home": "Central 2"
+                },
+                {
+                    "away": "Beeston 3",
+                    "date": "2026-01-13",
+                    "home": "Central 2"
+                },
+                {
+                    "away": "Gambit 7",
+                    "date": "2025-11-04",
+                    "home": "Central 2"
+                }
+            ],
+            "name": "Division 5",
+            "teams": [
+                "Ashfield 5",
+                "Beeston 2",
+                "Radcliffe & Bingham 5",
+                "Radcliffe & Bingham 6",
+                "Newark 3",
+                "Beeston 3",
+                "Gambit 7",
+                "Central 2"
+            ]
+        }
+    ],
+    "end": "2026-05-09",
+    "name": "Notts League 2025/26",
+    "onlyWhen": [
+        {
+            "constrained": "Beeston",
+            "reference": "West Nottingham"
+        }
+    ],
+    "start": "2025-09-06",
+    "venues": [
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "maxMatchesPerDay": 2,
+            "minimizeEmptyDays": false,
+            "name": "Great Gonerby Social Club"
+        },
+        {
+            "calendar": {
+                "holidays": [
+                    "2025-12-02",
+                    "2025-12-11",
+                    "2025-12-04",
+                    "2025-12-03",
+                    "2025-12-06",
+                    "2025-12-15",
+                    "2025-12-20",
+                    "2025-12-19",
+                    "2025-12-14",
+                    "2025-12-01",
+                    "2025-12-18",
+                    "2025-12-30",
+                    "2025-12-10",
+                    "2025-12-25",
+                    "2025-12-24",
+                    "2025-12-22",
+                    "2025-12-05",
+                    "2025-12-08",
+                    "2025-12-12",
+                    "2025-12-31",
+                    "2025-12-09",
+                    "2025-12-17",
+                    "2025-12-28",
+                    "2025-12-27",
+                    "2025-12-07",
+                    "2025-12-13",
+                    "2025-12-21",
+                    "2025-12-29",
+                    "2025-12-16",
+                    "2025-12-26",
+                    "2025-12-23"
+                ]
+            },
+            "maxMatchesPerDay": 2,
+            "minimizeEmptyDays": false,
+            "name": "Brown Cow"
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "maxMatchesPerDay": 2,
+            "minimizeEmptyDays": false,
+            "name": "Coronation Social Club"
+        },
+        {
+            "calendar": {
+                "holidays": [
+                    "2026-04-15",
+                    "2026-04-10",
+                    "2026-03-31",
+                    "2026-04-12",
+                    "2026-04-25",
+                    "2026-01-07",
+                    "2026-01-01",
+                    "2026-04-26",
+                    "2026-04-05",
+                    "2026-01-03",
+                    "2026-04-11",
+                    "2026-04-03",
+                    "2026-04-16",
+                    "2026-04-09",
+                    "2026-04-06",
+                    "2026-04-17",
+                    "2026-01-05",
+                    "2026-01-08",
+                    "2026-01-11",
+                    "2026-04-02",
+                    "2026-03-30",
+                    "2026-04-21",
+                    "2026-04-01",
+                    "2026-01-02",
+                    "2026-04-04",
+                    "2026-01-04",
+                    "2026-04-24",
+                    "2026-01-10",
+                    "2026-03-28",
+                    "2026-01-09",
+                    "2026-04-14",
+                    "2026-01-06",
+                    "2026-04-07",
+                    "2026-04-18",
+                    "2026-04-22",
+                    "2026-03-29",
+                    "2026-04-20",
+                    "2026-04-19",
+                    "2026-04-23",
+                    "2026-04-08",
+                    "2026-04-13"
+                ]
+            },
+            "maxMatchesPerDay": 1,
+            "minimizeEmptyDays": false,
+            "name": "Monica Partridge Building"
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "maxMatchesPerDay": 2,
+            "minimizeEmptyDays": false,
+            "name": "The Wolds Pub"
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "maxMatchesPerDay": 3,
+            "minimizeEmptyDays": false,
+            "name": "The Embankment Pub"
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "maxMatchesPerDay": 3,
+            "minimizeEmptyDays": true,
+            "name": "Bramcote Memorial Hall"
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "maxMatchesPerDay": 3,
+            "minimizeEmptyDays": false,
+            "name": "Royal British Legion Club"
+        },
+        {
+            "calendar": {
+                "holidays": []
+            },
+            "maxMatchesPerDay": 2,
+            "minimizeEmptyDays": false,
+            "name": "The Lincolnshire Poacher"
+        },
+        {
+            "calendar": {
+                "holidays": [
+                    "2025-10-03",
+                    "2025-10-02",
+                    "2025-10-05",
+                    "2025-10-04",
+                    "2025-10-01",
+                    "2025-10-06"
+                ]
+            },
+            "maxMatchesPerDay": 1,
+            "minimizeEmptyDays": false,
+            "name": "The Railway Club"
+        }
+    ]
+}
