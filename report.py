@@ -229,7 +229,7 @@ class Report:
             a.h3(_t=c.name)
             for t in c.teams:
                 a.h4(_t=t.name)
-                self.renderFixtureTable(a, byDate(t.fixtures), [c.calendar])
+                self.renderFixtureTable(a, byDate(t.fixtures), [c.calendar, t.calendar])
 
     def renderFixtureTable(self, a: Airium, fixtures: Iterable[Fixture], extraCalendars: Iterable[Calendar] = []) -> None:
         self.renderHeatmap(a, fixtures, extraCalendars)
