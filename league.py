@@ -222,7 +222,7 @@ class Division:
         return {
             "name": self.name,
             "teams": [t.name for t in self.teams],
-            "fixtures": [f.to_json() for f in sorted(self.fixtures, key=lambda f: f.date or f.name)],
+            "fixtures": [f.to_json() for f in sorted(self.fixtures, key=lambda f: f.name)],
             }
 
     @classmethod
