@@ -66,10 +66,6 @@ class Solver(SolverBase):
 
 
     def dom(self, f: Fixture) -> set[int]:
-        # Allow for fixture dates to be decided manually.
-        if f.date is not None:
-            return { self.dateToInt(f.date) }
-
         # Constraint: respects club late starts.
         start: int = max(self.dateToInt(d) for d in [self.league.start, f.home.club.lateStart, f.away.club.lateStart] if d is not None)
 
@@ -88,6 +84,10 @@ class Solver(SolverBase):
         # Constraint: matches between teams of the same club must be played by 31 Jan.
         if f.sameClub():
             ret = {d for d in ret if d <= self.dateToInt(date(self.league.end.year, 1, 31))}
+
+        # Allow for fixture dates to be decided manually.
+        if f.date is not None:
+            ret.intersection_update({ self.dateToInt(f.date) })
 
         return ret
 
