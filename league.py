@@ -34,7 +34,7 @@ class Calendar:
         self.holidays = frozenset(holidays)
 
     def to_json(self) -> dict[str, Any]:
-        return { "holidays": [str(d) for d in self.holidays] }
+        return { "holidays": [str(d) for d in sorted(self.holidays)] }
 
     @classmethod
     def from_json(cls: type[Self], o: dict[str, Any]) -> Self:
@@ -222,7 +222,7 @@ class Division:
         return {
             "name": self.name,
             "teams": [t.name for t in self.teams],
-            "fixtures": [f.to_json() for f in self.fixtures],
+            "fixtures": [f.to_json() for f in sorted(self.fixtures, key=lambda f: f.date or f.name)],
             }
 
     @classmethod
@@ -284,10 +284,10 @@ class League:
             "name": self.name,
             "start": str(self.start),
             "end": str(self.end),
-            "venues": [v.to_json() for v in self.venues],
-            "clubs": [c.to_json() for c in self.clubs],
+            "venues": [v.to_json() for v in sorted(self.venues, key=lambda v: v.name)],
+            "clubs": [c.to_json() for c in sorted(self.clubs, key=lambda c: c.name)],
             "divisions": [d.to_json() for d in self.divisions],
-            "onlyWhen": [ow.to_json() for ow in self.onlyWhen],
+            "onlyWhen": [ow.to_json() for ow in sorted(self.onlyWhen, key=lambda o: (o.constrained.name, o.reference.name))],
             "calendar": self.calendar.to_json(),
             }
 
