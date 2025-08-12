@@ -170,10 +170,11 @@ class DivisionSummary(BaseSummary):
                 for (i, weekDict) in enumerate(self.table()):
                     weekNoStr = str(i+1)
                     weekRowCount = sum(max(len(fixtures) for fixtures in day) for day in weekDict.values())
+                    oddPlus = True
                     for (date, divisions) in sorted(weekDict.items()):
                         dateRowCount = max(len(fixtures) for fixtures in divisions)
                         for dateRow in range(dateRowCount):
-                            with a.tr(klass=odd and 'odd' or 'even'):
+                            with a.tr(klass=f'{odd and "odd" or "even"} {oddPlus and "oddPlus" or "evenPlus"}'):
                                 if weekNoStr:
                                     a.td(_t=str(i+1), klass='week', rowspan=str(weekRowCount))
                                     weekNoStr = None
@@ -191,6 +192,8 @@ class DivisionSummary(BaseSummary):
                                     else:
                                         a.td(klass='home empty')
                                         a.td(klass='away empty')
+                        if dateRowCount >= 1:
+                            oddPlus = not oddPlus
                     if weekRowCount >= 1:
                         odd = not odd
 
@@ -396,6 +399,14 @@ class Report:
 
             .division_summary tr.odd td, .fixture tr.odd td {
                 background: rgb(232, 232, 232);
+            }
+
+            .division_summary tr.odd.evenPlus td, .fixture tr.odd.plus td {
+                background: rgb(212, 212, 212);
+            }
+
+            .division_summary tr.even.evenPlus td, .fixture tr.even.plus td {
+                background: rgb(240, 240, 240);
             }
 
             .division_summary .home {
