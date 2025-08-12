@@ -56,7 +56,7 @@ class Solver(SolverBase):
         self.adjacentTeamsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
         self.strictHomeAwayConstraint: int | None = None # Maximum number of mismatches of back-to-back game at home or away.
         self.strictMatchSpaceOut: int | None = 5 # Minimum number of days between back-to-back games of a team.
-        self.strictMaxNoWeeksWithMatches: int | None = 3 # Maximum number of weeks with back to back fixtures.
+        self.strictMaxNoWeeksWithMatches: int | None = 2 # Maximum number of weeks with back to back fixtures.
         self.strictXmasBreakDiff: int | None = 0 # Maximum number of fixtures either side of Xmas should have in addition to the other.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
