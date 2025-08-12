@@ -161,7 +161,7 @@ def season202526() -> League:
          Team(newark),
          Team(beeston),
          Team(radcliffeBingham),
-         Team(ashfield)
+         Team(ashfield),
         ])
     div2 = Division(
         "Division 2",
@@ -172,7 +172,7 @@ def season202526() -> League:
          Team(grantham),
          Team(gambit),
          Team(radcliffeBingham, calendar=Calendar({date(2025, 9, 8)})),
-         Team(ashfield)
+         Team(ashfield),
          ])
     div3 = Division(
         "Division 3",
@@ -181,9 +181,9 @@ def season202526() -> League:
          Team(gambit),
          Team(newark),
          Team(gambit),
+         Team(beeston),
          Team(ashfield),
-         Team(ashfield),
-         Team(grantham)
+         Team(grantham),
          ])
     div4 = Division(
         "Division 4",
@@ -193,8 +193,8 @@ def season202526() -> League:
          Team(radcliffeBingham),
          Team(radcliffeBingham),
          Team(gambit),
-         Team(westNottingham, calendar=westNottsSchoolHolidays),
-         Team(grantham)
+         Team(ashfield),
+         Team(grantham),
          ])
     div5 = Division(
         "Division 5",
@@ -203,9 +203,9 @@ def season202526() -> League:
          Team(radcliffeBingham),
          Team(radcliffeBingham),
          Team(newark),
-         Team(beeston),
          Team(gambit),
-         Team(central, "Central 2")
+         Team(central, "Central 2"),
+         Team(westNottingham, calendar=westNottsSchoolHolidays),
          ])
 
     return League(
