@@ -128,6 +128,23 @@ class TeamSummary(BaseSummary):
                                             a(" | ")
                                         self.renderTeam(a, atHome and f.away or f.home)
 
+class DivisionTeams(BaseSummary):
+    def render(self, a: Airium) -> None:
+        with a.table(klass='division_teams'):
+            with a.thead():
+                with a.tr():
+                    for (i, d) in enumerate(self.league.divisions):
+                        a.th(_t=d.name, klass=f'division_{str(i+1)}')
+            with a.tbody():
+                for j in range(max(len(d.teams) for d in self.league.divisions)):
+                    with a.tr():
+                        for (i, d) in enumerate(self.league.divisions):
+                            if j < len(d.teams):
+                                a.td(_t=d.teams[j].name, klass=f'division_{str(i+1)}')
+                            else:
+                                a.td(_t='', klass='empty')
+
+
 class DivisionSummary(BaseSummary):
     def table(self) -> list[dict[date, list[list[Fixture]]]]: # weeks, fixture date, division, fixtures list for that day/division
         ret: list[dict[date, list[list[Fixture]]]] = [dict() for _ in range(self.weekCount)]
@@ -206,6 +223,7 @@ class Report:
     def renderTeamSummary(self, a: Airium) -> None:
         a.h2(_t='Team summary')
         TeamSummary(self.league).render(a)
+        DivisionTeams(self.league).render(a)
 
     def renderDivisionSummary(self, a: Airium) -> None:
         a.h2(_t='Division summary')
@@ -345,23 +363,23 @@ class Report:
                 border-collapse: collapse;
             }
 
-            .team_summary .team.home.division_1, .team_summary .team.home.division_6 {
+            .team_summary .team.home.division_1, .team_summary .team.home.division_6, .division_teams .division_1, .division_teams .division_6 {
                 background: rgb(172, 238, 187);
             }
 
-            .team_summary .team.home.division_2, .team_summary .team.home.division_7 {
+            .team_summary .team.home.division_2, .team_summary .team.home.division_7, .division_teams .division_2, .division_teams .division_7 {
                 background: rgb(238, 172, 187);
             }
 
-            .team_summary .team.home.division_3, .team_summary .team.home.division_8 {
+            .team_summary .team.home.division_3, .team_summary .team.home.division_8, .division_teams .division_3, .division_teams .division_8 {
                 background: rgb(172, 187, 238);
             }
 
-            .team_summary .team.home.division_4, .team_summary .team.home.division_9 {
+            .team_summary .team.home.division_4, .team_summary .team.home.division_9, .division_teams .division_4, .division_teams .division_9 {
                 background: rgb(238, 187, 172);
             }
 
-            .team_summary .team.home.division_5, .team_summary .team.home.division_10 {
+            .team_summary .team.home.division_5, .team_summary .team.home.division_10, .division_teams .division_5, .division_teams .division_10 {
                 background: rgb(187, 172, 238);
             }
 
@@ -369,10 +387,11 @@ class Report:
                 background: rgb(200, 200, 200);
             }
 
-            .division_summary, .division_summary th, .division_summary td {
+            .division_summary, .division_summary th, .division_summary td, .division_teams, .division_teams th, .division_teams td {
                 font-size: 12pt;
                 border: 1px solid rgb(200, 200, 200);
                 border-collapse: collapse;
+                padding: 2pt;
             }
 
             .division_summary tr.odd td, .fixture tr.odd td {
@@ -381,5 +400,10 @@ class Report:
 
             .division_summary .home {
                 text-align: right;
+            }
+
+            .division_teams {
+                text-align: left;
+                margin-top: 1.5em;
             }
             ''')
