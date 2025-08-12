@@ -58,6 +58,7 @@ class Solver(SolverBase):
         self.strictMatchSpaceOut: int | None = 5 # Minimum number of days between back-to-back games of a team.
         self.strictMaxNoWeeksWithMatches: int | None = 2 # Maximum number of weeks with back to back fixtures.
         self.strictXmasBreakDiff: int | None = 0 # Maximum number of fixtures either side of Xmas should have in addition to the other.
+        self.strictXmasBreakPercentage: float = 0.8 # Percentage of teams that are required to satisfy the Xmas constraint, between 0 and 1 inclusive.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
         self.homeFixtureDomains: dict[Team, set[int]] = dict()
@@ -113,7 +114,7 @@ class Solver(SolverBase):
         optSpaceTeams = 0
         spaceNoMoreOpt = pycsp3f.Var(dom=[7*3], id='spaceNoMoreOpt') # Spacing bigger than this shouldn't count for optimization.
         for t in self.league.teams:
-            minimum = self.strictMatchSpaceOut if self.strictMatchSpaceOut else 1
+            minimum = self.strictMatchSpaceOut if self.strictMatchSpaceOut is not None else 1
             arr = pycsp3f.VarArray(
                 size=len(t.fixtures),
                 dom=range(minimum, 365),
@@ -122,7 +123,7 @@ class Solver(SolverBase):
             pycsp3f.satisfy(pycsp3f.NoOverlap(origins=[self.vars[f] for f in t.fixtures], lengths=arr))
             optSpaceTeams += pycsp3f.Sum(10 * pycsp3f.Minimum(v, spaceNoMoreOpt) for v in arr)
 
-        if self.strictMaxNoWeeksWithMatches:
+        if self.strictMaxNoWeeksWithMatches is not None:
             print("\t\tTeams can only have " + str(self.strictMaxNoWeeksWithMatches) + " consecutive weeks with matches")
             for t in self.league.teams:
                 pycsp3f.satisfy(pycsp3f.Cumulative(origins=[self.vars[f] for f in t.fixtures], lengths=(self.strictMaxNoWeeksWithMatches+1)*7, heights=1) <= self.strictMaxNoWeeksWithMatches)
@@ -226,7 +227,7 @@ class Solver(SolverBase):
 
                 arrays = [buildArr(as_, bs, prefix + 'ConstraintArr_' + t.sanitized_name) for (as_, bs, prefix) in toConsider]
                 countWrongs = [pycsp3f.Sum(array) for array in arrays]
-                if self.strictHomeAwayConstraint:
+                if self.strictHomeAwayConstraint is not None:
                     pycsp3f.satisfy(pycsp3f.Or(cw <= self.strictHomeAwayConstraint for cw in countWrongs))
                 return pycsp3f.Minimum(countWrongs)
         optTerms = [c for c in map(satisfyHomeAwayConstraint, self.league.teams) if c is not None]
@@ -234,14 +235,28 @@ class Solver(SolverBase):
             optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-100)
         print('')
 
-        print("\t\tFixtures should be evenly distributed before/after Xmas break")
-        beforeXmasBreakDates = range(self.dateToInt(date(self.league.end.year, 1, 1)))
-        xmasTerms = [
-            pycsp3f.abs((len(t.fixtures) // 2) - pycsp3f.Count([self.vars[f] for f in t.fixtures], values=beforeXmasBreakDates))
-            for t in self.league.teams
-            ]
-        if self.strictXmasBreakDiff:
-            pycsp3f.satisfy(term <= self.strictXmasBreakDiff for term in xmasTerms)
+        optXmas = 0
+        if self.strictXmasBreakDiff is not None:
+            print("\t\tFixtures should be evenly distributed before/after Xmas break")
+            beforeXmasBreakDates = range(self.dateToInt(date(self.league.end.year, 1, 1)))
+            xmasTerms = [
+                (len(t.fixtures) // 2, pycsp3f.Count([self.vars[f] for f in t.fixtures], values=beforeXmasBreakDates))
+                for t in self.league.teams
+                ]
+            xmasArr = pycsp3f.VarArray(size=len(xmasTerms), dom=[0, 1], id='xmasArr')
+
+            if self.strictXmasBreakDiff <= 0:
+                pycsp3f.satisfy(xmasArr[i] == (t == u) for (i, (t, u)) in enumerate(xmasTerms))
+            else:
+                pycsp3f.satisfy(xmasArr[i] == (abs(t - u) <= self.strictXmasBreakDiff) for (i, (t, u)) in enumerate(xmasTerms))
+
+            if self.strictXmasBreakPercentage >= 0.99999:
+                pycsp3f.satisfy(xmasArr[i] == 1 for i in range(len(xmasTerms)))
+            else:
+                xmasArrCount = pycsp3f.Var(id='xmasArrCount', dom=range(len(xmasTerms)+1))
+                pycsp3f.satisfy(xmasArrCount == pycsp3f.Count(xmasArr, value=1))
+                pycsp3f.satisfy(xmasArrCount >= int(len(xmasTerms) * self.strictXmasBreakPercentage))
+                optXmas = 500 * xmasArrCount
 
         print("\t\tVenues have matches assigned to most of their days")
         optVenues = pycsp3f.Sum(
@@ -266,6 +281,7 @@ class Solver(SolverBase):
         pycsp3f.maximize(0
                 + optSpaceTeams
                 + optSpaceDivision
+                + optXmas
                 + optVenues
                 + optVenuesEmptyDays
                 + optHomeAway
