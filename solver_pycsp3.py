@@ -57,6 +57,7 @@ class Solver(SolverBase):
         self.strictHomeAwayConstraint: int | None = 3 # Maximum number of mismatches of back-to-back game at home or away.
         self.strictMatchSpaceOut: int | None = 5 # Minimum number of days between back-to-back games of a team.
         self.strictMaxNoWeeksWithMatches: int | None = 3 # Maximum number of weeks with back to back fixtures.
+        self.strictXmasBreakDiff: int | None = 0 # Maximum number of fixtures either side of Xmas should have in addition to the other.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
         self.homeFixtureDomains: dict[Team, set[int]] = dict()
@@ -232,6 +233,15 @@ class Solver(SolverBase):
         if optTerms:
             optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-1000)
         print('')
+
+        print("\t\tFixtures should be evenly distributed before/after Xmas break")
+        beforeXmasBreakDates = range(self.dateToInt(date(self.league.end.year, 1, 1)))
+        xmasTerms = [
+            pycsp3f.abs((len(t.fixtures) // 2) - pycsp3f.Count([self.vars[f] for f in t.fixtures], values=beforeXmasBreakDates))
+            for t in self.league.teams
+            ]
+        if self.strictXmasBreakDiff:
+            pycsp3f.satisfy(term <= self.strictXmasBreakDiff for term in xmasTerms)
 
         print("\t\tVenues have matches assigned to most of their days")
         optVenues = pycsp3f.Sum(
