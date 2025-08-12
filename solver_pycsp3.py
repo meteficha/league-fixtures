@@ -54,7 +54,7 @@ class Solver(SolverBase):
         self.constraints = False
 
         self.adjacentTeamsConstraint = True # Prevent Team t from playing on the same day as Team (t-1) or Team (t+1) from the same club.
-        self.strictHomeAwayConstraint: int | None = 3 # Maximum number of mismatches of back-to-back game at home or away.
+        self.strictHomeAwayConstraint: int | None = None # Maximum number of mismatches of back-to-back game at home or away.
         self.strictMatchSpaceOut: int | None = 5 # Minimum number of days between back-to-back games of a team.
         self.strictMaxNoWeeksWithMatches: int | None = 3 # Maximum number of weeks with back to back fixtures.
         self.strictXmasBreakDiff: int | None = 0 # Maximum number of fixtures either side of Xmas should have in addition to the other.
@@ -231,7 +231,7 @@ class Solver(SolverBase):
                 return pycsp3f.Minimum(countWrongs)
         optTerms = [c for c in map(satisfyHomeAwayConstraint, self.league.teams) if c is not None]
         if optTerms:
-            optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-1000)
+            optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-100)
         print('')
 
         print("\t\tFixtures should be evenly distributed before/after Xmas break")
