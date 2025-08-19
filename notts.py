@@ -52,7 +52,7 @@ def season202526() -> League:
     universityHolidays = Calendar(
         { date(2026, 1, i) for i in range(1, 12) } |
         { date(2026, 3, i) for i in range(28, 32) } |
-        { date(2026, 4, i) for i in range(1, 27) }``
+        { date(2026, 4, i) for i in range(1, 27) }
         )
 
     bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=3, minimizeEmptyDays=True)
