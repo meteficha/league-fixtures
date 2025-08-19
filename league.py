@@ -76,13 +76,14 @@ class Venue:
 class Club:
     """A chess club."""
     @match_typing
-    def __init__(self, name: str, venue: Venue, weekday: Weekday, lateStart: date | None = None, calendar: Calendar | None = None):
+    def __init__(self, name: str, venue: Venue, weekday: Weekday, lateStart: date | None = None, calendar: Calendar | None = None, relaxed: bool = False):
         self.name = name
         self.venue = venue
         self.weekday = weekday
         self.lateStart = lateStart
         self.teams: list[Team] = []
         self.calendar = calendar if calendar else Calendar()
+        self.relaxed = relaxed # apply fewer constraints to this club
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -92,12 +93,14 @@ class Club:
             "lateStart": str(self.lateStart) if self.lateStart else None,
             "teams": [t.to_json() for t in self.teams],
             "calendar": self.calendar.to_json(),
+            "relaxed": self.relaxed
             }
 
     @classmethod
     def from_json(cls: type[Self], venues: dict[str, Venue], o: dict[str, Any]) -> Self:
         calendar = Calendar.from_json(o["calendar"]) if "calendar" in o else None
-        club = cls(name=o["name"], venue=venues[o["venue"]], weekday=Weekday(o["weekday"]), lateStart=dateOrNone(o.get("lateStart", None)), calendar=calendar)
+        relaxed = o["relaxed"] if "relaxed" in o else False
+        club = cls(name=o["name"], venue=venues[o["venue"]], weekday=Weekday(o["weekday"]), lateStart=dateOrNone(o.get("lateStart", None)), calendar=calendar, relaxed=relaxed)
         for t in o["teams"]:
             Team.from_json(club, t)
         return club
@@ -130,6 +133,10 @@ class Team:
             return ''.join([self.name[0:2]] + [c for c in self.name if c.isnumeric()] )
         else:
             return ''.join(c for c in self.name if c.isupper() or c.isnumeric())
+
+    @property
+    def relaxed(self) -> bool:
+        return self.club.relaxed
 
     def to_json(self) -> dict[str, Any]:
         return {

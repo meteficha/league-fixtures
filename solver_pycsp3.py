@@ -114,7 +114,7 @@ class Solver(SolverBase):
         optSpaceTeams = 0
         spaceNoMoreOpt = pycsp3f.Var(dom=[7*3], id='spaceNoMoreOpt') # Spacing bigger than this shouldn't count for optimization.
         for t in self.league.teams:
-            minimum = self.strictMatchSpaceOut if self.strictMatchSpaceOut is not None else 1
+            minimum = self.strictMatchSpaceOut if self.strictMatchSpaceOut is not None and not t.relaxed else 1
             arr = pycsp3f.VarArray(
                 size=len(t.fixtures),
                 dom=range(minimum, 365),
@@ -126,7 +126,8 @@ class Solver(SolverBase):
         if self.strictMaxNoWeeksWithMatches is not None:
             print("\t\tTeams can only have " + str(self.strictMaxNoWeeksWithMatches) + " consecutive weeks with matches")
             for t in self.league.teams:
-                pycsp3f.satisfy(pycsp3f.Cumulative(origins=[self.vars[f] for f in t.fixtures], lengths=(self.strictMaxNoWeeksWithMatches+1)*7, heights=1) <= self.strictMaxNoWeeksWithMatches)
+                if not t.relaxed:
+                    pycsp3f.satisfy(pycsp3f.Cumulative(origins=[self.vars[f] for f in t.fixtures], lengths=(self.strictMaxNoWeeksWithMatches+1)*7, heights=1) <= self.strictMaxNoWeeksWithMatches)
 
 
         print("\t\tVenues have a maximum number of matches per day")
@@ -153,6 +154,7 @@ class Solver(SolverBase):
             pycsp3f.satisfy(
                 pycsp3f.AllDifferent(self.vars[f] for t in [t1, t2] for f in t.fixtures if not f.teams == frozenset([t1, t2]))
                 for c in self.league.clubs
+                if not c.relaxed
                 for (t1, t2) in pairwise(c.teams)
             )
 
@@ -160,6 +162,7 @@ class Solver(SolverBase):
         pycsp3f.satisfy(
             pycsp3f.abs(self.vars[f1] - self.vars[f2]) >= 7*7 # pyright: ignore [reportOperatorIssue]
             for (f1, f2) in self.league.fixturePairs
+            if not f1.home.relaxed and not f1.away.relaxed
         )
 
         print("\t\tOnly when constraints")
@@ -199,7 +202,7 @@ class Solver(SolverBase):
                 pycsp3f.Increasing(sortedAwayFixtureArr, strict=True),
             ])
             print('.', end='', flush=True)
-            if self.strictHomeAwayConstraint == 1:
+            if self.strictHomeAwayConstraint == 1 and not t.relaxed:
                 toConsider = []
                 if not any(f in firstMatches for f in awayFixtures):
                     toConsider.append(pycsp3f.Increasing(alternate(sortedHomeFixtureArr, sortedAwayFixtureArr), strict=True))
@@ -227,7 +230,7 @@ class Solver(SolverBase):
 
                 arrays = [buildArr(as_, bs, prefix + 'ConstraintArr_' + t.sanitized_name) for (as_, bs, prefix) in toConsider]
                 countWrongs = [pycsp3f.Sum(array) for array in arrays]
-                if self.strictHomeAwayConstraint is not None:
+                if self.strictHomeAwayConstraint is not None and not t.relaxed:
                     pycsp3f.satisfy(pycsp3f.Or(cw <= self.strictHomeAwayConstraint for cw in countWrongs))
                 return pycsp3f.Minimum(countWrongs)
         optTerms = [c for c in map(satisfyHomeAwayConstraint, self.league.teams) if c is not None]
@@ -248,7 +251,7 @@ class Solver(SolverBase):
             if self.strictXmasBreakDiff <= 0:
                 pycsp3f.satisfy(xmasArr[i] == (t == u) for (i, (t, u)) in enumerate(xmasTerms))
             else:
-                pycsp3f.satisfy(xmasArr[i] == (abs(t - u) <= self.strictXmasBreakDiff) for (i, (t, u)) in enumerate(xmasTerms))
+                pycsp3f.satisfy(xmasArr[i] == (pycsp3f.abs(t - u) <= self.strictXmasBreakDiff) for (i, (t, u)) in enumerate(xmasTerms))
 
             if self.strictXmasBreakPercentage >= 0.99999:
                 pycsp3f.satisfy(xmasArr[i] == 1 for i in range(len(xmasTerms)))
