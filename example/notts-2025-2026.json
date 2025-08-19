@@ -29,6 +29,7 @@
             },
             "lateStart": "2025-09-15",
             "name": "Ashfield",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -70,6 +71,7 @@
             },
             "lateStart": null,
             "name": "Beeston",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -99,6 +101,7 @@
             },
             "lateStart": null,
             "name": "Gambit",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -152,6 +155,7 @@
             },
             "lateStart": null,
             "name": "Grantham",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -187,6 +191,7 @@
             },
             "lateStart": "2025-09-22",
             "name": "Mansfield",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -204,6 +209,7 @@
             },
             "lateStart": "2025-10-06",
             "name": "Newark",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -233,6 +239,7 @@
             },
             "lateStart": null,
             "name": "Nomads",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -265,6 +272,7 @@
             },
             "lateStart": "2025-09-16",
             "name": "Nottingham Central",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -292,6 +300,7 @@
             },
             "lateStart": "2025-09-08",
             "name": "Radcliffe & Bingham",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -383,6 +392,7 @@
             },
             "lateStart": "2025-09-27",
             "name": "University",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -422,6 +432,7 @@
             },
             "lateStart": "2025-09-29",
             "name": "West Bridgford",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
@@ -462,6 +473,7 @@
             },
             "lateStart": "2025-09-08",
             "name": "West Nottingham",
+            "relaxed": false,
             "teams": [
                 {
                     "calendar": {
