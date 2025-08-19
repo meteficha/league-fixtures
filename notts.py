@@ -52,10 +52,13 @@ def season202526() -> League:
     universityHolidays = Calendar(
         { date(2026, 1, i) for i in range(1, 12) } |
         { date(2026, 3, i) for i in range(28, 32) } |
-        { date(2026, 4, i) for i in range(1, 27) }
+        { date(2026, 4, i) for i in range(1, 27) }``
         )
 
     bramcote = Venue("Bramcote Memorial Hall", maxMatchesPerDay=3, minimizeEmptyDays=True)
+        # Bramcote should have been maxMatchesPerDay=2. However, that doesn't work
+        # right now anyway, because there are more Beeston home games than there are
+        # West Nottingham home games.
     brownCow = Venue("Brown Cow", calendar=Calendar({date(2025, 12, i) for i in range(1,32)}))
     coronation = Venue("Coronation Social Club", maxMatchesPerDay=2)
     embankment = Venue("The Embankment Pub", maxMatchesPerDay=3)
@@ -85,7 +88,7 @@ def season202526() -> League:
     beeston = Club(
         "Beeston",
         bramcote,
-        Weekday.TUESDAY
+        Weekday.TUESDAY,
         )
     central = Club(
         "Nottingham Central",
