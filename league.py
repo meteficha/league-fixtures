@@ -96,6 +96,10 @@ class Club:
             "relaxed": self.relaxed
             }
 
+    @cached_property
+    def sanitized_name(self) -> str:
+        return sanitize(self.name)
+
     @classmethod
     def from_json(cls: type[Self], venues: dict[str, Venue], o: dict[str, Any]) -> Self:
         calendar = Calendar.from_json(o["calendar"]) if "calendar" in o else None
@@ -252,20 +256,25 @@ class Division:
 class OnlyWhen:
     """Constraint that requires a constrained club's home matches to be played
     only when the reference club is playing a home match."""
-    def __init__(self, constrained: Club, reference: Club):
+    def __init__(self, constrained: Club, reference: Club, unconstrainedDays: Calendar | None = None):
         assert(constrained is not reference)
         self.constrained = constrained
         self.reference = reference
+        self.unconstrainedDays = unconstrainedDays
 
     def to_json(self) -> dict[str, Any]:
-        return {
+        ret: dict[str, Any] = {
             "constrained": self.constrained.name,
             "reference": self.reference.name,
             }
+        if self.unconstrainedDays is not None:
+            ret["unconstrainedDays"] = self.unconstrainedDays.to_json()
+        return ret
 
     @classmethod
     def from_json(cls: type[Self], clubs: dict[str, Club], o: dict[str, Any]) -> Self:
-        return cls(constrained=clubs[o["constrained"]], reference=clubs[o["reference"]])
+        unconstrainedDays = Calendar.from_json(o["unconstrainedDays"]) if "unconstrainedDays" in o else None
+        return cls(constrained=clubs[o["constrained"]], reference=clubs[o["reference"]], unconstrainedDays=unconstrainedDays)
 
 
 class League:

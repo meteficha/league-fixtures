@@ -168,10 +168,18 @@ class Solver(SolverBase):
         print("\t\tOnly when constraints")
         for ow in self.league.onlyWhen:
             print("\t\t\t" + ow.constrained.name + " plays at home only when " + ow.reference.name + " plays at home", end='', flush=True)
+            unconstrainedArray = []
+            if ow.unconstrainedDays and len(ow.unconstrainedDays.holidays) > 0:
+                unconstrainedDates = [self.dateToInt(d) for d in ow.unconstrainedDays.holidays] if ow.unconstrainedDays else []
+                unconstrainedArray = pycsp3f.VarArray(
+                    size=len(unconstrainedDates),
+                    dom=unconstrainedDates,
+                    id="unconstrainedArray_" + ow.constrained.sanitized_name + "_" + ow.reference.sanitized_name)
+                pycsp3f.satisfy(unconstrainedArray[i] == unconstrainedDates[i] for i in range(len(unconstrainedDates)))
             for t in ow.constrained.teams:
                 for f in t.homeFixtures:
                     pycsp3f.satisfy(
-                        pycsp3f.Exist([self.homeFixtureArrays[t2] for t2 in ow.reference.teams], value = self.vars[f])
+                        pycsp3f.Exist([self.homeFixtureArrays[t2] for t2 in ow.reference.teams] + [v for v in unconstrainedArray], value = self.vars[f])
                     )
             print(".")
 
@@ -296,6 +304,8 @@ class Solver(SolverBase):
         print("\tAsking for a solution... (press Ctrl-C to save best solution so far)\n\n\n")
         r = pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0)
         if r is not pycsp3.SAT and r is not pycsp3.OPTIMUM:
+            # r = pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0, extraction=True)
+            # print(pycsp3.core())
             raise UnsatisfiableConstraints(str(r))
 
         if r is pycsp3.OPTIMUM:
