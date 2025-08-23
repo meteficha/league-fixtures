@@ -25,6 +25,7 @@ from typing import Literal
 
 from league import League
 from report import Report
+import export_csv
 
 @click.group()
 def cli():
@@ -90,6 +91,22 @@ def report(input: str, output: str | None) -> None:
 
     print('Saving report')
     Report(league).saveTo(output)
+
+@cli.command()
+@click.option('--output', help='Output to a different file, instead of just adding an .csv suffix')
+@click.argument('input')
+def csv(input: str, output: str | None) -> None:
+    '''Generate a CSV report from a league file. Can be used with the ECF LMS importer.'''
+    output = input + '.csv' if output is None else output
+
+    print('Loading data')
+    league = None
+    with open(input, "r") as f:
+        league = League.from_json(json.load(f))
+
+    print('Saving CSV')
+    with open(output, "w") as f:
+        export_csv.write(f, league)
 
 if __name__ == '__main__':
     cli()
