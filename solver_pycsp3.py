@@ -59,6 +59,7 @@ class Solver(SolverBase):
         self.strictMaxNoWeeksWithMatches: int | None = 2 # Maximum number of weeks with back to back fixtures.
         self.strictXmasBreakDiff: int | None = 0 # Maximum number of fixtures either side of Xmas should have in addition to the other.
         self.strictXmasBreakPercentage: float = 0.8 # Percentage of teams that are required to satisfy the Xmas constraint, between 0 and 1 inclusive.
+        self.strictFixturePairSpacing: int | None = None # 7 # Minimum number of weeks between fixture pairs.
 
         self.homeFixtureArrays: dict[Team, ListVar] = dict()
         self.homeFixtureDomains: dict[Team, set[int]] = dict()
@@ -158,12 +159,13 @@ class Solver(SolverBase):
                 for (t1, t2) in pairwise(c.teams)
             )
 
-        print("\t\tFixture pairs played with time between them (7 weeks)")
-        pycsp3f.satisfy(
-            pycsp3f.abs(self.vars[f1] - self.vars[f2]) >= 7*7 # pyright: ignore [reportOperatorIssue]
-            for (f1, f2) in self.league.fixturePairs
-            if not f1.home.relaxed and not f1.away.relaxed
-        )
+        if self.strictFixturePairSpacing is not None:
+            print(f"\t\tFixture pairs played with time between them ({str(self.strictFixturePairSpacing)} weeks)")
+            pycsp3f.satisfy(
+                pycsp3f.abs(self.vars[f1] - self.vars[f2]) >= self.strictFixturePairSpacing*7 # pyright: ignore [reportOperatorIssue]
+                for (f1, f2) in self.league.fixturePairs
+                if not f1.home.relaxed and not f1.away.relaxed
+            )
 
         print("\t\tOnly when constraints")
         for ow in self.league.onlyWhen:
