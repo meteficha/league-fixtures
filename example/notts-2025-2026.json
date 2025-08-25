@@ -618,7 +618,7 @@
                 },
                 {
                     "away": "Radcliffe & Bingham 1",
-                    "date": "2025-10-21",
+                    "date": "2025-10-28",
                     "home": "Beeston 1"
                 },
                 {
@@ -1334,7 +1334,7 @@
                 },
                 {
                     "away": "Beeston 2",
-                    "date": "2025-10-28",
+                    "date": "2025-10-21",
                     "home": "Gambit 5"
                 },
                 {
@@ -1859,7 +1859,7 @@
                 },
                 {
                     "away": "Gambit 7",
-                    "date": "2026-03-31",
+                    "date": "2026-04-14",
                     "home": "Beeston 3"
                 },
                 {
@@ -1869,7 +1869,7 @@
                 },
                 {
                     "away": "Radcliffe & Bingham 5",
-                    "date": "2025-11-25",
+                    "date": "2025-10-28",
                     "home": "Beeston 3"
                 },
                 {
@@ -1879,7 +1879,7 @@
                 },
                 {
                     "away": "West Nottingham 3",
-                    "date": "2026-01-06",
+                    "date": "2026-01-20",
                     "home": "Beeston 3"
                 },
                 {
@@ -2111,7 +2111,14 @@
     "onlyWhen": [
         {
             "constrained": "Beeston",
-            "reference": "West Nottingham"
+            "reference": "West Nottingham",
+            "unconstrainedDays": {
+                "holidays": [
+                    "2025-10-28",
+                    "2026-01-20",
+                    "2026-04-14"
+                ]
+            }
         }
     ],
     "start": "2025-09-06",
