@@ -7,6 +7,9 @@ from .base import Constraint, ConstraintContext
 
 
 class DivisionDaySpreadObjectiveConstraint(Constraint):
+    def apply(self, _ctx: ConstraintContext) -> None:
+        return None
+
     def objective_term(self, ctx: ConstraintContext) -> Any:
         print("\t\tDivision should have matches on as many days as possible")
         return pycsp3f.Sum(

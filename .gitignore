@@ -3,3 +3,4 @@ report.html
 solver*.log
 __pycache__
 /oneoff
+__main__.xml

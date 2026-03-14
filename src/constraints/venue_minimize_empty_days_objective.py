@@ -7,6 +7,9 @@ from .base import Constraint, ConstraintContext
 
 
 class VenueMinimizeEmptyDaysObjectiveConstraint(Constraint):
+    def apply(self, _ctx: ConstraintContext) -> None:
+        return None
+
     def objective_term(self, ctx: ConstraintContext) -> Any:
         print("\t\tVenues can choose to minimize empty days")
         return -1 * pycsp3f.Sum(

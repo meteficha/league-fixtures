@@ -5,6 +5,9 @@ from .base import Constraint, ConstraintContext
 
 
 class VenueAssignedDaysObjectiveConstraint(Constraint):
+    def apply(self, _ctx: ConstraintContext) -> None:
+        return None
+
     def objective_term(self, ctx: ConstraintContext):
         print("\t\tVenues have matches assigned to most of their days")
         return pycsp3f.Sum(

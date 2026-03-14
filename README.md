@@ -64,3 +64,31 @@ constraints = [
 s = Solver(league, constraints=constraints, solver='ACE', solverOptions='-rr')
 s.solve()
 ```
+
+## Running the tests
+
+The test suite covers every constraint class with both satisfiable and unsatisfiable scenarios.
+
+### Setup
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Run all tests
+
+```bash
+python -m pytest test -q
+```
+
+### Run a specific constraint's tests
+
+```bash
+python -m pytest test/test_venue_daily_capacity.py -v
+```
+
+Tests live in `test/`, one module per constraint.  The helper utilities in
+`test/helpers.py` provide factory functions for building minimal `League`
+objects and `assert_sat`/`assert_unsat` helpers used by every test module.
