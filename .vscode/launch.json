@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: app.py",
+            "name": "Python Debugger: src/app.py",
             "type": "debugpy",
             "request": "launch",
-            "program": "app.py",
+            "program": "src/app.py",
             "args": [
                 "solve",
                 "notts-debug.json",
