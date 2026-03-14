@@ -67,8 +67,8 @@ def solve(input: str, output: str | None, solver: Literal['ACE', 'CHOCO'], optio
         league = League.from_json(json.load(f))
 
     print(f'Creating solver ({solver} {options})')
-    from solver_pycsp3 import Solver
-    s = Solver(league, solver, options)
+    from solver_pycsp3 import create_solver
+    s = create_solver(league, solver, options)
 
     print('Solving')
     s.solve()
