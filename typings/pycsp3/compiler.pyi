@@ -28,7 +28,7 @@ class Compilation:
     
 
 
-def load_json_data(filename, *, storing=...): # -> pycsp3.tools.curser.namedtuple | list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | pycsp3.tools.curser.namedtuple | Any] | pycsp3.tools.curser.namedtuple | Any] | pycsp3.tools.curser.namedtuple | Any] | Any | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | pycsp3.tools.curser.namedtuple | Any] | pycsp3.tools.curser.namedtuple | Any] | pycsp3.tools.curser.namedtuple | Any] | pycsp3.tools.curser.namedtuple | Any] | None:
+def load_json_data(filename, *, storing=..., record_string_data=...): # -> Any | AttributeDict | pycsp3.tools.curser.namedtuple | list[Any] | ListInt | ListVar | list[AttributeDict] | list[pycsp3.tools.curser.namedtuple] | None:
     """
     Loads and returns the data from the specified JSON file (possibly given by a URL)
 
@@ -37,7 +37,7 @@ def load_json_data(filename, *, storing=...): # -> pycsp3.tools.curser.namedtupl
     """
     ...
 
-def default_data(filename): # -> Any | pycsp3.tools.curser.namedtuple | list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | list[list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | pycsp3.tools.curser.namedtuple | Any] | None:
+def default_data(filename): # -> Any | AttributeDict | pycsp3.tools.curser.namedtuple | list[Any] | ListInt | ListVar | list[AttributeDict] | list[pycsp3.tools.curser.namedtuple] | None:
     """
     Loads data from the specified JSON file (possibly given by a URL)
 

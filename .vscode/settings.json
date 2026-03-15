@@ -9,5 +9,10 @@
         "rowspan",
         "strongtyping",
         "unsat"
-    ]
+    ],
+    "python.testing.pytestArgs": [
+        "test"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

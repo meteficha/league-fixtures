@@ -1,6 +1,17 @@
 # pyright: strict, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
 from .adjacent_teams_different_day import AdjacentTeamsDifferentDayConstraint
-from .base import Constraint, ConstraintContext
+from .base import Constraint, ConstraintContext, DomainConstraint
+from .domain import (
+    ClubHolidayDomainConstraint,
+    ClubLateStartDomainConstraint,
+    create_default_domain_constraints,
+    FixedDateDomainConstraint,
+    FixtureWeekdayDomainConstraint,
+    LeagueHolidayDomainConstraint,
+    SameClubDeadlineDomainConstraint,
+    TeamHolidayDomainConstraint,
+    VenueHolidayDomainConstraint,
+)
 from .division_day_spread_objective import DivisionDaySpreadObjectiveConstraint
 from .first_match_same_club import FirstMatchSameClubConstraint
 from .fixture_pair_spacing import FixturePairSpacingConstraint
@@ -17,6 +28,16 @@ from .xmas_break_balance import XmasBreakBalanceConstraint
 __all__ = [
     "Constraint",
     "ConstraintContext",
+    "DomainConstraint",
+    "FixtureWeekdayDomainConstraint",
+    "ClubLateStartDomainConstraint",
+    "LeagueHolidayDomainConstraint",
+    "VenueHolidayDomainConstraint",
+    "ClubHolidayDomainConstraint",
+    "TeamHolidayDomainConstraint",
+    "SameClubDeadlineDomainConstraint",
+    "FixedDateDomainConstraint",
+    "create_default_domain_constraints",
     "SingleFixtureDomainConstraint",
     "TeamNoOverlapAndSpacingConstraint",
     "MaxConsecutiveWeeksConstraint",

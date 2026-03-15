@@ -1,5 +1,4 @@
 # pyright: strict, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
-from datetime import date
 from typing import Any, Literal, Sequence
 
 from pycsp3.classes.main.variables import Variable
@@ -7,6 +6,7 @@ from pycsp3.tools.curser import ListVar
 import pycsp3
 import pycsp3.classes.entities as pycsp3ce
 import pycsp3.functions as pycsp3f
+import pycsp3.tools.utilities as pycsp3u
 
 from constraints import (
     AdjacentTeamsDifferentDayConstraint,
@@ -48,32 +48,6 @@ class Solver(SolverBase):
         self.solver = pycsp3.CHOCO if solver == "CHOCO" else pycsp3.ACE
         self.solverOptions = solverOptions
 
-    def dom(self, f: Fixture) -> set[int]:
-        # Constraint: respects club late starts.
-        start: int = max(self.dateToInt(d) for d in [self.league.start, f.home.club.lateStart, f.away.club.lateStart] if d is not None)
-
-        # Constraint: played within start/end dates.
-        # Constraint: played on venue's weekday.
-        ret = {d for d in self.possibleDays(f.weekday) if d >= start}
-
-        # Constraint: not played on a holiday.
-        ret.difference_update(self.holidaysLeague)
-        ret.difference_update(self.holidaysPerVenue[f.venue])
-        ret.difference_update(self.holidaysPerClub[f.home.club])
-        ret.difference_update(self.holidaysPerClub[f.away.club])
-        ret.difference_update(self.holidaysPerTeam[f.home])
-        ret.difference_update(self.holidaysPerTeam[f.away])
-
-        # Constraint: matches between teams of the same club must be played by 31 Jan.
-        if f.sameClub():
-            ret = {d for d in ret if d <= self.dateToInt(date(self.league.end.year, 1, 31))}
-
-        # Allow for fixture dates to be decided manually.
-        if f.date is not None:
-            ret.intersection_update({self.dateToInt(f.date)})
-
-        return ret
-
     def __createConstraints(self) -> None:
         if self.constraintsCreated:
             self.vars = {}
@@ -84,13 +58,15 @@ class Solver(SolverBase):
 
         objective_terms: list[Any] = []
         for constraint in self.constraintsPipeline:
-            constraint.apply(ctx)
-            objective_terms.append(constraint.objective_term(ctx))
+            obj_term = constraint.apply(ctx)
+            if obj_term is not None:
+                objective_terms.append(obj_term)
 
-        objective = 0
-        for term in objective_terms:
-            objective += term
-        pycsp3f.maximize(objective)
+        if len(objective_terms) > 0:
+            objective = 0
+            for term in objective_terms:
+                objective += term
+            pycsp3f.maximize(objective)
 
         self.vars = ctx.vars
         self.homeFixtureArrays = ctx.homeFixtureArrays
@@ -100,7 +76,7 @@ class Solver(SolverBase):
         print("\tCreating constraints...")
         self.__createConstraints()
         print("\tAsking for a solution... (press Ctrl-C to save best solution so far)\n\n\n")
-        r = pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0)
+        r = pycsp3.solve(solver=self.solver, options=self.solverOptions, verbose=0, auto_delete=True)
         if r is not pycsp3.SAT and r is not pycsp3.OPTIMUM:
             raise UnsatisfiableConstraints(str(r))
 
@@ -108,11 +84,18 @@ class Solver(SolverBase):
             print("\n\n\tFound the best solution. Wow!")
         print("\n\n\tExtracting solution")
         for f in self.league.fixtures:
-            v = pycsp3f.value(self.vars[f])
+            var = self.vars[f]
+            v = pycsp3f.value(var)
             if isinstance(v, int):
                 f.date = self.intToDate(v)
+            elif isinstance(v, type(pycsp3u.ANY)):
+                dom_values = var.dom.all_values() # pyright: ignore[reportAttributeAccessIssue]
+                if len(dom_values) == 1 and isinstance(dom_values[0], int):
+                    f.date = self.intToDate(dom_values[0])
+                else:
+                    raise Exception(f"pycsp3f.value({var}) is a star, domain has values {dom_values}, and is not a single int")
             else:
-                raise Exception(f"pycsp3f.value({self.vars[f]}) is {v}, not an int")
+                raise Exception(f"pycsp3f.value({var}) is {v}, not an int")
 
 
 def create_default_constraints() -> list[Constraint]:

@@ -9,7 +9,7 @@ def cursing(): # -> None:
 
 class OpOverrider:
     activated = ...
-    array_indexing_warning = ...
+    and_or_store = ...
     @staticmethod
     def enable(): # -> None:
         ...
@@ -33,34 +33,37 @@ class OpOverrider:
     def __neg__(self): # -> Node:
         ...
     
-    def __add__(self, other): # -> Self | <subclass of OpOverrider* and Node> | PartialConstraint | Node | Any:
+    def __add__(self, other, r_call=...): # -> Self | <subclass of OpOverrider* and Node> | PartialConstraint | int | Any:
         ...
     
-    def __radd__(self, other): # -> Node:
+    def __radd__(self, other): # -> Self | <subclass of OpOverrider* and Node> | PartialConstraint | int | Any:
         ...
     
-    def __sub__(self, other): # -> Self | <subclass of OpOverrider* and Node> | PartialConstraint | Node | Any:
+    def __sub__(self, other): # -> Self | <subclass of OpOverrider* and Node> | PartialConstraint | int | Any | Variable:
         ...
     
     def __rsub__(self, other): # -> Node:
         ...
     
-    def __mul__(self, other): # -> Node:
+    def __mul__(self, other, r_call=...): # -> Self | Literal[0]:
         ...
     
-    def __rmul__(self, other): # -> Node:
+    def __rmul__(self, other): # -> Self | Literal[0]:
         ...
     
-    def __mod__(self, other): # -> Node:
+    def __floordiv__(self, other): # -> Self:
         ...
     
-    def __pow__(self, other): # -> Node:
+    def __rfloordiv__(self, other):
         ...
     
-    def __floordiv__(self, other): # -> Node:
+    def __mod__(self, other): # -> <subclass of OpOverrider* and Variable>:
         ...
     
-    def __rfloordiv__(self, other): # -> Node:
+    def __rmod__(self, other):
+        ...
+    
+    def __pow__(self, other):
         ...
     
     def __lt__(self, other) -> bool:
@@ -81,19 +84,21 @@ class OpOverrider:
     def __ne__(self, other) -> bool:
         ...
     
-    def __or__(self, other): # -> Self | EOr | ConstraintDummyConstant | Node | Literal[True]:
+    def __or__(self, other): # -> Self | ConstraintDummyConstant | EOr | Literal[True]:
         ...
     
-    def __and__(self, other): # -> Self | EAnd | ConstraintDummyConstant | Literal[False]:
+    __ror__ = ...
+    def __and__(self, other): # -> Self | ConstraintDummyConstant | EAnd | Literal[False]:
         ...
     
+    __rand__ = ...
     def __invert__(self): # -> ENot | Variable | Node:
         ...
     
-    def __xor__(self, other): # -> EXor | Node | ConstraintDummyConstant:
+    def __xor__(self, other): # -> EXor | ConstraintDummyConstant:
         ...
     
-    def __rshift__(self, other): # -> list[Any | list[Any] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | None] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | list[Any] | None:
+    def __rshift__(self, other): # -> list[Any | list[Any]]:
         ...
     
 
@@ -132,9 +137,13 @@ class ListVar(list):
     def __add__(self, other): # -> ListVar:
         ...
     
+    def __radd__(self, other): # -> ListVar:
+        ...
+    
     def __mul__(self, other): # -> ScalarProduct:
         ...
     
+    __rmul__ = ...
     def __contains__(self, other): # -> bool:
         ...
     
@@ -167,6 +176,18 @@ class ListVar(list):
     
 
 
+class ListMultipleVar(list):
+    def __init__(self, multiple_variables=...) -> None:
+        ...
+    
+    def add_fields(self, field_names): # -> Self:
+        ...
+    
+    def __getitem__(self, indexes): # -> ListInt | ListVar | ListCtr | ListMix | list[Any]:
+        ...
+    
+
+
 class ListCtr(list):
     def __init__(self, ectrs) -> None:
         ...
@@ -191,10 +212,20 @@ class ListMix(list):
     
 
 
-def convert_to_namedtuples(obj): # -> list[Any] | ListInt | ListVar | list[pycsp3.tools.curser.namedtuple] | pycsp3.tools.curser.namedtuple:
+test = ...
+def convert_to_namedtuples(obj): # -> list[Any] | ListInt | ListVar | list[AttributeDict] | list[pycsp3.tools.curser.namedtuple] | AttributeDict | pycsp3.tools.curser.namedtuple:
     ...
 
 def is_namedtuple(obj): # -> bool:
+    ...
+
+def rows(m): # -> ListVar | ListInt | list[Any]:
+    """
+    Returns a list with the rows of the specified matrix
+
+    :param m: a matrix (i.e. a two-dimensional list)
+    :return: the matrix (possibly after converting its type)
+    """
     ...
 
 def columns(m): # -> ListVar | ListInt | list[ListVar | ListInt | list[Any]]:
@@ -259,6 +290,15 @@ def diagonals_up(m, *, broken=...): # -> ListVar | ListInt | list[Any | ListVar 
       :param m: a matrix (i.e. a two-dimensional list)
       :param broken: true when broken diagonals must be completed
       :return: the list of upward diagonals
+      """
+    ...
+
+def diagonals(m): # -> ListVar | ListInt | list[Any | ListVar | ListInt | list[Any]]:
+    """
+      Returns a list with the two main diagonals of the specified matrix
+
+      :param m: a matrix (i.e. a two-dimensional list)
+      :return: a list with the two main diagonals
       """
     ...
 

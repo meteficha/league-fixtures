@@ -40,7 +40,7 @@ def subvariant(name=...): # -> str | None:
     """
     ...
 
-def Var(term=..., *others, dom=..., id=...): # -> VariableInteger | VariableSymbolic:
+def Var(term=..., *others, dom=..., id=...): # -> VariableInteger | Any | VariableSymbolic:
     """
     Builds a stand-alone variable with the specified domain.
     The domain is either given by the named parameter dom, or given
@@ -57,7 +57,7 @@ def Var(term=..., *others, dom=..., id=...): # -> VariableInteger | VariableSymb
     """
     ...
 
-def VarArray(doms=..., *, size=..., dom=..., dom_border=..., id=..., comment=...): # -> tuple[Any, ...] | Variable | ListVar | None:
+def VarArray(doms=..., *, size=..., dom=..., dom_border=..., id=..., comment=..., tags=...):
     """
     Builds an array of variables.
     The number of dimensions of the array is given by the number of values in size.
@@ -70,8 +70,12 @@ def VarArray(doms=..., *, size=..., dom=..., dom_border=..., id=..., comment=...
     :param dom_border: the domain of the cells at the border of the (two-dimensional) array
     :param id: the id (name) of the array, or None (usually, None)
     :param comment: a string
+    :param tags a (possibly empty) list of tags
     :return: an array of variables
     """
+    ...
+
+def VarArrayMultiple(*, size, fields): # -> ListMultipleVar | Any:
     ...
 
 def var(name):
@@ -95,7 +99,7 @@ def And(*args, meta=...): # -> EAnd | ConstraintDummyConstant:
     """
     ...
 
-def Or(*args, meta=...): # -> EOr | ConstraintDummyConstant | Node:
+def Or(*args, meta=...): # -> EOr | ConstraintDummyConstant:
     """
     Builds a meta-constraint Or from the specified arguments.
     For example: Or(Sum(x) > 10, AllDifferent(x))
@@ -123,7 +127,7 @@ def Not(arg, meta=...): # -> ENot:
     """
     ...
 
-def Xor(*args, meta=...): # -> EXor | Node | ConstraintDummyConstant:
+def Xor(*args, meta=...): # -> EXor | ConstraintDummyConstant:
     """
     Builds a meta-constraint Xor from the specified arguments.
     For example: Xor(Sum(x) > 10, AllDifferent(x))
@@ -137,7 +141,7 @@ def Xor(*args, meta=...): # -> EXor | Node | ConstraintDummyConstant:
     """
     ...
 
-def If(test, *test_complement, Then, Else=..., meta=...): # -> EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | list[Any | list[Any | list[Any] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | None] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | list[Any] | None] | list[Any] | None:
+def If(test, *test_complement, Then, Else=..., meta=...):
     """
     Builds a complex form of constraint(s), based on the general control structure 'if then else'
     that can possibly be decomposed, at compilation time.
@@ -161,10 +165,10 @@ def If(test, *test_complement, Then, Else=..., meta=...): # -> EOr | ConstraintD
     """
     ...
 
-def Match(Expr, *, Cases): # -> list[ConstraintDummyConstant | Any | Node] | list[Any]:
+def Match(Expr, *, Cases): # -> list[ConstraintDummyConstant | Any] | list[Any]:
     ...
 
-def Iff(*args, meta=...): # -> EIff | bool | ConstraintDummyConstant | Node:
+def Iff(*args, meta=...): # -> EIff | bool | ConstraintDummyConstant:
     """
     Builds a meta-constraint Iff from the specified arguments.
     For example: Iff(Sum(x) > 10, AllDifferent(x))
@@ -203,7 +207,7 @@ def satisfy(*args, no_comment_tags_extraction=...):
     """
     ...
 
-def Table(*, scope, supports=..., conflicts=...): # -> ECtr:
+def Table(*, scope, supports=..., conflicts=...): # -> ECtr | None:
     """
     Builds and returns a constraint Table.
 
@@ -218,7 +222,7 @@ def Table(*, scope, supports=..., conflicts=...): # -> ECtr:
 def col(*args): # -> Node:
     ...
 
-def abs(arg): # -> Node | Any:
+def abs(arg): # -> Any:
     """
     If the specified argument is a node or a variable of the model, the function builds
     and returns a node 'abs', root of a tree expression where the specified argument is a child.
@@ -228,7 +232,7 @@ def abs(arg): # -> Node | Any:
     """
     ...
 
-def min(*args): # -> int | str | Node:
+def min(*args): # -> int | str:
     """
     When one of the specified arguments is a node or a variable of the model, the function builds
     and returns a node 'min', root of a tree expression where specified arguments are children.
@@ -238,7 +242,7 @@ def min(*args): # -> int | str | Node:
     """
     ...
 
-def max(*args): # -> int | str | Node:
+def max(*args): # -> int | str:
     """
     When one of the specified arguments is a node or a variable of the model, the function builds
     and returns a node 'max', root of a tree expression where specified arguments are children.
@@ -248,7 +252,7 @@ def max(*args): # -> int | str | Node:
     """
     ...
 
-def xor(*args): # -> Node | ConstraintDummyConstant:
+def xor(*args): # -> ConstraintDummyConstant:
     """
     If there is only one argument, returns it.
     Otherwise, builds and returns a node 'xor', root of a tree expression where specified arguments are children.
@@ -258,7 +262,7 @@ def xor(*args): # -> Node | ConstraintDummyConstant:
     """
     ...
 
-def iff(*args): # -> EIff | bool | ConstraintDummyConstant | Node:
+def iff(*args): # -> EIff | bool | ConstraintDummyConstant:
     """
     Builds and returns a node 'iff', root of a tree expression where specified arguments are children.
     Without any parent, it becomes a constraint.
@@ -267,7 +271,7 @@ def iff(*args): # -> EIff | bool | ConstraintDummyConstant | Node:
     """
     ...
 
-def imply(*args): # -> list[Any | list[Any] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | None] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | list[Any] | None:
+def imply(*args): # -> list[Any | list[Any]]:
     """
     Builds and returns a node 'imply', root of a tree expression where specified arguments are children.
     Without any parent, it becomes a constraint.
@@ -277,7 +281,7 @@ def imply(*args): # -> list[Any | list[Any] | EOr | ConstraintDummyConstant | No
     """
     ...
 
-def ift(test, Then, Else): # -> list[Any | list[Any] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | None] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | list[Any] | list[Any | list[Any | list[Any] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | None] | EOr | ConstraintDummyConstant | Node | EIfThen | EIfThenElse | list[Any] | None] | None:
+def ift(test, Then, Else): # -> list[Any | list[Any]] | list[Any | list[Any | list[Any]]] | ConstraintDummyConstant:
     """
     Builds and returns a node 'ifthenelse', root of a tree expression where specified arguments are children.
     Without any parent, it becomes a constraint.
@@ -290,13 +294,13 @@ def ift(test, Then, Else): # -> list[Any | list[Any] | EOr | ConstraintDummyCons
     """
     ...
 
-def belong(x, values): # -> ConstraintDummyConstant | Node:
+def belong(x, values): # -> ConstraintDummyConstant:
     ...
 
-def not_belong(x, values): # -> ConstraintDummyConstant | Node:
+def not_belong(x, values): # -> ConstraintDummyConstant:
     ...
 
-def expr(operator, *args): # -> Node:
+def expr(operator, *args):
     """
     Builds and returns a node, root of a tree expression where specified arguments are children.
     The type of the new node is given by the specified operator.
@@ -326,7 +330,7 @@ def both(this, And): # -> ConstraintDummyConstant:
     """
     ...
 
-def disjunction(*args): # -> ConstraintDummyConstant | Node:
+def disjunction(*args): # -> ConstraintDummyConstant:
     """
     Builds and returns a node 'or', root of a tree expression where specified arguments are children.
     Without any parent, it becomes a constraint.
@@ -335,7 +339,7 @@ def disjunction(*args): # -> ConstraintDummyConstant | Node:
     """
     ...
 
-def either(this, Or): # -> ConstraintDummyConstant | Node:
+def either(this, Or): # -> ConstraintDummyConstant:
     """
     Builds and returns a node 'or', root of a tree expression where the two specified arguments are children.
     Without any parent, it becomes a constraint.
@@ -389,7 +393,7 @@ def AllDifferentList(term, *others, excepting=...): # -> ECtr:
     """
     ...
 
-def AllEqual(term, *others, excepting=...): # -> ECtr:
+def AllEqual(term, *others, excepting=...): # -> ConstraintDummyConstant | ECtr:
     """
     Builds and returns a constraint AllEqual.
 
@@ -412,7 +416,7 @@ def AllEqualList(term, *others, excepting=...): # -> list[Any] | ECtr:
     """
     ...
 
-def Increasing(term, *others, strict=..., lengths=...): # -> list[Node] | ECtr | None:
+def Increasing(term, *others, strict=..., lengths=...): # -> list[Any] | ECtr | None:
     """
     Builds and returns a constraint Increasing.
 
@@ -424,7 +428,7 @@ def Increasing(term, *others, strict=..., lengths=...): # -> list[Node] | ECtr |
     """
     ...
 
-def Decreasing(term, *others, strict=..., lengths=...): # -> list[Node] | ECtr | None:
+def Decreasing(term, *others, strict=..., lengths=...): # -> list[Any] | ECtr | None:
     """
     Builds and returns a constraint Decreasing.
 
@@ -472,7 +476,7 @@ def Precedence(within, *, values=..., covered=...): # -> ECtr | None:
     """
     ...
 
-def Sum(term, *others, condition=...): # -> Any | ECtr | PartialConstraint | Literal[0]:
+def Sum(term, *others, condition=...):
     """
     Builds and returns a component Sum (that becomes a constraint when subject to a condition)
 
@@ -483,7 +487,7 @@ def Sum(term, *others, condition=...): # -> Any | ECtr | PartialConstraint | Lit
     """
     ...
 
-def Product(term, *others): # -> Node:
+def Product(term, *others):
     """
     Builds and returns a node 'mul', root of a tree expression where specified arguments are children
 
@@ -507,7 +511,7 @@ def Count(within, *within_complement, value=..., values=..., condition=...): # -
     """
     ...
 
-def Exist(within, *within_complement, value=...): # -> ConstraintDummyConstant | Node | ECtr | Literal[0]:
+def Exist(within, *within_complement, value=..., reified_by=...): # -> ConstraintDummyConstant | ECtr | VariableInteger | Any | Literal[0]:
     """
     Builds and returns a constraint Count that checks if at least one of the term evaluates to the specified value,
     or to 1 (seen as True) when value is None.
@@ -515,11 +519,12 @@ def Exist(within, *within_complement, value=...): # -> ConstraintDummyConstant |
     :param within: the (first) term, typically  a list of variables or expressions, on which the count applies
     :param within_complement: the other terms (if any) on which the count applies
     :param value the value to be found if not None (None, by default)
+    :reified_by if present (not None) a 01 variable corresponding to the reification of the constraint
     :return: a constraint Count
     """
     ...
 
-def AnyHold(within, *within_complement): # -> ConstraintDummyConstant | Node | ECtr | Literal[0]:
+def AnyHold(within, *within_complement): # -> ConstraintDummyConstant | ECtr | VariableInteger | Any | Literal[0]:
     """
     Builds and returns a constraint Count that checks if at least one term evaluates to 1 (seen as True).
 
@@ -563,7 +568,7 @@ def ExactlyOne(within, *within_complement, value=...): # -> bool | ConstraintDum
     """
     ...
 
-def AtLeastOne(within, *within_complement, value=...): # -> ConstraintDummyConstant | Node | ECtr | Literal[0]:
+def AtLeastOne(within, *within_complement, value=...): # -> ConstraintDummyConstant | ECtr | VariableInteger | Any | Literal[0]:
     """
     Builds and returns a constraint Count that checks that at least one term evaluates to 1 (seen as True) when value is not specified,
     or to the value (when the parameter is specified, and not None).
@@ -597,7 +602,7 @@ def AllHold(within, *within_complement): # -> bool | ConstraintDummyConstant | l
     """
     ...
 
-def Hamming(term, *others): # -> Any | ECtr | PartialConstraint | Literal[0]:
+def Hamming(term, *others):
     """
     Builds and returns a constraint Sum, corresponding to the Hamming distance of the two specified lists.
 
@@ -607,7 +612,7 @@ def Hamming(term, *others): # -> Any | ECtr | PartialConstraint | Literal[0]:
     """
     ...
 
-def NValues(within, *within_complement, excepting=..., condition=...): # -> ECtr | PartialConstraint | Literal[0]:
+def NValues(within, *within_complement, excepting=..., condition=...): # -> ConstraintDummyConstant | ECtr | PartialConstraint:
     """
     Builds and returns a component NValues (that becomes a constraint when subject to a condition).
 
@@ -619,7 +624,7 @@ def NValues(within, *within_complement, excepting=..., condition=...): # -> ECtr
     """
     ...
 
-def NumberDistinctValues(within, *within_complement, excepting=..., condition=...): # -> ECtr | PartialConstraint | Literal[0]:
+def NumberDistinctValues(within, *within_complement, excepting=..., condition=...): # -> ConstraintDummyConstant | ECtr | PartialConstraint:
     """
         Builds and returns a component NValues (that becomes a constraint when subject to a condition).
         This function is an alias for the function 'NValues()'
@@ -632,7 +637,7 @@ def NumberDistinctValues(within, *within_complement, excepting=..., condition=..
         """
     ...
 
-def NotAllEqual(term, *others): # -> ECtr | bool:
+def NotAllEqual(term, *others): # -> ConstraintDummyConstant | ECtr:
     """
       Builds and returns a component NValues (capturing NotAllEqual)
 
@@ -642,7 +647,7 @@ def NotAllEqual(term, *others): # -> ECtr | bool:
       """
     ...
 
-def Cardinality(within, *within_complement, occurrences, closed=...): # -> ECtr:
+def Cardinality(within, *within_complement, occurrences, closed=...): # -> ConstraintDummyConstant | ECtr:
     """
     Builds and returns a constraint Cardinality.
 
@@ -657,7 +662,7 @@ def Cardinality(within, *within_complement, occurrences, closed=...): # -> ECtr:
     """
     ...
 
-def Maximum(term, *others, condition=...): # -> Any | ECtr | PartialConstraint | int:
+def Maximum(term, *others, condition=...): # -> ECtr | PartialConstraint:
     """
     Builds and returns a component Maximum (that becomes a constraint when subject to a condition).
 
@@ -668,7 +673,7 @@ def Maximum(term, *others, condition=...): # -> Any | ECtr | PartialConstraint |
     """
     ...
 
-def Minimum(term, *others, condition=...): # -> Any | ECtr | PartialConstraint | int:
+def Minimum(term, *others, condition=...): # -> ECtr | PartialConstraint:
     """
     Builds and returns a component Minimum (that becomes a constraint when subject to a condition).
 
@@ -785,7 +790,7 @@ def Knapsack(selection, *selection_complement, weights, wlimit=..., wcondition=.
 def Flow(term, *others, balance, arcs, weights=..., condition=...): # -> ECtr | PartialConstraint:
     ...
 
-def Circuit(successors, *successors_complement, start_index=..., size=...): # -> ECtr:
+def Circuit(successors, *successors_complement, start_index=..., size=..., no_self_looping=...): # -> list[Any] | ECtr:
     """
     Builds and returns a constraint Circuit.
 
@@ -819,6 +824,11 @@ def Adhoc(form, note=..., **d): # -> ECtr:
     """
     ...
 
+deco_exec = ...
+def deco(f):
+    ...
+
+@deco
 def minimize(term): # -> EObjective:
     """
     Builds and returns an objective that corresponds to minimizing the specified term.
@@ -873,22 +883,23 @@ def unpost(i=..., j=...): # -> None:
     """
     ...
 
-def value(x, *, sol=...):
+def value(model_variable, *, sol=...):
     """
     Returns the value assigned to the specified variable when the solution at the specified index has been found
 
-    :param x: a variable
+    :param model_variable: a variable of the model
     :param sol: the index of a found solution
     """
     ...
 
-def values(m, *, sol=...): # -> ListInt | None:
+def values(model_variables, *model_variables_complement, sol=...): # -> ListInt | list[Any] | None:
     """
     Returns a list similar to the specified structure with the values assigned to the involved variables
-    when the solution at the specified index has been found
+    when the solution in the specified order (sol) has been found
 
-    :param m: a structure (typically list) of any dimension involving variables
-    :param sol: the index of a found solution
+    :param model_variables: the first term (typically, a list) containing variables on which the function applies
+    :param model_variables_complement: the other terms (if any) on which the function applies
+    :param sol: the order (index) of a found solution
     """
     ...
 

@@ -7,9 +7,9 @@ import os
 import sys
 from collections import namedtuple
 from itertools import permutations, product
-from pycsp3.functions import Adhoc, AllDifferent, AllDifferentList, AllEqual, AllEqualList, AllHold, And, AnyHold, AtLeastOne, AtMostOne, BinPacking, Cardinality, Channel, Circuit, Clause, Count, Cumulative, Decreasing, ExactlyOne, Exist, Flow, Hamming, If, Iff, Increasing, Knapsack, LexDecreasing, LexIncreasing, Match, Maximum, MaximumArg, Minimum, MinimumArg, NValues, NoOverlap, NoneHold, Not, NotAllEqual, NotExist, NumberDistinctValues, Or, Precedence, Product, Regular, Slide, Sum, Table, Var, VarArray, Xor, abs, annotate, belong, both, col, conjunction, disjunction, either, expr, iff, ift, imply, max, maximize, min, minimize, not_belong, objective, posted, protect, satisfy, subvariant, unpost, value, values, var, variant, xor
-from pycsp3.tools.curser import columns, cp_array, diagonal_down, diagonal_up, diagonals_down, diagonals_up, ring
-from pycsp3.tools.utilities import ALL, ANY, all_primes, alphabet_positions, combinations, decrement, different_values, flatten, integer_scaling, warning
+from pycsp3.functions import Adhoc, AllDifferent, AllDifferentList, AllEqual, AllEqualList, AllHold, And, AnyHold, AtLeastOne, AtMostOne, BinPacking, Cardinality, Channel, Circuit, Clause, Count, Cumulative, Decreasing, ExactlyOne, Exist, Flow, Hamming, If, Iff, Increasing, Knapsack, LexDecreasing, LexIncreasing, Match, Maximum, MaximumArg, Minimum, MinimumArg, NValues, NoOverlap, NoneHold, Not, NotAllEqual, NotExist, NumberDistinctValues, Or, Precedence, Product, Regular, Slide, Sum, Table, Var, VarArray, VarArrayMultiple, Xor, abs, annotate, belong, both, col, conjunction, disjunction, either, expr, iff, ift, imply, max, maximize, min, minimize, not_belong, objective, posted, protect, satisfy, subvariant, unpost, value, values, var, variant, xor
+from pycsp3.tools.curser import columns, cp_array, diagonal_down, diagonal_up, diagonals, diagonals_down, diagonals_up, ring, rows
+from pycsp3.tools.utilities import ALL, ANY, all_primes, alphabet_positions, build_table, combinations, decrement, different_values, flatten, integer_scaling, number_max_of_values_for_sum_le, number_max_of_values_for_sum_lt, number_of_values_for_sum_ge, number_of_values_for_sum_gt, warning
 from pycsp3.classes.auxiliary.conditions import complement, eq, ge, gt, le, lt, ne
 from pycsp3.classes.auxiliary.enums import TypeRank, TypeSolver, TypeStatus
 from pycsp3.classes.auxiliary.tables import to_ordinary_table
@@ -19,9 +19,7 @@ from pycsp3.compiler import Compilation, default_data, load_json_data
 
 __python_version__ = ...
 __pycsp3_version__ = ...
-if sys.version_info[0] < 3 or sys.version_info[1] < 6:
-    ...
-if sys.version_info[1] < 9:
+if sys.version_info[0] < 3 or sys.version_info[1] < 10:
     ...
 UNSAT = ...
 SAT = ...
@@ -31,6 +29,7 @@ UNKNOWN = ...
 ACE = ...
 CHOCO = ...
 Task = ...
+Item = ...
 if sys.argv:
     ...
 _solver = ...
@@ -84,7 +83,7 @@ def core(): # -> None:
     """
     ...
 
-def solve(*, solver=..., options=..., filename=..., verbose=..., sols=..., extraction=...): # -> Literal[TypeStatus.UNKNOWN, TypeStatus.CORE, TypeStatus.UNSAT, TypeStatus.OPTIMUM, TypeStatus.SAT] | None:
+def solve(*, solver=..., options=..., filename=..., verbose=..., sols=..., extraction=..., directory=..., auto_delete=..., on_solution=..., should_stop=...):
     """
     Solves the current model (after compiling it) and returns the status of this operation.
 
@@ -95,6 +94,10 @@ def solve(*, solver=..., options=..., filename=..., verbose=..., sols=..., extra
     :param verbose: verbosity level from -1 to 2
     :param sols: number of solutions to be found (ALL if no limit)
     :param extraction: True if an unsatisfiable core of constraints must be sought
+    :param directory: directory where generated XML and log files must be written
+    :param auto_delete: True if generated XML and log files must be removed after solving
+    :param on_solution: callback called on each intermediate solution produced by the solver
+    :param should_stop: callback or threading.Event used to stop the solver while it is running
     :return: the status of the solving operation
     """
     ...

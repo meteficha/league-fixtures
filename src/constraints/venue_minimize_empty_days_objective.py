@@ -7,13 +7,10 @@ from .base import Constraint, ConstraintContext
 
 
 class VenueMinimizeEmptyDaysObjectiveConstraint(Constraint):
-    def apply(self, _ctx: ConstraintContext) -> None:
-        return None
-
-    def objective_term(self, ctx: ConstraintContext) -> Any:
+    def apply(self, ctx: ConstraintContext) -> Any:
         print("\t\tVenues can choose to minimize empty days")
         return -1 * pycsp3f.Sum(
             pycsp3f.NValues(ctx.vars[f] for f in v.fixtures)
             for v in ctx.solver.league.venues
-            if v.minimizeEmptyDays
+            if v.minimizeEmptyDays and len(v.fixtures) >= 2
         )

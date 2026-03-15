@@ -1,6 +1,6 @@
 airium==0.2.7
 click==8.2.1
 lxml==6.0.0
-pycsp3==2.5.1
-pytest==8.4.1
+pycsp3 @ git+https://github.com/meteficha/pycsp3@35d6ebf495eadeb203df974a94bef7eaa2d38110
+pytest==9.0.2
 strongtyping==3.13.2

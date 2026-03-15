@@ -23,8 +23,10 @@ class ConstraintContext:
 
 
 class Constraint:
-    def apply(self, ctx: ConstraintContext) -> None:
+    def apply(self, ctx: ConstraintContext) -> Any | None:
         raise NotImplementedError()
 
-    def objective_term(self, _ctx: ConstraintContext) -> Any:
-        return 0
+
+class DomainConstraint:
+    def apply_to_fixture_domain(self, ctx: ConstraintContext, fixture: Fixture, domain: set[int]) -> set[int]:
+        raise NotImplementedError()

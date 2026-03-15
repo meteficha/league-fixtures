@@ -70,7 +70,10 @@ class Node(Entity):
     def __init__(self, node_type, args) -> None:
         ...
     
-    def __bool__(self): # -> Literal[True]:
+    def arity(self): # -> int:
+        ...
+    
+    def __bool__(self): # -> bool:
         ...
     
     def __getitem__(self, i):
@@ -164,11 +167,11 @@ class Node(Entity):
         ...
     
     @staticmethod
-    def build(node_type, *args): # -> Node:
+    def build(node_type, *args):
         ...
     
     @staticmethod
-    def set(*args): # -> Node:
+    def set(*args):
         ...
     
     @staticmethod
@@ -176,15 +179,15 @@ class Node(Entity):
         ...
     
     @staticmethod
-    def disjunction(*args): # -> Node:
+    def disjunction(*args):
         ...
     
     @staticmethod
-    def in_range(x, r): # -> Node:
+    def in_range(x, r):
         ...
     
     @staticmethod
-    def not_in_range(x, r): # -> Node:
+    def not_in_range(x, r):
         ...
     
     @staticmethod

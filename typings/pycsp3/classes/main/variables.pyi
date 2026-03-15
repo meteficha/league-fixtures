@@ -6,7 +6,25 @@ class Domain:
     def __init__(self, *args) -> None:
         ...
     
-    def __iter__(self): # -> Iterator[float]:
+    def remove(self, v): # -> bool:
+        ...
+    
+    def smallest_value(self): # -> int | float:
+        ...
+    
+    def greatest_value(self): # -> int | float:
+        ...
+    
+    def all_values(self): # -> range | list[float]:
+        ...
+    
+    def is_binary(self): # -> bool:
+        ...
+    
+    def is_infinite(self): # -> bool:
+        ...
+    
+    def __iter__(self): # -> Iterator[int] | Iterator[float]:
         ...
     
     def __getitem__(self, item):
@@ -19,18 +37,6 @@ class Domain:
         ...
     
     def __repr__(self): # -> str:
-        ...
-    
-    def smallest_value(self): # -> float | int:
-        ...
-    
-    def greatest_value(self): # -> float | int:
-        ...
-    
-    def all_values(self): # -> list[float]:
-        ...
-    
-    def is_binary(self): # -> bool:
         ...
     
 
@@ -84,10 +90,10 @@ class VariableInteger(Variable):
     def __init__(self, name, dom) -> None:
         ...
     
-    def among(self, *values): # -> ConstraintDummyConstant | Node:
+    def among(self, *values): # -> ConstraintDummyConstant:
         ...
     
-    def not_among(self, *values): # -> ConstraintDummyConstant | Node:
+    def not_among(self, *values): # -> ConstraintDummyConstant:
         ...
     
 

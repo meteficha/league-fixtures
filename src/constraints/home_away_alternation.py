@@ -12,11 +12,10 @@ from .utils import alternate, build_pair_order_violation_array, domUnion
 class HomeAwayAlternationConstraint(Constraint):
     def __init__(self, strictHomeAwayConstraint: int | None = None) -> None:
         self.strictHomeAwayConstraint = strictHomeAwayConstraint
-        self._optHomeAway: Any = 0
 
-    def apply(self, ctx: ConstraintContext) -> None:
+    def apply(self, ctx: ConstraintContext) -> Any:
         print("\t\tTeams alternate between playing away and at home", end="", flush=True)
-        self._optHomeAway = 0
+        optHomeAway = None
 
         def satisfyHomeAwayConstraint(t: Team) -> Any:
             awayFixtures: list[Fixture] = list(t.awayFixtures)
@@ -77,8 +76,6 @@ class HomeAwayAlternationConstraint(Constraint):
 
         optTerms = [c for c in map(satisfyHomeAwayConstraint, ctx.solver.league.teams) if c is not None]
         if optTerms:
-            self._optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-100)
+            optHomeAway = pycsp3f.Sum(c for c in optTerms) * (-100)
         print("")
-
-    def objective_term(self, _ctx: ConstraintContext) -> Any:
-        return self._optHomeAway
+        return optHomeAway

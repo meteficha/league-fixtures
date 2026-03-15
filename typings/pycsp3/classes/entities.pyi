@@ -27,6 +27,9 @@ class Entity:
     def copy_basic_attributes_of(self, other): # -> Self:
         ...
     
+    def __repr__(self): # -> str:
+        ...
+    
 
 
 class EVar(Entity):
@@ -76,6 +79,12 @@ class ECtr(Entity):
         ...
     
     def __bool__(self): # -> Literal[True]:
+        ...
+    
+    def __repr__(self) -> str:
+        ...
+    
+    def __str__(self) -> str:
         ...
     
     def to_table(self): # -> list[bool] | Self:

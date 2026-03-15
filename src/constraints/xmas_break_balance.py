@@ -8,15 +8,11 @@ from .base import Constraint, ConstraintContext
 
 
 class XmasBreakBalanceConstraint(Constraint):
-    def __init__(self, strictXmasBreakDiff: int | None = 0, strictXmasBreakPercentage: float = 0.8) -> None:
+    def __init__(self, strictXmasBreakDiff: int = 0, strictXmasBreakPercentage: float = 0.8) -> None:
         self.strictXmasBreakDiff = strictXmasBreakDiff
         self.strictXmasBreakPercentage = strictXmasBreakPercentage
-        self._optXmas: Any = 0
 
-    def apply(self, ctx: ConstraintContext) -> None:
-        self._optXmas = 0
-        if self.strictXmasBreakDiff is None:
-            return
+    def apply(self, ctx: ConstraintContext) -> Any:
         print("\t\tFixtures should be evenly distributed before/after Xmas break")
         beforeXmasBreakDates = range(ctx.solver.dateToInt(date(ctx.solver.league.end.year, 1, 1)))
         xmasTerms = [
@@ -40,7 +36,4 @@ class XmasBreakBalanceConstraint(Constraint):
         xmasArrCount = pycsp3f.Var(id="xmasArrCount", dom=range(len(xmasTerms) + 1))
         pycsp3f.satisfy(xmasArrCount == pycsp3f.Count(xmasArr, value=1))
         pycsp3f.satisfy(xmasArrCount >= int(len(xmasTerms) * self.strictXmasBreakPercentage))
-        self._optXmas = 500 * xmasArrCount
-
-    def objective_term(self, _ctx: ConstraintContext) -> Any:
-        return self._optXmas
+        return 500 * xmasArrCount

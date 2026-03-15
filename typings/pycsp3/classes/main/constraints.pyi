@@ -227,6 +227,9 @@ class ConstraintSum(ConstraintWithCondition):
     def add(self, term): # -> Self:
         ...
     
+    def to_terms(self): # -> list[Any]:
+        ...
+    
 
 
 class ConstraintCount(ConstraintWithCondition):
@@ -314,7 +317,7 @@ class ConstraintMinimumArg(ConstraintWithCondition):
 
 
 class ConstraintElement(ConstraintWithCondition):
-    def __init__(self, lst, *, index, type_rank=..., condition=...) -> None:
+    def __init__(self, lst, *, index, type_rank=..., value=..., condition=..., reified_by=...) -> None:
         ...
     
     def min_possible_value(self):
@@ -452,6 +455,38 @@ class ConstraintDummyConstant(ConstraintUnmergeable):
     def __gt__(self, other) -> bool:
         ...
     
+    def __or__(self, other): # -> ECtr:
+        ...
+    
+    def __add__(self, other):
+        ...
+    
+    __radd__ = ...
+    def __sub__(self, other):
+        ...
+    
+    def __rsub__(self, other):
+        ...
+    
+    def __mul__(self, other): # -> Self:
+        ...
+    
+    __rmul__ = ...
+    def __floordiv__(self, other): # -> Self:
+        ...
+    
+    def __rfloordiv__(self, other):
+        ...
+    
+    def __mod__(self, other): # -> Self:
+        ...
+    
+    def __rmod__(self, other): # -> Literal[0]:
+        ...
+    
+    def __str__(self) -> str:
+        ...
+    
 
 
 class PartialConstraint:
@@ -462,6 +497,9 @@ class PartialConstraint:
         ...
     
     def __eq__(self, other) -> bool:
+        ...
+    
+    def __neg__(self): # -> Self | Variable | Any:
         ...
     
     def __ne__(self, other) -> bool:
@@ -479,22 +517,30 @@ class PartialConstraint:
     def __gt__(self, other) -> bool:
         ...
     
-    def __add__(self, other): # -> Self | Node | PartialConstraint | Any:
+    def __add__(self, other): # -> Self | PartialConstraint | int | Any:
         ...
     
-    def __sub__(self, other): # -> Self | Node | PartialConstraint | Any:
+    __radd__ = ...
+    def __sub__(self, other): # -> Self | PartialConstraint | int | Any:
         ...
     
-    def __mul__(self, other): # -> Node | PartialConstraint | Any | Self:
+    def __rsub__(self, other):
         ...
     
-    def __rmul__(self, other): # -> Node | PartialConstraint | Any:
+    def __mul__(self, other): # -> PartialConstraint | int | Any | Self:
         ...
     
-    def __floordiv__(self, other): # -> Node:
+    __rmul__ = ...
+    def __floordiv__(self, other):
         ...
     
-    def __mod__(self, other): # -> Node:
+    def __rfloordiv__(self, other):
+        ...
+    
+    def __mod__(self, other):
+        ...
+    
+    def __rmod__(self, other):
         ...
     
     def __getitem__(self, i): # -> Self:
@@ -503,11 +549,23 @@ class PartialConstraint:
     def __contains__(self, item): # -> bool:
         ...
     
+    def among(self, right_operand): # -> ECtr:
+        ...
+    
+    def is_in(self, right_operand): # -> ECtr:
+        ...
+    
+    def not_among(self, right_operand): # -> ECtr:
+        ...
+    
+    def is_not_in(self, right_operand): # -> ECtr:
+        ...
+    
     def __str__(self) -> str:
         ...
     
     @staticmethod
-    def combine_partial_objects(obj1, operator, obj2): # -> PartialConstraint | Any:
+    def combine_partial_objects(obj1, operator, obj2): # -> PartialConstraint | int | Any:
         ...
     
 
@@ -534,19 +592,30 @@ class ScalarProduct:
     def __ne__(self, other) -> bool:
         ...
     
-    def __add__(self, other): # -> PartialConstraint | Any:
+    def __add__(self, other): # -> PartialConstraint | int | Any:
         ...
     
-    def __sub__(self, other): # -> PartialConstraint | Any:
+    __radd__ = ...
+    def __sub__(self, other): # -> PartialConstraint | int | Any:
         ...
     
-    def __floordiv__(self, other): # -> Node:
+    def __rsub__(self, other): # -> PartialConstraint | int | Any:
         ...
     
-    def __mod__(self, other): # -> Node:
+    def __mul__(self, other): # -> Self:
         ...
     
-    def __mul__(self, other): # -> Node:
+    __rmul__ = ...
+    def __floordiv__(self, other):
+        ...
+    
+    def __rfloordiv__(self, other):
+        ...
+    
+    def __mod__(self, other):
+        ...
+    
+    def __rmod__(self, other):
         ...
     
     def to_terms(self): # -> list[Any]:
@@ -569,13 +638,16 @@ class _Auxiliary:
     def replace_partial_constraint(self, pc): # -> VariableInteger:
         ...
     
-    def replace_constraint_with_condition(self, cc): # -> Node:
+    def replace_scalar_product(self, sp): # -> VariableInteger:
+        ...
+    
+    def replace_constraint_with_condition(self, cc):
         ...
     
     def replace_node(self, node, *, values=...): # -> VariableInteger:
         ...
     
-    def replace_partial_constraint_and_constraint_with_condition_and_possibly_node(self, term, *, node_too=..., values=...): # -> VariableInteger | Node:
+    def replace_partial_constraint_and_constraint_with_condition_and_possibly_node(self, term, *, node_too=..., values=...): # -> VariableInteger:
         ...
     
     def replace_partial_constraints_and_constraints_with_condition_and_possibly_nodes(self, terms, *, nodes_too=..., values=...): # -> list[Any]:
@@ -610,7 +682,7 @@ class _Auxiliary:
 def auxiliary(): # -> _Auxiliary | Any:
     ...
 
-def global_indirection(c): # -> ConstraintDummyConstant | Node | None:
+def global_indirection(c): # -> ConstraintDummyConstant | VariableInteger | Any | None:
     ...
 
 def manage_global_indirection(*args, also_pc=...): # -> list[Any] | None:

@@ -21,7 +21,10 @@ class Logger:
 
 
 class Instantiation:
-    def __init__(self, root, variables, values, pretty_solution) -> None:
+    def __init__(self, root, variables, values, pretty_solution, bound=...) -> None:
+        ...
+    
+    def value(self, model_variables, *model_variables_complement): # -> ListInt | list[Any] | None:
         ...
     
     def __repr__(self): # -> tuple[Any, Any]:
@@ -52,7 +55,7 @@ class SolverProcess:
     def parse_general_options(self, string_options, dict_options, dict_simplified_options):
         ...
     
-    def solve(self, instance, string_options=..., dict_options=..., dict_simplified_options=..., compiler=..., *, verbose=..., automatic=..., extraction=...): # -> Literal[TypeStatus.UNKNOWN, TypeStatus.CORE, TypeStatus.UNSAT, TypeStatus.OPTIMUM, TypeStatus.SAT] | None:
+    def solve(self, instance, string_options=..., dict_options=..., dict_simplified_options=..., compiler=..., *, verbose=..., automatic=..., extraction=..., on_solution=..., should_stop=...): # -> Literal[TypeStatus.UNKNOWN, TypeStatus.CORE, TypeStatus.UNSAT, TypeStatus.OPTIMUM, TypeStatus.SAT] | None:
         ...
     
     def switch_to_extraction(self): # -> None:
