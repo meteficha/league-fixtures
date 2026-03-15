@@ -8,7 +8,7 @@ from constraints import (
     TeamNoOverlapAndSpacingConstraint,
 )
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _sat_league():
@@ -48,7 +48,9 @@ def _unsat_league():
 
 def test_division_day_spread_objective_sat() -> None:
     constraints = [SingleFixtureDomainConstraint(), DivisionDaySpreadObjectiveConstraint()]
-    assert_sat(_sat_league(), constraints)
+    league = _sat_league()
+    assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, min_score=0.0, max_score=1.0)
 
 
 def test_division_day_spread_objective_unsat_with_hard_constraint() -> None:
@@ -80,6 +82,7 @@ def test_division_day_spread_objective_solver_dates_sat() -> None:
     constraints = [SingleFixtureDomainConstraint(), DivisionDaySpreadObjectiveConstraint()]
     assert_sat(league, constraints)
     assert_all_fixtures_assigned(league)
+    assert_check_score(constraints[1], league, min_score=0.0, max_score=1.0)
 
 
 def test_division_day_spread_objective_solver_dates_unsat_with_hard_constraint() -> None:
@@ -107,3 +110,12 @@ def test_division_day_spread_objective_solver_dates_unsat_with_hard_constraint()
         DivisionDaySpreadObjectiveConstraint(),
     ]
     assert_unsat(league, constraints)
+
+
+def test_division_day_spread_objective_check_partial_score() -> None:
+    """A division with clustered fixture dates has non-zero but non-perfect spread score."""
+    league = _sat_league()
+    fixtures = list(league.fixtures)
+    fixtures[1].date = fixtures[0].date
+    result = DivisionDaySpreadObjectiveConstraint().check(league)
+    assert 0.0 < result.score < 1.0

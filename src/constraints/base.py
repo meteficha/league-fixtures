@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from pycsp3.classes.main.variables import Variable
 from pycsp3.tools.curser import ListVar
 
-from league import Fixture, Team
+from league import Fixture, League, Team
 
 if TYPE_CHECKING:
     from solver_pycsp3 import Solver
@@ -22,8 +22,27 @@ class ConstraintContext:
     firstMatches: set[Fixture] = field(default_factory=set)
 
 
+@dataclass
+class CheckResult:
+    """Outcome of evaluating one constraint on an instantiated league."""
+
+    score: float
+    reasons: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if self.score < 0.0 or self.score > 1.0:
+            raise ValueError(f"CheckResult.score must be in [0, 1], got {self.score}")
+        if (self.score == 1.0) != (len(self.reasons) == 0):
+            raise ValueError("CheckResult.reasons must be empty iff score == 1")
+
+
 class Constraint:
     def apply(self, ctx: ConstraintContext) -> Any | None:
+        raise NotImplementedError()
+
+    def check(self, league: League) -> CheckResult:
+        """Evaluate this constraint on a concrete league assignment."""
+        del league
         raise NotImplementedError()
 
 

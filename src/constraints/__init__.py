@@ -1,6 +1,6 @@
 # pyright: strict, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
 from .adjacent_teams_different_day import AdjacentTeamsDifferentDayConstraint
-from .base import Constraint, ConstraintContext, DomainConstraint
+from .base import CheckResult, Constraint, ConstraintContext, DomainConstraint
 from .domain import (
     ClubHolidayDomainConstraint,
     ClubLateStartDomainConstraint,
@@ -27,6 +27,7 @@ from .xmas_break_balance import XmasBreakBalanceConstraint
 
 __all__ = [
     "Constraint",
+    "CheckResult",
     "ConstraintContext",
     "DomainConstraint",
     "FixtureWeekdayDomainConstraint",

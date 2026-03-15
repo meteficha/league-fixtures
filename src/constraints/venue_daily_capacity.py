@@ -1,9 +1,12 @@
 # pyright: strict, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
 from datetime import date
+from collections import defaultdict
 
 import pycsp3.functions as pycsp3f
+from league import League
 
-from .base import Constraint, ConstraintContext
+from .base import CheckResult, Constraint, ConstraintContext
+from .utils import cap_reasons, ratio_score
 
 
 class VenueDailyCapacityConstraint(Constraint):
@@ -17,3 +20,25 @@ class VenueDailyCapacityConstraint(Constraint):
                     occurrences={d: range(0, v.maxMatchesPerDay + 1) for d in dom},
                 )
             )
+
+    def check(self, league: League) -> CheckResult:
+        satisfied = 0
+        total = 0
+        reasons: list[str] = []
+
+        for v in league.venues:
+            per_day: dict[date, int] = defaultdict(int)
+            for f in v.fixtures:
+                if f.date is not None:
+                    per_day[f.date] += 1
+            for d, n in per_day.items():
+                total += 1
+                if n <= v.maxMatchesPerDay:
+                    satisfied += 1
+                else:
+                    reasons.append(
+                        f"Venue {v.name} has {n} matches on {d}, capacity is {v.maxMatchesPerDay}"
+                    )
+
+        score = ratio_score(satisfied, total)
+        return CheckResult(score=score, reasons=[] if score == 1.0 else cap_reasons(reasons))

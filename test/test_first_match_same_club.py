@@ -4,7 +4,7 @@ from datetime import date
 
 from constraints import FirstMatchSameClubConstraint, SingleFixtureDomainConstraint
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_first_match(same_club_date: date, other_date: date):
@@ -29,6 +29,7 @@ def test_first_match_same_club_sat() -> None:
     league = _league_for_first_match(date(2025, 9, 1), date(2025, 9, 8))
     constraints = [SingleFixtureDomainConstraint(), FirstMatchSameClubConstraint()]
     assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_first_match_same_club_unsat() -> None:
@@ -65,6 +66,7 @@ def test_first_match_same_club_solver_dates_sat() -> None:
     assert f_same.date < f_other.date
     assert f_same.date < f_balanced.date
     assert f_same.date < f_c2_home.date
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_first_match_same_club_solver_dates_unsat() -> None:
@@ -92,3 +94,10 @@ def test_first_match_same_club_solver_dates_unsat() -> None:
 
     constraints = [SingleFixtureDomainConstraint(), FirstMatchSameClubConstraint()]
     assert_unsat(league, constraints)
+
+
+def test_first_match_same_club_check_partial_score() -> None:
+    """One ordering comparison fails while others pass, producing a partial score."""
+    league = _league_for_first_match(date(2025, 9, 8), date(2025, 9, 8))
+    result = FirstMatchSameClubConstraint().check(league)
+    assert 0.0 < result.score < 1.0

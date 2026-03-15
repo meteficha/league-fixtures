@@ -1,7 +1,9 @@
 # pyright: strict, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false
 import pycsp3.functions as pycsp3f
+from league import League
 
-from .base import Constraint, ConstraintContext
+from .base import CheckResult, Constraint, ConstraintContext
+from .utils import cap_reasons, ratio_score
 
 
 class OnlyWhenConstraint(Constraint):
@@ -28,3 +30,28 @@ class OnlyWhenConstraint(Constraint):
                         pycsp3f.Exist([ctx.homeFixtureArrays[t2] for t2 in ow.reference.teams] + [v for v in unconstrainedArray], value=ctx.vars[f])
                     )
             print(".")
+
+    def check(self, league: League) -> CheckResult:
+        satisfied = 0
+        total = 0
+        reasons: list[str] = []
+
+        for ow in league.onlyWhen:
+            allowed_dates = {f.date for t in ow.reference.teams for f in t.homeFixtures if f.date is not None}
+            if ow.unconstrainedDays is not None:
+                allowed_dates.update(ow.unconstrainedDays.holidays)
+
+            for t in ow.constrained.teams:
+                for f in t.homeFixtures:
+                    if f.date is None:
+                        continue
+                    total += 1
+                    if f.date in allowed_dates:
+                        satisfied += 1
+                    else:
+                        reasons.append(
+                            f"OnlyWhen violated: {ow.constrained.name} home fixture {f.name} on {f.date}"
+                        )
+
+        score = ratio_score(satisfied, total)
+        return CheckResult(score=score, reasons=[] if score == 1.0 else cap_reasons(reasons))

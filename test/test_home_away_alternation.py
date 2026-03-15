@@ -4,7 +4,7 @@ from datetime import date
 
 from constraints import HomeAwayAlternationConstraint, SingleFixtureDomainConstraint
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_alternation(home_dates: tuple[date, date], away_dates: tuple[date, date]):
@@ -35,6 +35,7 @@ def test_home_away_alternation_sat() -> None:
     )
     constraints = [SingleFixtureDomainConstraint(), HomeAwayAlternationConstraint(strictHomeAwayConstraint=1)]
     assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_home_away_alternation_unsat() -> None:
@@ -78,6 +79,7 @@ def test_home_away_alternation_solver_dates_sat() -> None:
     constraints = [SingleFixtureDomainConstraint(), HomeAwayAlternationConstraint(strictHomeAwayConstraint=1)]
     assert_sat(league, constraints)
     assert_all_fixtures_assigned(league)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_home_away_alternation_solver_dates_unsat() -> None:
@@ -110,3 +112,13 @@ def test_home_away_alternation_solver_dates_unsat() -> None:
 
     constraints = [SingleFixtureDomainConstraint(), HomeAwayAlternationConstraint(strictHomeAwayConstraint=1)]
     assert_unsat(league, constraints)
+
+
+def test_home_away_alternation_check_partial_score() -> None:
+    """A mixed alternation ordering yields a score strictly between 0 and 1."""
+    league = _league_for_alternation(
+        home_dates=(date(2025, 9, 1), date(2025, 9, 8)),
+        away_dates=(date(2025, 9, 15), date(2025, 9, 22)),
+    )
+    result = HomeAwayAlternationConstraint(strictHomeAwayConstraint=None).check(league)
+    assert 0.0 < result.score < 1.0

@@ -8,7 +8,7 @@ from constraints import (
     VenueMinimizeEmptyDaysObjectiveConstraint,
 )
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _sat_league():
@@ -48,7 +48,9 @@ def _unsat_league():
 
 def test_venue_minimize_empty_days_objective_sat() -> None:
     constraints = [SingleFixtureDomainConstraint(), VenueMinimizeEmptyDaysObjectiveConstraint()]
-    assert_sat(_sat_league(), constraints)
+    league = _sat_league()
+    assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, min_score=0.0, max_score=1.0)
 
 
 def test_venue_minimize_empty_days_objective_unsat_with_hard_constraint() -> None:
@@ -92,6 +94,7 @@ def test_venue_minimize_empty_days_objective_solver_dates_sat() -> None:
     assert f1.date is not None
     assert f2.date is not None
     assert f1.date == f2.date
+    assert_check_score(constraints[1], league, min_score=0.0, max_score=1.0)
 
 
 def test_venue_minimize_empty_days_objective_solver_dates_unsat_with_hard_constraint() -> None:
@@ -119,3 +122,10 @@ def test_venue_minimize_empty_days_objective_solver_dates_unsat_with_hard_constr
         VenueMinimizeEmptyDaysObjectiveConstraint(),
     ]
     assert_unsat(league, constraints)
+
+
+def test_venue_minimize_empty_days_objective_check_partial_score() -> None:
+    """A minimize-empty-days venue using more than one date yields a partial compactness score."""
+    league = _sat_league()
+    result = VenueMinimizeEmptyDaysObjectiveConstraint().check(league)
+    assert 0.0 < result.score < 1.0

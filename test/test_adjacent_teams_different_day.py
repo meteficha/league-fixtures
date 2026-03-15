@@ -4,7 +4,7 @@ from datetime import date
 
 from constraints import AdjacentTeamsDifferentDayConstraint, SingleFixtureDomainConstraint
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_adjacent(d1: date, d2: date):
@@ -32,6 +32,7 @@ def test_adjacent_teams_different_day_sat() -> None:
     league = _league_for_adjacent(date(2025, 9, 1), date(2025, 9, 8))
     constraints = [SingleFixtureDomainConstraint(), AdjacentTeamsDifferentDayConstraint(enabled=True)]
     assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_adjacent_teams_different_day_unsat() -> None:
@@ -73,6 +74,7 @@ def test_adjacent_teams_different_day_solver_dates_sat() -> None:
     assert_sat(league, constraints)
     assert_all_fixtures_assigned(league)
     assert f1.date != f2.date
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_adjacent_teams_different_day_solver_dates_unsat() -> None:
@@ -108,3 +110,35 @@ def test_adjacent_teams_different_day_solver_dates_unsat() -> None:
 
     constraints = [SingleFixtureDomainConstraint(), AdjacentTeamsDifferentDayConstraint(enabled=True)]
     assert_unsat(league, constraints)
+
+
+def test_adjacent_teams_different_day_check_partial_score() -> None:
+    """One adjacent pair collides and another does not, so check score is strictly between 0 and 1."""
+    va = mk_venue("VA")
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+    vd = mk_venue("VD")
+
+    c_adj = mk_club("Adj", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+    cd = mk_club("D", vd)
+
+    a1 = mk_team(c_adj, "Adj1")
+    a2 = mk_team(c_adj, "Adj2")
+    a3 = mk_team(c_adj, "Adj3")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+    d1 = mk_team(cd, "D1")
+
+    league = mk_league(
+        teams=[a1, a2, a3, b1, c1, d1],
+        fixtures=[
+            mk_fixture(a1, b1, date(2025, 9, 1)),
+            mk_fixture(a2, c1, date(2025, 9, 1)),
+            mk_fixture(a3, d1, date(2025, 9, 8)),
+        ],
+    )
+
+    result = AdjacentTeamsDifferentDayConstraint(enabled=True).check(league)
+    assert 0.0 < result.score < 1.0

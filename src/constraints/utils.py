@@ -6,6 +6,19 @@ from pycsp3.classes.main.variables import Variable
 import pycsp3.functions as pycsp3f
 
 
+def ratio_score(satisfied: int, total: int) -> float:
+    if total <= 0:
+        return 1.0
+    return satisfied / total
+
+
+def cap_reasons(reasons: list[str], max_items: int = 5) -> list[str]:
+    if len(reasons) <= max_items:
+        return reasons
+    hidden = len(reasons) - max_items
+    return reasons[:max_items] + [f"... and {hidden} more"]
+
+
 def alternate[T](xs: Iterable[T], ys: Iterable[T]) -> Iterable[T]:
     """alternate([a0, ..., ak], [b0, ..., bk]) = [a0, b0, a1, b1, ..., ak, bk]"""
     ai = xs.__iter__()

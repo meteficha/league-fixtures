@@ -5,7 +5,7 @@ from datetime import date
 from constraints import OnlyWhenConstraint, SingleFixtureDomainConstraint
 from league import OnlyWhen, Weekday
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_only_when(constrained_date: date, reference_date: date):
@@ -33,6 +33,7 @@ def test_only_when_sat() -> None:
     league = _league_for_only_when(date(2025, 9, 1), date(2025, 9, 1))
     constraints = [SingleFixtureDomainConstraint(), OnlyWhenConstraint()]
     assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_only_when_unsat() -> None:
@@ -73,6 +74,7 @@ def test_only_when_solver_dates_sat() -> None:
     assert_sat(league, constraints)
     assert_all_fixtures_assigned(league)
     assert f_constrained.date == f_reference.date
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_only_when_solver_dates_unsat() -> None:
@@ -102,3 +104,31 @@ def test_only_when_solver_dates_unsat() -> None:
 
     constraints = [SingleFixtureDomainConstraint(), OnlyWhenConstraint()]
     assert_unsat(league, constraints)
+
+
+def test_only_when_check_partial_score() -> None:
+    """One constrained home date is aligned and another is not, yielding a partial score."""
+    vc = mk_venue("VC")
+    vr = mk_venue("VR")
+    vo = mk_venue("VO")
+
+    constrained = mk_club("Constrained", vc)
+    reference = mk_club("Reference", vr)
+    opp = mk_club("Opp", vo)
+
+    tc = mk_team(constrained, "C1")
+    tr = mk_team(reference, "R1")
+    to = mk_team(opp, "O1")
+
+    league = mk_league(
+        teams=[tc, tr, to],
+        fixtures=[
+            mk_fixture(tc, to, date(2025, 9, 1)),
+            mk_fixture(tc, tr, date(2025, 9, 8)),
+            mk_fixture(tr, to, date(2025, 9, 1)),
+        ],
+        only_when=[OnlyWhen(constrained=constrained, reference=reference)],
+    )
+
+    result = OnlyWhenConstraint().check(league)
+    assert 0.0 < result.score < 1.0

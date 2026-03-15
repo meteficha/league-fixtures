@@ -4,7 +4,7 @@ from datetime import date
 
 from constraints import SingleFixtureDomainConstraint, TeamNoOverlapAndSpacingConstraint
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_spacing(d1: date, d2: date):
@@ -28,6 +28,7 @@ def test_team_no_overlap_spacing_sat() -> None:
     league = _league_for_spacing(date(2025, 9, 1), date(2025, 9, 8))
     constraints = [SingleFixtureDomainConstraint(), TeamNoOverlapAndSpacingConstraint(strictMatchSpaceOut=5)]
     assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_team_no_overlap_spacing_unsat() -> None:
@@ -61,6 +62,7 @@ def test_team_no_overlap_spacing_solver_dates_sat() -> None:
     constraints = [SingleFixtureDomainConstraint(), TeamNoOverlapAndSpacingConstraint(strictMatchSpaceOut=5)]
     assert_sat(league, constraints)
     assert_all_fixtures_assigned(league)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_team_no_overlap_spacing_solver_dates_unsat() -> None:
@@ -84,3 +86,31 @@ def test_team_no_overlap_spacing_solver_dates_unsat() -> None:
 
     constraints = [SingleFixtureDomainConstraint(), TeamNoOverlapAndSpacingConstraint(strictMatchSpaceOut=8)]
     assert_unsat(league, constraints)
+
+
+def test_team_no_overlap_spacing_check_partial_score() -> None:
+    """One adjacent gap satisfies spacing and one does not, so score is partial."""
+    va = mk_venue("VA")
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+    vd = mk_venue("VD")
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+    cd = mk_club("D", vd)
+    ta = mk_team(ca, "A1")
+    tb = mk_team(cb, "B1")
+    tc = mk_team(cc, "C1")
+    td = mk_team(cd, "D1")
+
+    league = mk_league(
+        teams=[ta, tb, tc, td],
+        fixtures=[
+            mk_fixture(ta, tb, date(2025, 9, 1)),
+            mk_fixture(tc, ta, date(2025, 9, 8)),
+            mk_fixture(td, ta, date(2025, 9, 10)),
+        ],
+    )
+
+    result = TeamNoOverlapAndSpacingConstraint(strictMatchSpaceOut=5).check(league)
+    assert 0.0 < result.score < 1.0

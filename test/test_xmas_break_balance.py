@@ -4,7 +4,7 @@ from datetime import date
 
 from constraints import SingleFixtureDomainConstraint, XmasBreakBalanceConstraint
 
-from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_check_score, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_xmas(d1: date, d2: date):
@@ -27,6 +27,7 @@ def test_xmas_break_balance_sat() -> None:
         XmasBreakBalanceConstraint(strictXmasBreakDiff=0, strictXmasBreakPercentage=1.0),
     ]
     assert_sat(league, constraints)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_xmas_break_balance_unsat() -> None:
@@ -66,6 +67,7 @@ def test_xmas_break_balance_solver_dates_sat() -> None:
     ]
     assert_sat(league, constraints)
     assert_all_fixtures_assigned(league)
+    assert_check_score(constraints[1], league, expected=1.0)
 
 
 def test_xmas_break_balance_solver_dates_unsat() -> None:
@@ -83,3 +85,32 @@ def test_xmas_break_balance_solver_dates_unsat() -> None:
         XmasBreakBalanceConstraint(strictXmasBreakDiff=0, strictXmasBreakPercentage=1.0),
     ]
     assert_unsat(league, constraints)
+
+
+def test_xmas_break_balance_check_partial_score() -> None:
+    """Two teams are balanced around New Year and two are not, giving a partial score."""
+    va = mk_venue("VA")
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+    vd = mk_venue("VD")
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+    cd = mk_club("D", vd)
+    a1 = mk_team(ca, "A1")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+    d1 = mk_team(cd, "D1")
+
+    league = mk_league(
+        teams=[a1, b1, c1, d1],
+        fixtures=[
+            mk_fixture(a1, b1, date(2025, 10, 6)),
+            mk_fixture(b1, a1, date(2026, 1, 5)),
+            mk_fixture(c1, d1, date(2025, 10, 6)),
+            mk_fixture(d1, c1, date(2025, 10, 13)),
+        ],
+    )
+
+    result = XmasBreakBalanceConstraint(strictXmasBreakDiff=0, strictXmasBreakPercentage=0.0).check(league)
+    assert 0.0 < result.score < 1.0

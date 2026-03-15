@@ -6,6 +6,7 @@ from datetime import date
 
 import pytest
 
+from constraints import CheckResult
 from league import Calendar, Club, Division, Fixture, League, OnlyWhen, Team, Venue, Weekday
 from solver_base import UnsatisfiableConstraints
 from solver_pycsp3 import Constraint, Solver
@@ -84,3 +85,25 @@ def assert_unsat(league: League, constraints: Sequence[Constraint]) -> None:
 def assert_all_fixtures_assigned(league: League) -> None:
     for fixture in league.fixtures:
         assert fixture.date is not None, f"Fixture {fixture.name} was not assigned a date"
+
+
+def assert_check_score(
+    constraint: Constraint,
+    league: League,
+    *,
+    expected: float | None = None,
+    min_score: float | None = None,
+    max_score: float | None = None,
+) -> CheckResult:
+    result = constraint.check(league)
+    if expected is not None:
+        assert result.score == expected
+    if min_score is not None:
+        assert result.score >= min_score
+    if max_score is not None:
+        assert result.score <= max_score
+    if result.score == 1.0:
+        assert result.reasons == []
+    else:
+        assert len(result.reasons) > 0
+    return result

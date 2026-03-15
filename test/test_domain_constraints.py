@@ -5,6 +5,7 @@ from datetime import date
 from constraints import (
     ClubHolidayDomainConstraint,
     ClubLateStartDomainConstraint,
+    DomainConstraint,
     FixedDateDomainConstraint,
     FixtureWeekdayDomainConstraint,
     LeagueHolidayDomainConstraint,
@@ -13,6 +14,7 @@ from constraints import (
     TeamHolidayDomainConstraint,
     VenueHolidayDomainConstraint,
 )
+from league import Fixture
 from solver_pycsp3 import ConstraintContext, Solver
 
 from .helpers import mk_club, mk_fixture, mk_league, mk_team, mk_venue
@@ -38,7 +40,7 @@ def _league_for_fixture(
     home_late_start: date | None = None,
     away_late_start: date | None = None,
     fixed_date: date | None = None,
-) -> tuple[Solver, ConstraintContext, object]:
+) -> tuple[Solver, ConstraintContext, Fixture]:
     v1 = mk_venue("V1", holidays=venue_holidays)
     v2 = mk_venue("V2")
     c1 = mk_club("C1", v1, late_start=home_late_start, holidays=home_club_holidays)
@@ -63,7 +65,7 @@ def _league_for_same_club_fixture(
     away_team_holidays: list[date] | None = None,
     late_start: date | None = None,
     fixed_date: date | None = None,
-) -> tuple[Solver, ConstraintContext, object]:
+) -> tuple[Solver, ConstraintContext, Fixture]:
     v1 = mk_venue("V1", holidays=venue_holidays)
     c1 = mk_club("C1", v1, late_start=late_start, holidays=club_holidays)
     t1 = mk_team(c1, "C1_1")
@@ -77,7 +79,7 @@ def _league_for_same_club_fixture(
     return solver, ConstraintContext(solver=solver), fixture
 
 
-def _apply_rule(rule: object, ctx: ConstraintContext, fixture: object, *, full_season: bool = False) -> set[date]:
+def _apply_rule(rule: DomainConstraint, ctx: ConstraintContext, fixture: Fixture, *, full_season: bool = False) -> set[date]:
     if full_season:
         domain = set(range(ctx.solver.dateToInt(ctx.solver.league.end)))
     else:
@@ -87,7 +89,7 @@ def _apply_rule(rule: object, ctx: ConstraintContext, fixture: object, *, full_s
 
 
 def test_fixture_weekday_domain_constraint() -> None:
-    solver, ctx, fixture = _league_for_fixture()
+    _, ctx, fixture = _league_for_fixture()
 
     actual = _apply_rule(FixtureWeekdayDomainConstraint(), ctx, fixture, full_season=True)
 
