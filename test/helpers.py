@@ -46,7 +46,7 @@ def mk_team(club: Club, name: str) -> Team:
     return Team(club=club, name=name)
 
 
-def mk_fixture(home: Team, away: Team, when: date) -> Fixture:
+def mk_fixture(home: Team, away: Team, when: date | None = None) -> Fixture:
     return Fixture(home=home, away=away, date=when)
 
 
@@ -79,3 +79,8 @@ def assert_unsat(league: League, constraints: Sequence[Constraint]) -> None:
     with pytest.raises((UnsatisfiableConstraints, SystemExit, AssertionError)):
         solver = Solver(league=league, constraints=constraints, solver="ACE", solverOptions="")
         solver.solve()
+
+
+def assert_all_fixtures_assigned(league: League) -> None:
+    for fixture in league.fixtures:
+        assert fixture.date is not None, f"Fixture {fixture.name} was not assigned a date"

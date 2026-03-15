@@ -4,7 +4,7 @@ from datetime import date
 
 from constraints import HomeAwayAlternationConstraint, SingleFixtureDomainConstraint
 
-from .helpers import assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_alternation(home_dates: tuple[date, date], away_dates: tuple[date, date]):
@@ -42,5 +42,71 @@ def test_home_away_alternation_unsat() -> None:
         home_dates=(date(2025, 9, 1), date(2025, 9, 8)),
         away_dates=(date(2025, 9, 22), date(2025, 9, 29)),
     )
+    constraints = [SingleFixtureDomainConstraint(), HomeAwayAlternationConstraint(strictHomeAwayConstraint=1)]
+    assert_unsat(league, constraints)
+
+
+def test_home_away_alternation_solver_dates_sat() -> None:
+    """A full 3-team round-robin with enough Mondays allows strict home-away alternation."""
+    va = mk_venue("VA")
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+
+    a1 = mk_team(ca, "A1")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+
+    fixtures = [
+        mk_fixture(a1, b1),
+        mk_fixture(a1, c1),
+        mk_fixture(b1, a1),
+        mk_fixture(b1, c1),
+        mk_fixture(c1, a1),
+        mk_fixture(c1, b1),
+    ]
+    league = mk_league(
+        teams=[a1, b1, c1],
+        fixtures=fixtures,
+        start=date(2025, 9, 1),
+        end=date(2025, 10, 20),
+    )
+
+    constraints = [SingleFixtureDomainConstraint(), HomeAwayAlternationConstraint(strictHomeAwayConstraint=1)]
+    assert_sat(league, constraints)
+    assert_all_fixtures_assigned(league)
+
+
+def test_home_away_alternation_solver_dates_unsat() -> None:
+    """Strict alternation needs 4 distinct slots per team; only 3 Mondays makes that impossible."""
+    va = mk_venue("VA")
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+
+    a1 = mk_team(ca, "A1")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+
+    league = mk_league(
+        teams=[a1, b1, c1],
+        fixtures=[
+            mk_fixture(a1, b1),
+            mk_fixture(a1, c1),
+            mk_fixture(b1, a1),
+            mk_fixture(b1, c1),
+            mk_fixture(c1, a1),
+            mk_fixture(c1, b1),
+        ],
+        start=date(2025, 9, 1),
+        end=date(2025, 9, 22),
+    )
+
     constraints = [SingleFixtureDomainConstraint(), HomeAwayAlternationConstraint(strictHomeAwayConstraint=1)]
     assert_unsat(league, constraints)

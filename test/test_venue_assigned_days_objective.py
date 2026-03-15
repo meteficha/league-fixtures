@@ -8,7 +8,7 @@ from constraints import (
     VenueAssignedDaysObjectiveConstraint,
 )
 
-from .helpers import assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _sat_league():
@@ -58,3 +58,64 @@ def test_venue_assigned_days_objective_unsat_with_hard_constraint() -> None:
         VenueAssignedDaysObjectiveConstraint(),
     ]
     assert_unsat(_unsat_league(), constraints)
+
+
+def test_venue_assigned_days_objective_solver_dates_sat() -> None:
+    """With unassigned dates, maximizing assigned venue days is still feasible and fully schedules the league."""
+    va = mk_venue("VA", minimize_empty_days=False)
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+    a1 = mk_team(ca, "A1")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+
+    f1 = mk_fixture(a1, b1)
+    f2 = mk_fixture(a1, c1)
+    league = mk_league(
+        teams=[a1, b1, c1],
+        fixtures=[
+            f1,
+            f2,
+            mk_fixture(b1, a1),
+            mk_fixture(b1, c1),
+            mk_fixture(c1, a1),
+            mk_fixture(c1, b1),
+        ],
+    )
+
+    constraints = [SingleFixtureDomainConstraint(), VenueAssignedDaysObjectiveConstraint()]
+    assert_sat(league, constraints)
+    assert_all_fixtures_assigned(league)
+    assert f1.date is not None
+    assert f2.date is not None
+    assert f1.date != f2.date
+
+
+def test_venue_assigned_days_objective_solver_dates_unsat_with_hard_constraint() -> None:
+    """The objective cannot make an impossible hard-spacing instance feasible in a 2-Monday window."""
+    va = mk_venue("VA", minimize_empty_days=False)
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+    a1 = mk_team(ca, "A1")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+
+    league = mk_league(
+        teams=[a1, b1, c1],
+        fixtures=[mk_fixture(a1, b1), mk_fixture(c1, a1), mk_fixture(b1, c1)],
+        start=date(2025, 9, 1),
+        end=date(2025, 9, 15),
+    )
+
+    constraints = [
+        SingleFixtureDomainConstraint(),
+        TeamNoOverlapAndSpacingConstraint(strictMatchSpaceOut=5),
+        VenueAssignedDaysObjectiveConstraint(),
+    ]
+    assert_unsat(league, constraints)

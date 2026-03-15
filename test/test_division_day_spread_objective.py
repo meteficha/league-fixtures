@@ -8,7 +8,7 @@ from constraints import (
     TeamNoOverlapAndSpacingConstraint,
 )
 
-from .helpers import assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _sat_league():
@@ -58,3 +58,52 @@ def test_division_day_spread_objective_unsat_with_hard_constraint() -> None:
         DivisionDaySpreadObjectiveConstraint(),
     ]
     assert_unsat(_unsat_league(), constraints)
+
+
+def test_division_day_spread_objective_solver_dates_sat() -> None:
+    """With no preset dates, objective-only solving remains feasible and assigns all fixtures."""
+    va = mk_venue("VA")
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+    a1 = mk_team(ca, "A1")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+
+    league = mk_league(
+        teams=[a1, b1, c1],
+        fixtures=[mk_fixture(a1, b1), mk_fixture(a1, c1), mk_fixture(b1, c1), mk_fixture(c1, b1)],
+    )
+
+    constraints = [SingleFixtureDomainConstraint(), DivisionDaySpreadObjectiveConstraint()]
+    assert_sat(league, constraints)
+    assert_all_fixtures_assigned(league)
+
+
+def test_division_day_spread_objective_solver_dates_unsat_with_hard_constraint() -> None:
+    """Objective cannot rescue an instance where hard no-overlap spacing is impossible in a 2-Monday horizon."""
+    va = mk_venue("VA")
+    vb = mk_venue("VB")
+    vc = mk_venue("VC")
+    ca = mk_club("A", va)
+    cb = mk_club("B", vb)
+    cc = mk_club("C", vc)
+    a1 = mk_team(ca, "A1")
+    b1 = mk_team(cb, "B1")
+    c1 = mk_team(cc, "C1")
+
+    league = mk_league(
+        teams=[a1, b1, c1],
+        fixtures=[mk_fixture(a1, b1), mk_fixture(c1, a1), mk_fixture(b1, c1)],
+        start=date(2025, 9, 1),
+        end=date(2025, 9, 15),
+    )
+
+    constraints = [
+        SingleFixtureDomainConstraint(),
+        TeamNoOverlapAndSpacingConstraint(strictMatchSpaceOut=5),
+        DivisionDaySpreadObjectiveConstraint(),
+    ]
+    assert_unsat(league, constraints)

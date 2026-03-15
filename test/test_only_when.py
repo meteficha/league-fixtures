@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import date
 
 from constraints import OnlyWhenConstraint, SingleFixtureDomainConstraint
-from league import OnlyWhen
+from league import OnlyWhen, Weekday
 
-from .helpers import assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
+from .helpers import assert_all_fixtures_assigned, assert_sat, assert_unsat, mk_club, mk_fixture, mk_league, mk_team, mk_venue
 
 
 def _league_for_only_when(constrained_date: date, reference_date: date):
@@ -37,5 +37,68 @@ def test_only_when_sat() -> None:
 
 def test_only_when_unsat() -> None:
     league = _league_for_only_when(date(2025, 9, 8), date(2025, 9, 1))
+    constraints = [SingleFixtureDomainConstraint(), OnlyWhenConstraint()]
+    assert_unsat(league, constraints)
+
+
+def test_only_when_solver_dates_sat() -> None:
+    """Without fixed dates, the solver can align constrained-home dates with reference-home dates.
+
+    One fixed filler fixture gives the opponent team a home fixture, required by SingleFixtureDomainConstraint.
+    """
+    vc = mk_venue("VC")
+    vr = mk_venue("VR")
+    vo = mk_venue("VO")
+
+    constrained = mk_club("Constrained", vc)
+    reference = mk_club("Reference", vr)
+    opp = mk_club("Opp", vo)
+
+    tc = mk_team(constrained, "C1")
+    tr = mk_team(reference, "R1")
+    to = mk_team(opp, "O1")
+
+    f_constrained = mk_fixture(tc, to)
+    f_reference = mk_fixture(tr, to)
+    f_balanced = mk_fixture(to, tc, date(2025, 9, 15))
+    league = mk_league(
+        teams=[tc, tr, to],
+        fixtures=[f_constrained, f_reference, f_balanced],
+        only_when=[OnlyWhen(constrained=constrained, reference=reference)],
+        start=date(2025, 9, 1),
+        end=date(2025, 9, 29),
+    )
+
+    constraints = [SingleFixtureDomainConstraint(), OnlyWhenConstraint()]
+    assert_sat(league, constraints)
+    assert_all_fixtures_assigned(league)
+    assert f_constrained.date == f_reference.date
+
+
+def test_only_when_solver_dates_unsat() -> None:
+    """A constrained Monday club cannot match any home date of a Tuesday reference club.
+
+    A fixed filler fixture ensures each team has a home fixture while keeping the Monday-vs-Tuesday contradiction intact.
+    """
+    vc = mk_venue("VC")
+    vr = mk_venue("VR")
+    vo = mk_venue("VO")
+
+    constrained = mk_club("Constrained", vc, weekday=Weekday.MONDAY)
+    reference = mk_club("Reference", vr, weekday=Weekday.TUESDAY)
+    opp = mk_club("Opp", vo, weekday=Weekday.MONDAY)
+
+    tc = mk_team(constrained, "C1")
+    tr = mk_team(reference, "R1")
+    to = mk_team(opp, "O1")
+
+    league = mk_league(
+        teams=[tc, tr, to],
+        fixtures=[mk_fixture(tc, to), mk_fixture(tr, to), mk_fixture(to, tc, date(2025, 9, 15))],
+        only_when=[OnlyWhen(constrained=constrained, reference=reference)],
+        start=date(2025, 9, 1),
+        end=date(2025, 9, 29),
+    )
+
     constraints = [SingleFixtureDomainConstraint(), OnlyWhenConstraint()]
     assert_unsat(league, constraints)
